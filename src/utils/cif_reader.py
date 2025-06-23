@@ -1,0 +1,524 @@
+"""CifReader beta (2025/06/21)"""
+import os
+import re
+import warnings
+from itertools import product
+from pathlib import Path
+from typing import Dict, List, Tuple
+
+import numpy as np
+import pandas as pd
+from numpy.typing import NDArray
+
+
+class CifReader:
+    #TODO: ノーマライズ と 高速化
+    parent_dir = Path(os.path.abspath(__file__)).parent.parent
+    ELEMENT_PROP = pd.read_csv(f'{parent_dir}/constants/element_properties.csv')
+
+    def __init__(self, cif_path: str) -> None:
+        """Initialize the CifReader class.
+
+        Parameters
+        ----------
+        cif_path : str
+            Path of cif file.
+        """
+        self.basename = None
+
+        # Crystal properties
+        self.cell_lengths = [None, None, None]
+        self.cell_angles = [None, None, None]
+        self.lattice = None
+        self.symmetry_pos = []
+        self.z_value = 0
+
+        # Molecule properties
+        self.symbols = []
+        self.coordinates = []
+        self.sym_symbols = []
+        self.sym_coords = np.empty((0, 3))
+
+        # Unique molecule
+        self.unique_symbols = {}
+        self.unique_coords = {}
+
+        self._reader(cif_path)
+        self._calc_lattice()
+        self._operate_sym()
+        self.sym_symbols, self.sym_coords = self.remove_duplicates(self.sym_symbols, self.sym_coords)
+        self._split_mols()
+        self._put_unit_cell()
+        self.sym_symbols, self.sym_coords = self.remove_duplicates(self.sym_symbols, self.sym_coords)
+        self._split_mols()
+        self._calc_z_value()
+
+    def _calc_lattice(self):
+        """Calculate lattice."""
+        a, b, c = self.cell_lengths
+        alpha, beta, gamma = tuple(map(lambda x: np.radians(x), self.cell_angles))
+
+        b_x = b * np.cos(gamma)
+        b_y = b * np.sin(gamma)
+        c_x = c * np.cos(beta)
+        v = ((np.cos(alpha) - np.cos(beta) * np.cos(gamma))) / np.sin(gamma)
+        c_y = c * v
+        c_z = c * np.sqrt(1 - np.cos(beta)**2 - v**2)
+
+        self.lattice = np.array((
+            (a, 0, 0),
+            (b_x, b_y, 0),
+            (c_x, c_y, c_z),
+        ))
+
+    def _calc_z_value(self):
+        """Calculate z value."""
+        for atom_idx in self.bonded_atoms:
+            cen_of_weight = self.calc_cen_of_weight(
+                self.sym_symbols[atom_idx], self.sym_coords[atom_idx])
+            cen_of_weight = np.round(cen_of_weight, decimals=10)
+            if np.all(cen_of_weight<1):
+                self.unique_symbols[self.z_value] = self.sym_symbols[atom_idx]
+                self.unique_coords[self.z_value] = self.sym_coords[atom_idx]
+                self.z_value += 1
+
+    def _is_in_unit_cell(self, cen_of_weight: NDArray[np.float64]) -> bool:
+        """Determine if the center of weight is in the unit cell.
+
+        Parameters
+        ----------
+        cen_of_weight : NDArray[np.float64]
+            Center of weight.
+
+        Returns
+        -------
+        bool
+            True if the center of weight is in the unit cell.
+        """
+        if np.all(0 <= cen_of_weight) and np.all(cen_of_weight < 1):
+            is_in_unit_cell = True
+        else:
+            is_in_unit_cell = False
+
+        return is_in_unit_cell
+
+    def _make_adjacency_mat(self):
+        """Determine bonding and create the adjacency matrix.
+
+        Notes
+        -----
+        Error occurs when symbol is D.
+        """
+        distance_threshold = 1.5
+
+        num_atoms = len(self.sym_symbols)
+        self.adjacency_mat = np.zeros((num_atoms, num_atoms))
+        vdw_dict = self.ELEMENT_PROP[['symbol', 'vdw_radius']].set_index('symbol').to_dict()['vdw_radius']
+
+        self.cart_coords = np.dot(self.sym_coords, self.lattice)
+
+        vdw_distance = np.array([vdw_dict[symbol] for symbol in self.sym_symbols]) + np.array([vdw_dict[symbol] for symbol in self.sym_symbols])[:, np.newaxis]
+        distance = np.linalg.norm(self.cart_coords[:, np.newaxis, :] - self.cart_coords[np.newaxis, :, :], axis=-1)
+        self.adjacency_mat[(distance <= vdw_distance - distance_threshold) & (distance != 0)] = 1
+
+    def _operate_sym(self) -> None:
+        """Perform molecular symmetry operations."""
+
+        def _extract_coord(coord: NDArray[np.float64], idx: int, is_minus: bool) -> NDArray[np.float64]:
+            """Extract coordinates from the coordinate array.
+
+            Parameters
+            ----------
+            coord : NDArray[np.float64]
+                Coordinate array.
+            idx : int
+                Index of the coordinate to extract.
+            is_minus : bool
+                If True, the coordinate is extracted with a minus sign.
+
+            Returns
+            -------
+            NDArray[np.float64]
+                Extracted coordinate array.
+            """
+            if is_minus:
+                return -coord[:, idx].copy()
+            else:
+                return coord[:, idx].copy()
+
+
+        if len(self.symmetry_pos) == 0:
+            raise SymmetryIsNotDefinedError('Symmetry is not defined.')
+
+        self.sym_symbols = np.tile(self.symbols, len(self.symmetry_pos))
+
+        idx_fil = ('x', 'y', 'z')
+
+        for pos in self.symmetry_pos:
+            moved_coord = np.zeros(self.coordinates.shape)
+
+            sum_array = np.empty(0)
+
+            for i, s, in enumerate(pos.split(',')):
+                matches = re.findall(r'[0-9]/[0-9]', s)
+                if matches:
+                    fraction = eval(f'float({matches[0]})')
+                else:
+                    fraction = 0
+                sum_array = np.append(sum_array, fraction)
+
+                terms = [x.replace('+', '') for x in re.findall(r'\+?\-?[x-z]', s)]
+
+                for term in terms:
+                    is_minus = False
+
+                    if '-' in term:
+                        is_minus = True
+                        term = term[-1]
+
+                    moved_coord[:, i] += _extract_coord(
+                        self.coordinates,
+                        idx_fil.index(term),
+                        is_minus
+                    )
+            moved_coord = sum_array + moved_coord
+            self.sym_coords = np.append(self.sym_coords, moved_coord, axis=0)
+
+    def _put_unit_cell(self, diff: float = 10**-16) -> None:
+        """Put molecules into unit cell.
+
+        Parameters
+        ----------
+        diff : int or float
+            Specifies the error range of the unit cell., by default 10**-16
+        """
+        for atom_idx in self.bonded_atoms:
+            for i, c in enumerate(self.calc_cen_of_weight(self.sym_symbols[atom_idx], self.sym_coords[atom_idx])):
+
+                if 1+diff < c:
+                    change = -int(c)
+                elif c < 0-diff:
+                    change = abs(int(c)) + 1
+                else:
+                    change = 0
+                self.sym_coords[atom_idx, i] += change
+
+    def _reader(self, cif_path: str) -> None:
+        """Read cif file infomation.
+
+        Parameters
+        ----------
+        cif_path : str
+            Path of cif file.
+        """
+        # indexの位置を保存する
+        counter = 0
+        atom_data_index = {
+            '_atom_site_label': None,
+            '_atom_site_type_symbol': None,
+            '_atom_site_fract_x': None,
+            '_atom_site_fract_y': None,
+            '_atom_site_fract_z': None,
+        }
+        symmetry_data_index = None
+
+        is_read_atom = False
+        is_read_sym = False
+
+        with open(cif_path) as f:
+            while True:
+                line = f.readline()
+                if not line:
+                    break
+                line = line.strip()
+
+                # 今後の空白文字の判定を無くすため
+                if not line:
+                    continue
+
+                if line.startswith('data_'):
+                    self.basename = '_'.join(line.split('_')[1:])
+
+                # ユニットセルの情報を取得する
+                cell_params = ('_cell_length_a', '_cell_length_b', '_cell_length_c', '_cell_angle_alpha', '_cell_angle_beta', '_cell_angle_gamma')
+                if line.startswith(tuple(cell_params)):
+                    value = float(re.sub(r'\(.*\)', '', line.split()[-1]))
+                    if line.startswith('_cell_length'):
+                        self.cell_lengths[cell_params.index(line.split()[0])] = value
+                    else:
+                        self.cell_angles[cell_params.index(line.split()[0])%3] = value
+
+                # indexの位置を取得する
+                if 'loop_' == line:
+                    counter = 0
+                    is_read_atom = False
+                    is_read_sym = False
+                    continue
+                elif '_' == line[0]:
+                    if line in atom_data_index.keys():
+                        atom_data_index[line] = counter
+                        is_read_atom = True
+                        is_read_sym = False
+                    elif line in ('_symmetry_equiv_pos_as_xyz', '_space_group_symop_operation_xyz'):
+                        symmetry_data_index = counter
+                        is_read_atom = False
+                        is_read_sym = True
+                    counter += 1
+                    continue
+                elif ';' == line[0]:
+                    is_read_atom = False
+                    is_read_sym = False
+                    continue
+
+                if line[0] not in ('_', '#'):
+                    # シンボルとfractional coordinatesを取得する
+                    if is_read_atom:
+                        tmp_atom_data = line.split()
+                        # disorderを取り除く処理
+                        if '?' not in tmp_atom_data[atom_data_index['_atom_site_label']]:
+                            if atom_data_index['_atom_site_type_symbol'] is None:
+                                symbol = tmp_atom_data[atom_data_index['_atom_site_label']]
+                                for s in ['A', 'B', 'C']:
+                                    symbol = symbol.replace(s, '')
+                                symbol = re.sub(r'\d+', '', symbol)
+                            else:
+                                symbol = tmp_atom_data[atom_data_index['_atom_site_type_symbol']]
+                            fract_x = tmp_atom_data[atom_data_index['_atom_site_fract_x']]
+                            fract_y = tmp_atom_data[atom_data_index['_atom_site_fract_y']]
+                            fract_z = tmp_atom_data[atom_data_index['_atom_site_fract_z']]
+                            coord = [float(re.sub(r'\(.*\)', '', x)) for x in [fract_x, fract_y, fract_z]]
+                            self.symbols.append(symbol)
+                            self.coordinates.append(coord)
+                    # 対称操作の情報を取得する
+                    elif is_read_sym:
+                        if "'" in line:
+                            line = list(map(lambda x: x.strip().replace(' ', ''), line.split("'")))
+                            self.symmetry_pos.append(line[symmetry_data_index].lower())
+                        else:
+                            line = list(map(lambda x: x.strip().replace(' ', ''), line.split()))
+                            self.symmetry_pos.append(line[symmetry_data_index].lower())
+
+            self.symbols = np.array(self.symbols)
+            self.coordinates = np.array(self.coordinates)
+
+    def _search_connect_atoms(self, node: int, atoms: List[int], visited: NDArray[np.bool_], num_atoms: int) -> None:
+        """Find bonded atoms using depth-first search.
+
+        Parameters
+        ----------
+        node : int
+            Index of the atom.
+        atoms : List[int]
+            List of bonded atoms.
+        visited : NDArray[np.bool_]
+            Array of visited atoms.
+        num_atoms : int
+            Number of atoms.
+        """
+        visited[node] = True
+        atoms.append(node)
+        for i in range(num_atoms):
+            if self.adjacency_mat[node, i] and not visited[i]:
+                self._search_connect_atoms(i, atoms, visited, num_atoms)
+
+    def _split_mols(self) -> None:
+        """Split molecules."""
+        self.bonded_atoms = []
+        num_atoms = len(self.sym_symbols)
+        visited = np.zeros(num_atoms, dtype=bool)
+
+        self._make_adjacency_mat()
+
+        for i in range(num_atoms):
+            if not visited[i]:
+                atoms = []
+                self._search_connect_atoms(i, atoms, visited, num_atoms)
+                self.bonded_atoms.append(atoms)
+
+        # インデックスに対応する行を取り出す
+        self.sub_matrices = []
+        for index_group in self.bonded_atoms:
+            # インデックスが該当する行を取り出す
+            index_group.sort()
+            sub_matrix = self.adjacency_mat[np.ix_(index_group, index_group)]
+            self.sub_matrices.append(sub_matrix)
+
+    def calc_cen_of_weight(self, symbols: List[str], coordinates: NDArray[np.float64]) -> NDArray[np.float64]:
+        """Calculate center of weight.
+
+        Parameters
+        ----------
+        symbols : ArrayLike[str]
+            Symbols of monomolecular.
+        coordinates : NDArray[np.float64]
+            Coordinates of monomolecular.
+
+        Returns
+        -------
+        NDArray[np.float64]
+            Center of weight.
+        """
+        weight = [self.ELEMENT_PROP[self.ELEMENT_PROP['symbol'] == symbol]['weight'].iloc[0] for symbol in symbols]
+        cen_of_weight = np.average(coordinates, axis=0, weights=weight)
+
+        return cen_of_weight
+
+    def convert_cart_to_frac(self, cart_coord: NDArray[np.float64]) -> NDArray[np.float64]:
+        """Convert Cartesian coordinates to fractional coordinates.
+
+        Parameters
+        ----------
+        cart_coord : NDArray[np.float64]
+            Cartesian coordinates.
+
+        Returns
+        -------
+        NDArray[np.float64]
+            Fractional coordinates.
+        """
+        a, b, c = self.cell_lengths
+        alpha, beta, gamma = tuple(map(lambda x: np.radians(x), self.cell_angles))
+        b_x = -np.cos(gamma) / (a*np.sin(gamma))
+        b_y = 1 / (b*np.sin(gamma))
+        v = np.sqrt(1 - np.cos(alpha)**2 - np.cos(beta)**2 - np.cos(gamma)**2 + 2*np.cos(alpha)*np.cos(beta)*np.cos(gamma))
+        c_x = (np.cos(alpha)*np.cos(gamma) - np.cos(beta)) / (a*v*np.sin(gamma))
+        c_y = (np.cos(beta)*np.cos(gamma) - np.cos(alpha)) / (b*v*np.sin(gamma))
+        c_z = np.sin(gamma) / (c*v)
+
+        vector = np.array((
+                (1/a, 0, 0),
+                (b_x, b_y, 0),
+                (c_x, c_y, c_z),
+            ))
+
+        return np.dot(cart_coord, vector)
+
+    def convert_frac_to_cart(self, frac_coord: NDArray[np.float64]) -> NDArray[np.float64]:
+        """Convert fractional coordinates to Cartesian coordinates.
+
+        Parameters
+        ----------
+        frac_coord : NDArray[np.float64]
+            Fractional coordinates.
+
+        Returns
+        -------
+        NDArray[np.float64]
+            Cartesian coordinates.
+        """
+        return np.dot(frac_coord, self.lattice)
+
+    def expand_mols(
+        self,
+        expand_range: int = 1
+    ) -> Dict[Tuple[int, int, int], Dict[int, List[Tuple[str, NDArray[np.float64]]]]]:
+        """Generate molecules around unique molecules.
+
+        Parameters
+        ----------
+        expand_range : int
+            The number of molecular cycles produced., by default 1
+
+        Returns
+        -------
+        Dict[Tuple[int, int, int], Dict[int, List[Tuple[str, NDArray[np.float64]]]]]
+            A nested dictionary containing the expanded molecular structure:
+
+            - Outer key: Tuple[int, int, int]
+                Represents the unit cell offset (i, j, k) relative to the origin unit cell.
+                For example, (0, 0, 0) is the origin unit cell, (1, 0, 0) is one unit cell away in the a-direction, etc.
+
+            - Inner key: int
+                The index of the unique molecule within that unit cell.
+
+            - Value: Tuple[List[str], NDArray[np.float64]]
+                A list containing molecular information:
+                - List[str]: Element symbols of the molecule
+                - NDArray[np.float64]: Cartesian coordinates of the molecule (shape: (3, n))
+        """
+        expand_mols = {}
+        combs = tuple(product(tuple(range(-expand_range, expand_range+1)), repeat=3))
+
+        for comb in combs:
+            for i, unique_coord in self.unique_coords.items():
+                if i == 0:
+                    expand_mols[comb] = {i: [self.unique_symbols[i], unique_coord + np.array(comb)]}
+                else:
+                    expand_mols[comb][i] = [self.unique_symbols[i], unique_coord + np.array(comb)]
+
+        return expand_mols
+
+    def make_bond_type_mat(self) -> List[NDArray[np.int32]]:
+        """Make bond type matrix.
+
+        Returns
+        -------
+        List[NDArray[np.int32]]
+            Bond type matrix.
+
+        Warnings
+        --------
+        This function is unverified. Please check the result.
+        """
+        #TODO: 未完成(結合種類判定の部分)のため、使用する場合は確認が必要
+        warnings.warn('make_bond_type_mat is unverified. Please check the result.')
+        bond_type_mat = self.adjacency_mat.copy()
+
+        covalent_df = self.ELEMENT_PROP[['symbol', 'single_covalent_radius', 'double_covalent_radius', 'triple_covalent_radius']].copy()
+
+        covalent_df['double'] = (covalent_df['double_covalent_radius']+covalent_df['single_covalent_radius']) / 2
+        covalent_df['triple'] = (covalent_df['triple_covalent_radius']+covalent_df['double_covalent_radius']) / 2
+        # covalent_df['double'] = covalent_df['double_covalent_radius']
+        # covalent_df['triple'] = covalent_df['triple_covalent_radius']
+
+        covalent_dict = covalent_df.set_index('symbol').to_dict()
+        triple_distance = np.array([covalent_dict['triple'][symbol] for symbol in self.sym_symbols]) + np.array([covalent_dict['triple'][symbol] for symbol in self.sym_symbols])[:, np.newaxis]
+        double_distance = np.array([covalent_dict['double'][symbol] for symbol in self.sym_symbols]) + np.array([covalent_dict['double'][symbol] for symbol in self.sym_symbols])[:, np.newaxis]
+        distance = np.linalg.norm(self.cart_coords[:, np.newaxis, :] - self.cart_coords[np.newaxis, :, :], axis=-1)
+
+        bond_type_mat[(distance <= double_distance) & (distance != 0)] = 2
+        bond_type_mat[(distance <= triple_distance) & (distance != 0)] = 3
+
+        # インデックスに対応する行を取り出す
+        split_bond_type_mat = []
+        for index_group in self.bonded_atoms:
+            # インデックスが該当する行を取り出す
+            index_group.sort()
+            tmp_mat = bond_type_mat[np.ix_(index_group, index_group)]
+            split_bond_type_mat.append(tmp_mat)
+
+        return split_bond_type_mat
+
+    def remove_duplicates(
+        self,
+        symbol: List[str],
+        coordinate: NDArray[np.float64],
+        tol: float = 1e-4,
+    ) -> Tuple[List[str], NDArray[np.float64]]:
+        """Remove duplicates from symbol and coordinate arrays based on coordinate with a given tolerance.
+
+        Parameters
+        ----------
+        symbol : List[str]
+            Symbols of molecules.
+        coordinate : NDArray[np.float64]
+            Coordinates of molecules.
+        tol : float
+            Tolerance for duplicate detection.
+
+        Returns
+        -------
+        Tuple[List[str], NDArray[np.float64]]
+            Symbols and coordinates of unique molecules.
+        """
+        distance_mat = ((coordinate[np.newaxis, :, :] - coordinate[:, np.newaxis, :]) ** 2).sum(axis=-1) # 距離計算
+        dup = (distance_mat <= tol)
+        dup = np.tril(dup, k=-1)
+        unique_indices = ~dup.any(axis=-1)
+
+        return symbol[unique_indices], coordinate[unique_indices]
+
+
+class SymmetryIsNotDefinedError(Exception):
+    """Exception raised when symmetry is not defined."""
+    pass
