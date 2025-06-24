@@ -3,7 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 # 概要
-`mcal.py`は有機半導体の移動度テンソルを計算するツールです。結晶構造から移動積分と再組織化エネルギーを計算し、異方性と経路の連続性を考慮して移動度テンソルを決定します。
+`mcal.py`は有機半導体の移動度テンソルを計算するツールです。結晶構造から移動積分と再配列エネルギーを計算し、異方性と経路の連続性を考慮して移動度テンソルを決定します。
 
 # 必要環境
 * Python 3.7以降
@@ -11,7 +11,7 @@
 * Pandas
 * Gaussian 09または16
 
-# 重要な注意事項
+# 注意事項
 * Gaussianのパスが設定されている必要があります。
 
 # mcal 使用マニュアル
@@ -26,8 +26,8 @@ python mcal.py <cif_filename> <osc_type> [オプション]
 
 - `cif_filename`: CIFファイルのパス
 - `osc_type`: 有機半導体の種類
-  - `p`: p型半導体（HOMOレベルを使用）
-  - `n`: n型半導体（LUMOレベルを使用）
+  - `p`: p型半導体（HOMOを使用）
+  - `n`: n型半導体（LUMOを使用）
 
 ### 基本例
 
@@ -67,6 +67,10 @@ Gaussian 09を使用します（デフォルトはGaussian 16）。
 #### `-r, --read`
 Gaussianを実行せずに既存のログファイルから結果を読み取ります。
 - **例**: `python mcal.py xxx.cif p -r`
+
+#### `-rp, --read_pickle`
+計算を実行せずに既存のpickleファイルから結果を読み取ります。
+- **例**: `python mcal.py xxx.cif p -rp`
 
 #### `--resume`
 ログファイルが正常に終了している場合、既存の結果を使用して計算を再開します。
@@ -130,6 +134,9 @@ python mcal.py xxx.cif p -M "B3LYP/6-311G(d,p)"
 # 既存の計算結果から読み取り
 python mcal.py xxx.cif p -r
 
+# 既存のpickleファイルから読み取り
+python mcal.py xxx.cif p -rp
+
 # 中断された計算を再開
 python mcal.py xxx.cif p --resume
 
@@ -146,7 +153,7 @@ python mcal.py xxx.cif p --mc --pde
 ## 出力
 
 ### 標準出力
-- 再組織化エネルギー
+- 再配列エネルギー
 - 各ペアの移動積分
 - 拡散係数テンソル
 - 移動度テンソル
@@ -181,3 +188,9 @@ python mcal.py xxx.cif p
 # CPU数を増やす
 python mcal.py xxx.cif p -c 16
 ```
+
+# 著者
+[山形大学 有機エレクトロニクス研究センター (ROEL) 松井研究室](https://matsui-lab.yz.yamagata-u.ac.jp/index.html)  
+松井 弘之、尾沢 昂輝  
+Email: h-matsui[at]yz.yamagata-u.ac.jp  
+[at]を@に置き換えてください

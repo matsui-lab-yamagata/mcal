@@ -68,6 +68,10 @@ Use Gaussian 09 (default is Gaussian 16).
 Read results from existing log files without executing Gaussian.
 - **Example**: `python mcal.py xxx.cif p -r`
 
+#### `-rp, --read_pickle`
+Read results from existing pickle file without executing calculations.
+- **Example**: `python mcal.py xxx.cif p -rp`
+
 #### `--resume`
 Resume calculation using existing results if log files terminated normally.
 - **Example**: `python mcal.py xxx.cif p --resume`
@@ -130,6 +134,9 @@ python mcal.py xxx.cif p -M "B3LYP/6-311G(d,p)"
 # Read from existing calculation results
 python mcal.py xxx.cif p -r
 
+# Read from existing pickle file
+python mcal.py xxx.cif p -rp
+
 # Resume interrupted calculation
 python mcal.py xxx.cif p --resume
 
@@ -181,3 +188,9 @@ python mcal.py xxx.cif p
 # Increase number of CPUs
 python mcal.py xxx.cif p -c 16
 ``` 
+
+# Authors
+[Matsui Laboratory, Research Center for Organic Electronics (ROEL), Yamagata University](https://matsui-lab.yz.yamagata-u.ac.jp/index-e.html)  
+Hiroyuki Matsui, Koki Ozawa  
+Email: h-matsui[at]yz.yamagata-u.ac.jp  
+Please replace [at] with @  
