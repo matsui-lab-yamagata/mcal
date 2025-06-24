@@ -3,6 +3,7 @@ import argparse
 import functools
 import pickle
 from pathlib import Path
+from time import time
 from typing import Dict, List, Literal, Optional, Tuple, Union
 
 import numpy as np
@@ -62,14 +63,16 @@ def main():
         - Save results to pickle file\n
         $ python hop_mcal.py xxx.cif p --pickle
 
+        - Read results from existing pickle file\n
+        $ python hop_mcal.py xxx_result.pkl p -rp
+
         - Read results from existing log files without running Gaussian\n
         $ python hop_mcal.py xxx.cif p -r
 
     Compare calculation methods:
-        - Compare results using Monte Carlo and PDE methods
+        - Compare results using Monte Carlo and PDE methods\n
         $ python hop_mcal.py xxx.cif p --mc --pde
     """
-
     # Error range for skipping calculation of transfer integrals using moment of inertia and distance between centers of weight.
     CENTER_OF_WEIGHT_ERROR = 1.0e-7
     MOMENT_OF_INERTIA_ERROR = np.array([[1.0e-3, 1.0e-3, 1.0e-3]])
@@ -93,6 +96,11 @@ def main():
     )
     parser.add_argument('-g', '--g09', help='use Gaussian 09 (default is Gaussian 16)', action='store_true')
     parser.add_argument('-r', '--read', help='read log files without executing Gaussian', action='store_true')
+    parser.add_argument(
+        '-rp', '--read_pickle',
+        help='read results from existing pickle file',
+        action='store_true'
+    )
     parser.add_argument('-p', '--pickle', help='save to pickle the result of calculation', action='store_true')
     parser.add_argument(
         '--cellsize',
@@ -133,11 +141,18 @@ def main():
     cif_path_without_ext = f'{directory}/{filename}'
 
     print('---------------------------------------')
-    print(' mcal beta (2025/06/23) by Matsui Lab. ')
+    print(' mcal beta (2025/06/24) by Matsui Lab. ')
     print('---------------------------------------')
 
+    if args.read_pickle:
+        read_pickle(args.file)
+        exit()
+
     print(f'\nCalculate as {args.osc_type}-type organic semiconductor.')
-    print(f'\nInput File Name: {args.file}\n')
+    print(f'\nInput File Name: {args.file}')
+    Tcal.print_timestamp()
+    print()
+    start_time = time()
 
     ##### Calculate reorganization energy #####
     cif_reader = CifReader(cif_path=cif_file)
@@ -199,15 +214,14 @@ def main():
 
                 coordinates = cif_reader.convert_frac_to_cart(coordinates)
 
-                if not args.fullcal:
-                    min_distance = cal_min_distance(
-                        unique_symbols, unique_coords,
-                        symbols, coordinates
-                    )
-                    if min_distance > 5:
-                        print()
-                        print(f'Skip calculation of transfer integral from {s}-th in (0,0,0) cell to {t}-th in ({i},{j},{k}) cell because the minimum distance is over 5 \u212B.\n')
-                        continue
+                min_distance = cal_min_distance(
+                    unique_symbols, unique_coords,
+                    symbols, coordinates
+                )
+                if min_distance > 5:
+                    print()
+                    print(f'Skip calculation of transfer integral from {s}-th in (0,0,0) cell to {t}-th in ({i},{j},{k}) cell because the minimum distance is over 5 \u212B.\n')
+                    continue
 
                 moment, _ = cal_moment_of_inertia(
                     unique_symbols, unique_coords,
@@ -324,6 +338,7 @@ def main():
     if args.pickle:
         with open(f'{cif_path_without_ext}_result.pkl', 'wb') as f:
             pickle.dump({
+                'osc_type': args.osc_type,
                 'lattice': cif_reader.lattice,
                 'z_value': cif_reader.z_value,
                 'reorganization': reorg_energy,
@@ -334,6 +349,18 @@ def main():
                 'mobility_value': value,
                 'mobility_vector': vector
             }, f)
+
+    Tcal.print_timestamp()
+    end_time = time()
+    elapsed_time = end_time - start_time
+    if elapsed_time < 1:
+        print(f'Elapsed Time: {elapsed_time*1000:.0f} ms')
+    elif elapsed_time < 60:
+        print(f'Elapsed Time: {elapsed_time:.0f} s')
+    elif elapsed_time < 3600:
+        print(f'Elapsed Time: {elapsed_time/60:.0f} min')
+    else:
+        print(f'Elapsed Time: {elapsed_time/3600:.0f} h')
 
 
 def atom_weight(symbol: str) -> float:
@@ -773,6 +800,30 @@ def print_transfer_integral(osc_type: Literal['p', 'n'], transfer: float):
     print(' Transfer integral ')
     print('-------------------')
     print(f'{mol_orb[osc_type]}: {transfer:12.6g} eV\n')
+
+
+def read_pickle(file_name: str):
+    print(f'\nInput File Name: {file_name}')
+
+    with open(file_name, 'rb') as f:
+        results = pickle.load(f)
+
+    # print(results)
+
+    print(f'\nCalculate as {results["osc_type"]}-type organic semiconductor.')
+
+    print_reorg_energy(results['osc_type'], results['reorganization'])
+
+    for s, t, i, j, k, ti in results['transfer_integrals']:
+        print()
+        print(f'{s}-th in (0,0,0) cell to {t}-th in ({i},{j},{k}) cell')
+        print_transfer_integral(results['osc_type'], ti)
+
+    print_tensor(results['diffusion_coefficient_tensor'], msg="Diffusion coefficient tensor")
+
+    print_tensor(results['mobility_tensor'])
+
+    print_mobility(results['mobility_value'], results['mobility_vector'])
 
 
 class OSCTypeError(Exception):
