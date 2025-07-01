@@ -80,6 +80,44 @@ def demo():
         print(f"{d[0]:9.6f} {d[1]:9.6f} {d[2]:9.6f}")
 
 
+def cal_pinv(array: NDArray[np.float64], rcond: float = 1e-9) -> NDArray[np.float64]:
+    """Calculate pseudo-inverse matrix using eigenvalue decomposition
+
+    Parameters
+    ----------
+    array : NDArray[np.float64]
+        Input matrix
+    rcond : float, optional
+        Cutoff for small singular values, by default 1e-9
+
+    Returns
+    -------
+    NDArray[np.float64]
+        Pseudo-inverse matrix
+
+    Raises
+    ------
+    ValueError
+        The last eigenvalue is not zero.
+    ValueError
+        All eigenvalues except the last one should be negative.
+    """
+    eigvals, eigvecs = np.linalg.eigh(array)
+
+    # Calculate pseudo-inverse matrix using eigenvalue decomposition
+    inveigvals = np.zeros_like(eigvals)
+    if abs(eigvals[-1] / eigvals[0]) > rcond:
+        raise ValueError(f"The last eigenvalue is not zero, which is unexpected for this test case. {eigvals}")
+    if any(eigvals[0:-1] > 0):
+        raise ValueError(f"All eigenvalues except the last one should be negative, which is unexpected for this test case. {eigvals}")
+
+    inveigvals[0:-1] = 1.0 / eigvals[0:-1]
+    inveigvals[-1] = 0.0
+    pinv = eigvecs @ np.diag(inveigvals) @ eigvecs.T
+
+    return pinv
+
+
 def marcus_rate(transfer: float, reorganization: float, T: float = 300.0) -> float:
     """Calculate hopping rate (1/s) from transfer integral (eV) and reorganization energy (eV)
 
@@ -164,7 +202,23 @@ def diffusion_coefficient_tensor(
         C[s, :] += p * vec
         C[t, :] -= p * vec  # Consider hopping in both directions
 
-    return (D / 2 + C.T @ LA.pinv(B) @ C) / n
+    # For n = 1 case, skip C.T @ B_pinv @ C term as it equals zero
+    if n > 1:
+        B_pinv = cal_pinv(B)
+        D = (D / 2 + C.T @ B_pinv @ C) / n
+    else:
+        D = D / 2
+
+    # Check computational errors
+    threshold = np.max(abs(D)) * 1e-9
+    D_diff = abs(D - D.T)
+    if np.any(D_diff > threshold):
+        raise ValueError(f"Diffusion coefficient tensor D should be symmetric: {D}")
+
+    # Make symmetric matrix considering computational errors
+    D = (D + D.T) / 2
+
+    return D
 
 
 def diffusion_coefficient_tensor_PDE(
