@@ -3,7 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 # 概要
-`mcal.py`は有機半導体の移動度テンソルを計算するツールです。結晶構造から移動積分と再配列エネルギーを計算し、異方性と経路の連続性を考慮して移動度テンソルを決定します。
+`mcal.py`は有機半導体の移動度テンソルを計算するツールです。結晶構造から移動積分と再配列エネルギーを計算し、異方性と経路の連続性を考慮して移動度テンソルを算出します。
 
 # 必要環境
 * Python 3.7以降
@@ -19,15 +19,16 @@
 ## 基本的な使用方法
 
 ```bash
-python mcal.py <cif_filename> <osc_type> [オプション]
+python mcal.py <cif_filename or pkl_filename> <osc_type> [オプション]
 ```
 
 ### 必須引数
 
 - `cif_filename`: CIFファイルのパス
-- `osc_type`: 有機半導体の種類
-  - `p`: p型半導体（HOMOを使用）
-  - `n`: n型半導体（LUMOを使用）
+- `pkl_filename`: pickleファイルのパス
+- `osc_type`: 何型の有機半導体として計算するか
+  - `p`: p型半導体 (移動積分にHOMOを使用)
+  - `n`: n型半導体 (移動積分にLUMOを使用)
 
 ### 基本例
 
@@ -44,7 +45,7 @@ python mcal.py xxx.cif n
 ### 計算設定
 
 #### `-M, --method <method>`
-Gaussian計算で使用する計算手法を指定します。
+Gaussianで使用する計算手法を指定します。
 - **デフォルト**: `B3LYP/6-31G(d,p)`
 - **例**: `python mcal.py xxx.cif p -M "B3LYP/6-31G(d)"`
 
@@ -65,12 +66,12 @@ Gaussian 09を使用します（デフォルトはGaussian 16）。
 ### 計算制御
 
 #### `-r, --read`
-Gaussianを実行せずに既存のログファイルから結果を読み取ります。
+Gaussianを実行せずに既存のlogファイルから結果を読み取ります。
 - **例**: `python mcal.py xxx.cif p -r`
 
 #### `-rp, --read_pickle`
 計算を実行せずに既存のpickleファイルから結果を読み取ります。
-- **例**: `python mcal.py xxx.cif p -rp`
+- **例**: `python mcal.py xxx_result.pkl p -rp`
 
 #### `--resume`
 ログファイルが正常に終了している場合、既存の結果を使用して計算を再開します。
@@ -96,14 +97,14 @@ Gaussianを実行せずに既存のログファイルから結果を読み取り
 ### 拡散係数計算手法
 
 #### `--mc`
-モンテカルロ法を使用して拡散係数テンソルを計算します。
+モンテカルロ法を使用して拡散係数テンソルを計算します。(テスト用)
 - **例**: `python mcal.py xxx.cif p --mc`
 
 #### `--pde`
-偏微分方程式法を使用して拡散係数テンソルを計算します。
+偏微分方程式法を使用して拡散係数テンソルを計算します。(テスト用)
 - **例**: `python mcal.py xxx.cif p --pde`
 
-## 実用的な使用例
+## 使用例
 
 ### 基本的な計算
 ```bash
@@ -135,7 +136,7 @@ python mcal.py xxx.cif p -M "B3LYP/6-311G(d,p)"
 python mcal.py xxx.cif p -r
 
 # 既存のpickleファイルから読み取り
-python mcal.py xxx.cif p -rp
+python mcal.py xxx_result.pkl p -rp
 
 # 中断された計算を再開
 python mcal.py xxx.cif p --resume
