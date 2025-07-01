@@ -19,12 +19,13 @@
 ## Basic Usage
 
 ```bash
-python mcal.py <cif_filename> <osc_type> [options]
+python mcal.py <cif_filename or pkl_filenname> <osc_type> [options]
 ```
 
 ### Required Arguments
 
 - `cif_filename`: Path to the CIF file
+- `pkl_filename`: Path to the pickle file
 - `osc_type`: Organic semiconductor type
   - `p`: p-type semiconductor (uses HOMO level)
   - `n`: n-type semiconductor (uses LUMO level)
@@ -70,7 +71,7 @@ Read results from existing log files without executing Gaussian.
 
 #### `-rp, --read_pickle`
 Read results from existing pickle file without executing calculations.
-- **Example**: `python mcal.py xxx.cif p -rp`
+- **Example**: `python mcal.py xxx_result.pkl p -rp`
 
 #### `--resume`
 Resume calculation using existing results if log files terminated normally.
@@ -135,7 +136,7 @@ python mcal.py xxx.cif p -M "B3LYP/6-311G(d,p)"
 python mcal.py xxx.cif p -r
 
 # Read from existing pickle file
-python mcal.py xxx.cif p -rp
+python mcal.py xxx_result.pkl p -rp
 
 # Resume interrupted calculation
 python mcal.py xxx.cif p --resume
