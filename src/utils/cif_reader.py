@@ -1,4 +1,4 @@
-"""CifReader beta (2025/06/21)"""
+"""CifReader beta (2025/07/16)"""
 import os
 import re
 import warnings
@@ -77,7 +77,7 @@ class CifReader:
             cen_of_weight = self.calc_cen_of_weight(
                 self.sym_symbols[atom_idx], self.sym_coords[atom_idx])
             cen_of_weight = np.round(cen_of_weight, decimals=10)
-            if np.all(cen_of_weight<1):
+            if self._is_in_unit_cell(cen_of_weight):
                 self.unique_symbols[self.z_value] = self.sym_symbols[atom_idx]
                 self.unique_coords[self.z_value] = self.sym_coords[atom_idx]
                 self.z_value += 1
@@ -184,20 +184,13 @@ class CifReader:
             moved_coord = sum_array + moved_coord
             self.sym_coords = np.append(self.sym_coords, moved_coord, axis=0)
 
-    def _put_unit_cell(self, diff: float = 10**-16) -> None:
-        """Put molecules into unit cell.
-
-        Parameters
-        ----------
-        diff : int or float
-            Specifies the error range of the unit cell., by default 10**-16
-        """
+    def _put_unit_cell(self) -> None:
+        """Put molecules into unit cell."""
         for atom_idx in self.bonded_atoms:
             for i, c in enumerate(self.calc_cen_of_weight(self.sym_symbols[atom_idx], self.sym_coords[atom_idx])):
-
-                if 1+diff < c:
+                if 1 <= c:
                     change = -int(c)
-                elif c < 0-diff:
+                elif c < 0:
                     change = abs(int(c)) + 1
                 else:
                     change = 0
@@ -263,6 +256,8 @@ class CifReader:
                         symmetry_data_index = counter
                         is_read_atom = False
                         is_read_sym = True
+                    else:
+                        is_read_sym = False
                     counter += 1
                     continue
                 elif ';' == line[0]:
