@@ -1,7 +1,6 @@
-"""CifReader beta (2025/07/16)"""
+"""CifReader beta (2025/08/18)"""
 import os
 import re
-import warnings
 from itertools import product
 from pathlib import Path
 from typing import Dict, List, Tuple
@@ -12,9 +11,10 @@ from numpy.typing import NDArray
 
 
 class CifReader:
-    #TODO: ノーマライズ と 高速化
     parent_dir = Path(os.path.abspath(__file__)).parent.parent
-    ELEMENT_PROP = pd.read_csv(f'{parent_dir}/constants/element_properties.csv')
+    ELEMENT_PROP = pd.read_csv(f'{parent_dir}/constants/element_properties.csv').dropna(axis=0)
+    ATOMIC_WEIGHTS = ELEMENT_PROP[['symbol', 'weight']].set_index('symbol').to_dict()['weight']
+    COVALENT_RADII = ELEMENT_PROP[['symbol', 'covalent_radius']].set_index('symbol').to_dict()['covalent_radius']
 
     def __init__(self, cif_path: str) -> None:
         """Initialize the CifReader class.
@@ -74,9 +74,8 @@ class CifReader:
     def _calc_z_value(self):
         """Calculate z value."""
         for atom_idx in self.bonded_atoms:
-            cen_of_weight = self.calc_cen_of_weight(
-                self.sym_symbols[atom_idx], self.sym_coords[atom_idx])
-            cen_of_weight = np.round(cen_of_weight, decimals=10)
+            cen_of_weight = self.calc_cen_of_weight(self.sym_symbols[atom_idx], self.sym_coords[atom_idx])
+
             if self._is_in_unit_cell(cen_of_weight):
                 self.unique_symbols[self.z_value] = self.sym_symbols[atom_idx]
                 self.unique_coords[self.z_value] = self.sym_coords[atom_idx]
@@ -113,13 +112,16 @@ class CifReader:
 
         num_atoms = len(self.sym_symbols)
         self.adjacency_mat = np.zeros((num_atoms, num_atoms))
-        vdw_dict = self.ELEMENT_PROP[['symbol', 'vdw_radius']].set_index('symbol').to_dict()['vdw_radius']
 
         self.cart_coords = np.dot(self.sym_coords, self.lattice)
 
-        vdw_distance = np.array([vdw_dict[symbol] for symbol in self.sym_symbols]) + np.array([vdw_dict[symbol] for symbol in self.sym_symbols])[:, np.newaxis]
+        try:
+            covalent_distance = np.array([self.COVALENT_RADII[symbol] for symbol in self.sym_symbols]) + np.array([self.COVALENT_RADII[symbol] for symbol in self.sym_symbols])[:, np.newaxis]
+        except KeyError:
+            raise ElementPropertiesIsNotDefinedError(f'Element properties is not defined.')
+
         distance = np.linalg.norm(self.cart_coords[:, np.newaxis, :] - self.cart_coords[np.newaxis, :, :], axis=-1)
-        self.adjacency_mat[(distance <= vdw_distance - distance_threshold) & (distance != 0)] = 1
+        self.adjacency_mat[(distance <= covalent_distance * 1.3) & (distance != 0)] = 1
 
     def _operate_sym(self) -> None:
         """Perform molecular symmetry operations."""
@@ -204,7 +206,7 @@ class CifReader:
         cif_path : str
             Path of cif file.
         """
-        # indexの位置を保存する
+        # save index position
         counter = 0
         atom_data_index = {
             '_atom_site_label': None,
@@ -225,14 +227,14 @@ class CifReader:
                     break
                 line = line.strip()
 
-                # 今後の空白文字の判定を無くすため
+                # remove blank characters
                 if not line:
                     continue
 
                 if line.startswith('data_'):
                     self.basename = '_'.join(line.split('_')[1:])
 
-                # ユニットセルの情報を取得する
+                # get unit cell information
                 cell_params = ('_cell_length_a', '_cell_length_b', '_cell_length_c', '_cell_angle_alpha', '_cell_angle_beta', '_cell_angle_gamma')
                 if line.startswith(tuple(cell_params)):
                     value = float(re.sub(r'\(.*\)', '', line.split()[-1]))
@@ -241,7 +243,7 @@ class CifReader:
                     else:
                         self.cell_angles[cell_params.index(line.split()[0])%3] = value
 
-                # indexの位置を取得する
+                # get index position
                 if 'loop_' == line:
                     counter = 0
                     is_read_atom = False
@@ -266,10 +268,10 @@ class CifReader:
                     continue
 
                 if line[0] not in ('_', '#'):
-                    # シンボルとfractional coordinatesを取得する
+                    # get symbol and fractional coordinates
                     if is_read_atom:
                         tmp_atom_data = line.split()
-                        # disorderを取り除く処理
+                        # remove disorder
                         if '?' not in tmp_atom_data[atom_data_index['_atom_site_label']]:
                             if atom_data_index['_atom_site_type_symbol'] is None:
                                 symbol = tmp_atom_data[atom_data_index['_atom_site_label']]
@@ -284,7 +286,7 @@ class CifReader:
                             coord = [float(re.sub(r'\(.*\)', '', x)) for x in [fract_x, fract_y, fract_z]]
                             self.symbols.append(symbol)
                             self.coordinates.append(coord)
-                    # 対称操作の情報を取得する
+                    # get symmetry operation information
                     elif is_read_sym:
                         if "'" in line:
                             line = list(map(lambda x: x.strip().replace(' ', ''), line.split("'")))
@@ -330,10 +332,10 @@ class CifReader:
                 self._search_connect_atoms(i, atoms, visited, num_atoms)
                 self.bonded_atoms.append(atoms)
 
-        # インデックスに対応する行を取り出す
+        # get row corresponding to index
         self.sub_matrices = []
         for index_group in self.bonded_atoms:
-            # インデックスが該当する行を取り出す
+            # get row corresponding to index
             index_group.sort()
             sub_matrix = self.adjacency_mat[np.ix_(index_group, index_group)]
             self.sub_matrices.append(sub_matrix)
@@ -353,10 +355,14 @@ class CifReader:
         NDArray[np.float64]
             Center of weight.
         """
-        weight = [self.ELEMENT_PROP[self.ELEMENT_PROP['symbol'] == symbol]['weight'].iloc[0] for symbol in symbols]
+        try:
+            weight = [self.ATOMIC_WEIGHTS[symbol] for symbol in symbols]
+        except KeyError:
+            raise ElementPropertiesIsNotDefinedError(f'Element properties is not defined.')
+
         cen_of_weight = np.average(coordinates, axis=0, weights=weight)
 
-        return cen_of_weight
+        return np.round(cen_of_weight, decimals=10)
 
     def convert_cart_to_frac(self, cart_coord: NDArray[np.float64]) -> NDArray[np.float64]:
         """Convert Cartesian coordinates to fractional coordinates.
@@ -443,47 +449,6 @@ class CifReader:
 
         return expand_mols
 
-    def make_bond_type_mat(self) -> List[NDArray[np.int32]]:
-        """Make bond type matrix.
-
-        Returns
-        -------
-        List[NDArray[np.int32]]
-            Bond type matrix.
-
-        Warnings
-        --------
-        This function is unverified. Please check the result.
-        """
-        #TODO: 未完成(結合種類判定の部分)のため、使用する場合は確認が必要
-        warnings.warn('make_bond_type_mat is unverified. Please check the result.')
-        bond_type_mat = self.adjacency_mat.copy()
-
-        covalent_df = self.ELEMENT_PROP[['symbol', 'single_covalent_radius', 'double_covalent_radius', 'triple_covalent_radius']].copy()
-
-        covalent_df['double'] = (covalent_df['double_covalent_radius']+covalent_df['single_covalent_radius']) / 2
-        covalent_df['triple'] = (covalent_df['triple_covalent_radius']+covalent_df['double_covalent_radius']) / 2
-        # covalent_df['double'] = covalent_df['double_covalent_radius']
-        # covalent_df['triple'] = covalent_df['triple_covalent_radius']
-
-        covalent_dict = covalent_df.set_index('symbol').to_dict()
-        triple_distance = np.array([covalent_dict['triple'][symbol] for symbol in self.sym_symbols]) + np.array([covalent_dict['triple'][symbol] for symbol in self.sym_symbols])[:, np.newaxis]
-        double_distance = np.array([covalent_dict['double'][symbol] for symbol in self.sym_symbols]) + np.array([covalent_dict['double'][symbol] for symbol in self.sym_symbols])[:, np.newaxis]
-        distance = np.linalg.norm(self.cart_coords[:, np.newaxis, :] - self.cart_coords[np.newaxis, :, :], axis=-1)
-
-        bond_type_mat[(distance <= double_distance) & (distance != 0)] = 2
-        bond_type_mat[(distance <= triple_distance) & (distance != 0)] = 3
-
-        # インデックスに対応する行を取り出す
-        split_bond_type_mat = []
-        for index_group in self.bonded_atoms:
-            # インデックスが該当する行を取り出す
-            index_group.sort()
-            tmp_mat = bond_type_mat[np.ix_(index_group, index_group)]
-            split_bond_type_mat.append(tmp_mat)
-
-        return split_bond_type_mat
-
     def remove_duplicates(
         self,
         symbol: List[str],
@@ -506,12 +471,17 @@ class CifReader:
         Tuple[List[str], NDArray[np.float64]]
             Symbols and coordinates of unique molecules.
         """
-        distance_mat = ((coordinate[np.newaxis, :, :] - coordinate[:, np.newaxis, :]) ** 2).sum(axis=-1) # 距離計算
+        distance_mat = ((coordinate[np.newaxis, :, :] - coordinate[:, np.newaxis, :]) ** 2).sum(axis=-1)
         dup = (distance_mat <= tol)
         dup = np.tril(dup, k=-1)
         unique_indices = ~dup.any(axis=-1)
 
         return symbol[unique_indices], coordinate[unique_indices]
+
+
+class ElementPropertiesIsNotDefinedError(Exception):
+    """Exception raised when element properties is not defined."""
+    pass
 
 
 class SymmetryIsNotDefinedError(Exception):

@@ -141,7 +141,7 @@ def main():
     cif_path_without_ext = f'{directory}/{filename}'
 
     print('---------------------------------------')
-    print(' mcal beta (2025/06/24) by Matsui Lab. ')
+    print(' mcal beta (2025/08/18) by Matsui Lab. ')
     print('---------------------------------------')
 
     if args.read_pickle:
