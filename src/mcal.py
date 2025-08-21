@@ -141,7 +141,7 @@ def main():
     cif_path_without_ext = f'{directory}/{filename}'
 
     print('---------------------------------------')
-    print(' mcal beta (2025/08/18) by Matsui Lab. ')
+    print(' mcal beta (2025/08/21) by Matsui Lab. ')
     print('---------------------------------------')
 
     if args.read_pickle:
@@ -494,12 +494,13 @@ def cal_min_distance(
         Minimum distance between two sets of atoms
     """
     ELEMENT_PROP = CifReader.ELEMENT_PROP
+    VDW_RADII = ELEMENT_PROP[['symbol', 'vdw_radius']].set_index('symbol').to_dict()['vdw_radius']
 
     radii1 = np.array(
-        [ELEMENT_PROP[ELEMENT_PROP['symbol'] == symbol]['vdw_radius'].iloc[0] for symbol in symbols1]
+        [VDW_RADII[symbol] for symbol in symbols1]
     )
     radii2 = np.array(
-        [ELEMENT_PROP[ELEMENT_PROP['symbol'] == symbol]['vdw_radius'].iloc[0] for symbol in symbols2]
+        [VDW_RADII[symbol] for symbol in symbols2]
     )
 
     distances = np.sqrt(np.sum((coords1[:, np.newaxis] - coords2)**2, axis=2)) - radii1[:, np.newaxis] - radii2
