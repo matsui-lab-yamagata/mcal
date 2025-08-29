@@ -1,4 +1,4 @@
-"""CifReader beta (2025/08/18)"""
+"""CifReader beta (2025/08/30)"""
 import os
 import re
 from itertools import product
@@ -11,6 +11,20 @@ from numpy.typing import NDArray
 
 
 class CifReader:
+    """CifReader class.
+
+    This class is used to read cif file and extract crystal information.
+
+    Raises
+    ------
+    ElementPropertiesIsNotDefinedError
+        Raised when element properties is not defined.
+    SymmetryIsNotDefinedError
+        Raised when symmetry is not defined.
+    ZValueIsNotMatchError
+        Raised when z value is not match.
+        The atomic bond detection may not be functioning correctly.
+    """
     parent_dir = Path(os.path.abspath(__file__)).parent.parent
     ELEMENT_PROP = pd.read_csv(f'{parent_dir}/constants/element_properties.csv').dropna(axis=0)
     ATOMIC_WEIGHTS = ELEMENT_PROP[['symbol', 'weight']].set_index('symbol').to_dict()['weight']
@@ -32,9 +46,11 @@ class CifReader:
         self.lattice = None
         self.symmetry_pos = []
         self.z_value = 0
+        self._ref_z_value = 0
 
         # Molecule properties
         self.symbols = []
+        self.symbols_label = []
         self.coordinates = []
         self.sym_symbols = []
         self.sym_coords = np.empty((0, 3))
@@ -47,11 +63,16 @@ class CifReader:
         self._calc_lattice()
         self._operate_sym()
         self.sym_symbols, self.sym_coords = self.remove_duplicates(self.sym_symbols, self.sym_coords)
+        self._make_adjacency_mat()
         self._split_mols()
         self._put_unit_cell()
         self.sym_symbols, self.sym_coords = self.remove_duplicates(self.sym_symbols, self.sym_coords)
+        self._make_adjacency_mat()
         self._split_mols()
         self._calc_z_value()
+
+        if self._ref_z_value != 0 and self.z_value != self._ref_z_value:
+            raise ZValueIsNotMatchError('Z value is not match.')
 
     def _calc_lattice(self):
         """Calculate lattice."""
@@ -102,23 +123,17 @@ class CifReader:
         return is_in_unit_cell
 
     def _make_adjacency_mat(self):
-        """Determine bonding and create the adjacency matrix.
-
-        Notes
-        -----
-        Error occurs when symbol is D.
-        """
-        distance_threshold = 1.5
-
+        """Determine bonding and create the adjacency matrix."""
         num_atoms = len(self.sym_symbols)
-        self.adjacency_mat = np.zeros((num_atoms, num_atoms))
+        self.adjacency_mat = np.zeros((num_atoms, num_atoms), dtype=np.bool)
 
         self.cart_coords = np.dot(self.sym_coords, self.lattice)
 
         try:
-            covalent_distance = np.array([self.COVALENT_RADII[symbol] for symbol in self.sym_symbols]) + np.array([self.COVALENT_RADII[symbol] for symbol in self.sym_symbols])[:, np.newaxis]
+            covalent_distance = np.array([self.COVALENT_RADII[symbol] for symbol in self.sym_symbols]) \
+                + np.array([self.COVALENT_RADII[symbol] for symbol in self.sym_symbols])[:, np.newaxis]
         except KeyError:
-            raise ElementPropertiesIsNotDefinedError(f'Element properties is not defined.')
+            raise ElementPropertiesIsNotDefinedError('Element properties is not defined.')
 
         distance = np.linalg.norm(self.cart_coords[:, np.newaxis, :] - self.cart_coords[np.newaxis, :, :], axis=-1)
         self.adjacency_mat[(distance <= covalent_distance * 1.3) & (distance != 0)] = 1
@@ -242,6 +257,8 @@ class CifReader:
                         self.cell_lengths[cell_params.index(line.split()[0])] = value
                     else:
                         self.cell_angles[cell_params.index(line.split()[0])%3] = value
+                elif line.startswith('_cell_formula_units_Z'):
+                    self._ref_z_value = int(line.split()[-1])
 
                 # get index position
                 if 'loop_' == line:
@@ -274,17 +291,20 @@ class CifReader:
                         # remove disorder
                         if '?' not in tmp_atom_data[atom_data_index['_atom_site_label']]:
                             if atom_data_index['_atom_site_type_symbol'] is None:
-                                symbol = tmp_atom_data[atom_data_index['_atom_site_label']]
+                                symbol_label = tmp_atom_data[atom_data_index['_atom_site_label']]
+                                symbol = symbol_label
                                 for s in ['A', 'B', 'C']:
                                     symbol = symbol.replace(s, '')
                                 symbol = re.sub(r'\d+', '', symbol)
                             else:
+                                symbol_label = tmp_atom_data[atom_data_index['_atom_site_label']]
                                 symbol = tmp_atom_data[atom_data_index['_atom_site_type_symbol']]
                             fract_x = tmp_atom_data[atom_data_index['_atom_site_fract_x']]
                             fract_y = tmp_atom_data[atom_data_index['_atom_site_fract_y']]
                             fract_z = tmp_atom_data[atom_data_index['_atom_site_fract_z']]
                             coord = [float(re.sub(r'\(.*\)', '', x)) for x in [fract_x, fract_y, fract_z]]
                             self.symbols.append(symbol)
+                            self.symbols_label.append(symbol_label)
                             self.coordinates.append(coord)
                     # get symmetry operation information
                     elif is_read_sym:
@@ -324,8 +344,6 @@ class CifReader:
         num_atoms = len(self.sym_symbols)
         visited = np.zeros(num_atoms, dtype=bool)
 
-        self._make_adjacency_mat()
-
         for i in range(num_atoms):
             if not visited[i]:
                 atoms = []
@@ -358,7 +376,7 @@ class CifReader:
         try:
             weight = [self.ATOMIC_WEIGHTS[symbol] for symbol in symbols]
         except KeyError:
-            raise ElementPropertiesIsNotDefinedError(f'Element properties is not defined.')
+            raise ElementPropertiesIsNotDefinedError('Element properties is not defined.')
 
         cen_of_weight = np.average(coordinates, axis=0, weights=weight)
 
@@ -486,4 +504,8 @@ class ElementPropertiesIsNotDefinedError(Exception):
 
 class SymmetryIsNotDefinedError(Exception):
     """Exception raised when symmetry is not defined."""
+    pass
+
+class ZValueIsNotMatchError(Exception):
+    """Exception raised when z value is not match."""
     pass
