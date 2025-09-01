@@ -95,7 +95,7 @@ class CifReader:
     def _calc_z_value(self):
         """Calculate z value."""
         for atom_idx in self.bonded_atoms:
-            cen_of_weight = self.calc_cen_of_weight(self.sym_symbols[atom_idx], self.sym_coords[atom_idx])
+            cen_of_weight = self.calc_cen_of_weight(self.sym_coords[atom_idx])
 
             if self._is_in_unit_cell(cen_of_weight):
                 self.unique_symbols[self.z_value] = self.sym_symbols[atom_idx]
@@ -204,7 +204,7 @@ class CifReader:
     def _put_unit_cell(self) -> None:
         """Put molecules into unit cell."""
         for atom_idx in self.bonded_atoms:
-            for i, c in enumerate(self.calc_cen_of_weight(self.sym_symbols[atom_idx], self.sym_coords[atom_idx])):
+            for i, c in enumerate(self.calc_cen_of_weight(self.sym_coords[atom_idx])):
                 if 1 <= c:
                     change = -int(c)
                 elif c < 0:
@@ -358,13 +358,11 @@ class CifReader:
             sub_matrix = self.adjacency_mat[np.ix_(index_group, index_group)]
             self.sub_matrices.append(sub_matrix)
 
-    def calc_cen_of_weight(self, symbols: List[str], coordinates: NDArray[np.float64]) -> NDArray[np.float64]:
+    def calc_cen_of_weight(self, coordinates: NDArray[np.float64]) -> NDArray[np.float64]:
         """Calculate center of weight.
 
         Parameters
         ----------
-        symbols : ArrayLike[str]
-            Symbols of monomolecular.
         coordinates : NDArray[np.float64]
             Coordinates of monomolecular.
 
