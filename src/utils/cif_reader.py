@@ -373,12 +373,7 @@ class CifReader:
         NDArray[np.float64]
             Center of weight.
         """
-        try:
-            weight = [self.ATOMIC_WEIGHTS[symbol] for symbol in symbols]
-        except KeyError:
-            raise ElementPropertiesIsNotDefinedError('Element properties is not defined.')
-
-        cen_of_weight = np.average(coordinates, axis=0, weights=weight)
+        cen_of_weight = np.average(coordinates, axis=0)
 
         return np.round(cen_of_weight, decimals=10)
 
