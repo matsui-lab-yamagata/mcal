@@ -141,7 +141,7 @@ def main():
     cif_path_without_ext = f'{directory}/{filename}'
 
     print('---------------------------------------')
-    print(' mcal beta (2025/08/21) by Matsui Lab. ')
+    print(' mcal beta (2025/09/02) by Matsui Lab. ')
     print('---------------------------------------')
 
     if args.read_pickle:
@@ -156,6 +156,9 @@ def main():
 
     ##### Calculate reorganization energy #####
     cif_reader = CifReader(cif_path=cif_file)
+    print(f'Export {cif_path_without_ext}_unit_cell.mol')
+    cif_reader.export_unit_cell_file(f'{cif_path_without_ext}_unit_cell.mol', format='mol')
+    print('Please verify that the created unit cell is correct.\n')
     symbols = cif_reader.unique_symbols[0]
     coordinates = cif_reader.unique_coords[0]
     coordinates = cif_reader.convert_frac_to_cart(coordinates)
