@@ -126,7 +126,7 @@ class CifReader:
     def _make_adjacency_mat(self):
         """Determine bonding and create the adjacency matrix."""
         num_atoms = len(self.sym_symbols)
-        self.adjacency_mat = np.zeros((num_atoms, num_atoms), dtype=np.bool)
+        self.adjacency_mat = np.zeros((num_atoms, num_atoms), dtype=np.bool_)
 
         self.cart_coords = np.dot(self.sym_coords, self.lattice)
 
