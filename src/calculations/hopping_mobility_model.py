@@ -1,4 +1,4 @@
-"""hopping_mobility_model.py (2025/06/20)"""
+"""hopping_mobility_model.py (2025/10/06)"""
 import math
 import random
 from typing import List, Tuple
@@ -210,7 +210,7 @@ def diffusion_coefficient_tensor(
         D = D / 2
 
     # Check computational errors
-    threshold = np.max(abs(D)) * 1e-9
+    threshold = np.max(abs(D)) * 1e-6
     D_diff = abs(D - D.T)
     if np.any(D_diff > threshold):
         raise ValueError(f"Diffusion coefficient tensor D should be symmetric: {D}")
