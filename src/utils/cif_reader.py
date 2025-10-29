@@ -1,4 +1,4 @@
-"""CifReader beta (2025/09/02)"""
+"""CifReader beta (2025/10/30)"""
 import os
 import re
 from itertools import product
@@ -594,7 +594,7 @@ class FileIO:
 
         for i in range(len(self.symbols_list)):
             for s, (x, y, z) in zip(self.symbols_list[i], self.coordinates_list[i]):
-                atom_lines.append(f"{x:10.4f}{y:10.4f}{z:10.4f}{s:>2s}      0\n")
+                atom_lines.append(f"{x:10.4f}{y:10.4f}{z:10.4f} {s:>2s}     0\n")
 
             for j in range(len(self.symbols_list[i])):
                 for k in range(j):
