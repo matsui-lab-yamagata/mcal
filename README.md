@@ -97,12 +97,12 @@ Save calculation results to a pickle file.
 ### Diffusion Coefficient Calculation Methods
 
 #### `--mc`
-Calculate diffusion coefficient tensor using Monte Carlo method.
+Calculate diffusion coefficient tensor using kinetic Monte Carlo method.
 - **Example**: `python mcal.py xxx.cif p --mc`
 
-#### `--pde`
-Calculate diffusion coefficient tensor using Partial Differential Equation method.
-- **Example**: `python mcal.py xxx.cif p --pde`
+#### `--ode`
+Calculate diffusion coefficient tensor using Ordinary Differential Equation method.
+- **Example**: `python mcal.py xxx.cif p --ode`
 
 ## Practical Usage Examples
 
@@ -147,8 +147,8 @@ python mcal.py xxx.cif p -p
 
 ### Comparing Diffusion Coefficients
 ```bash
-# Compare with normal calculation + Monte Carlo + PDE methods
-python mcal.py xxx.cif p --mc --pde
+# Compare with normal calculation + kinetic Monte Carlo + ODE methods
+python mcal.py xxx.cif p --mc --ode
 ```
 
 ## Output

@@ -16,7 +16,7 @@ from utils.gjf_maker import GjfMaker
 from calculations.hopping_mobility_model import (
     diffusion_coefficient_tensor,
     diffusion_coefficient_tensor_MC,
-    diffusion_coefficient_tensor_PDE,
+    diffusion_coefficient_tensor_ODE,
     marcus_rate,
     mobility_tensor
 )
@@ -70,8 +70,8 @@ def main():
         $ python hop_mcal.py xxx.cif p -r
 
     Compare calculation methods:
-        - Compare results using Monte Carlo and PDE methods\n
-        $ python hop_mcal.py xxx.cif p --mc --pde
+        - Compare results using kinetic Monte Carlo and ODE methods\n
+        $ python hop_mcal.py xxx.cif p --mc --ode
     """
     # Error range for skipping calculation of transfer integrals using moment of inertia and distance between centers of weight.
     CENTER_OF_WEIGHT_ERROR = 1.0e-7
@@ -116,8 +116,8 @@ def main():
     )
     parser.add_argument('--mc', help='use Monte Carlo method to calculate diffusion coefficient', action='store_true')
     parser.add_argument(
-        '--pde',
-        help='use Partial Differential Equation method to calculate diffusion coefficient',
+        '--ode',
+        help='use Ordinary Differential Equation method to calculate diffusion coefficient',
         action='store_true',
     )
     parser.add_argument(
@@ -328,14 +328,14 @@ def main():
         value_MC, vector_MC = cal_eigenvalue_decomposition(mu_MC)
         print_mobility(value_MC, vector_MC, sim_type='MC')
 
-    ##### Simulate mobility tensor calculation using Partial Differential Equation method #####
-    if args.pde:
-        D_PDE = diffusion_coefficient_tensor_PDE(cif_reader.lattice * 1e-8, hop)
-        print_tensor(D_PDE, msg="Diffusion coefficient tensor (PDE)")
-        mu_PDE = mobility_tensor(D_PDE)
-        print_tensor(mu_PDE, msg="Mobility tensor (PDE)")
-        value_PDE, vector_PDE = cal_eigenvalue_decomposition(mu_PDE)
-        print_mobility(value_PDE, vector_PDE, sim_type='PDE')
+    ##### Simulate mobility tensor calculation using Ordinary Differential Equation method #####
+    if args.ode:
+        D_ODE = diffusion_coefficient_tensor_ODE(cif_reader.lattice * 1e-8, hop)
+        print_tensor(D_ODE, msg="Diffusion coefficient tensor (ODE)")
+        mu_ODE = mobility_tensor(D_ODE)
+        print_tensor(mu_ODE, msg="Mobility tensor (ODE)")
+        value_ODE, vector_ODE = cal_eigenvalue_decomposition(mu_ODE)
+        print_mobility(value_ODE, vector_ODE, sim_type='ODE')
 
     # Save reorganization, transfer integrals, hop, mobility tensor
     if args.pickle:
@@ -717,7 +717,7 @@ def create_ti_gjf(
     gjf_maker.export_gjf(file_name=gjf_basename, save_dir=save_dir)
 
 
-def print_mobility(value: NDArray[np.float64], vector: NDArray[np.float64], sim_type: Literal['MC', 'PDE'] = ''):
+def print_mobility(value: NDArray[np.float64], vector: NDArray[np.float64], sim_type: Literal['MC', 'ODE'] = ''):
     """Print mobility and mobility vector
 
     Parameters
@@ -727,7 +727,7 @@ def print_mobility(value: NDArray[np.float64], vector: NDArray[np.float64], sim_
     vector : NDArray[np.float64]
         Mobility vector
     sim_type : str
-        Simulation type (MC or PDE)
+        Simulation type (MC or ODE)
     """
     msg_value = 'Mobility value'
     msg_vector = 'Mobility vector'
