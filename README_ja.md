@@ -100,9 +100,9 @@ Gaussianを実行せずに既存のlogファイルから結果を読み取りま
 モンテカルロ法を使用して拡散係数テンソルを計算します。(テスト用)
 - **例**: `python mcal.py xxx.cif p --mc`
 
-#### `--pde`
-偏微分方程式法を使用して拡散係数テンソルを計算します。(テスト用)
-- **例**: `python mcal.py xxx.cif p --pde`
+#### `--ode`
+常微分方程式法を使用して拡散係数テンソルを計算します。(テスト用)
+- **例**: `python mcal.py xxx.cif p --ode`
 
 ## 使用例
 
@@ -147,8 +147,8 @@ python mcal.py xxx.cif p -p
 
 ### 拡散係数の比較
 ```bash
-# 通常計算 + モンテカルロ + PDE法で比較
-python mcal.py xxx.cif p --mc --pde
+# 通常計算 + モンテカルロ法 + ODEで比較
+python mcal.py xxx.cif p --mc --ode
 ```
 
 ## 出力

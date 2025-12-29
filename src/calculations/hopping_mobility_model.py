@@ -22,9 +22,9 @@ def demo():
     print("Diffusion coefficient tensor (analytical):")
     for d in D:
         print(f"{d[0]:9.6f} {d[1]:9.6f} {d[2]:9.6f}")
-    print("Diffusion coefficient tensor (PDE):")
-    D_pde = diffusion_coefficient_tensor_PDE(lattice, hop)
-    for d in D_pde:
+    print("Diffusion coefficient tensor (ODE):")
+    D_ode = diffusion_coefficient_tensor_ODE(lattice, hop)
+    for d in D_ode:
         print(f"{d[0]:9.6f} {d[1]:9.6f} {d[2]:9.6f}")
     print("Diffusion coefficient tensor (MC):")
     D_mc = diffusion_coefficient_tensor_MC(lattice, hop)
@@ -43,9 +43,9 @@ def demo():
     print("Diffusion coefficient tensor (analytical):")
     for d in D:
         print(f"{d[0]:9.6f} {d[1]:9.6f} {d[2]:9.6f}")
-    print("Diffusion coefficient tensor (PDE):")
-    D_pde = diffusion_coefficient_tensor_PDE(lattice, hop)
-    for d in D_pde:
+    print("Diffusion coefficient tensor (ODE):")
+    D_ode = diffusion_coefficient_tensor_ODE(lattice, hop)
+    for d in D_ode:
         print(f"{d[0]:9.6f} {d[1]:9.6f} {d[2]:9.6f}")
     print("Diffusion coefficient tensor (MC):")
     D_mc = diffusion_coefficient_tensor_MC(lattice, hop)
@@ -70,9 +70,9 @@ def demo():
     print("Diffusion coefficient tensor (analytical):")
     for d in D:
         print(f"{d[0]:9.6f} {d[1]:9.6f} {d[2]:9.6f}")
-    print("Diffusion coefficient tensor (PDE):")
-    D_pde = diffusion_coefficient_tensor_PDE(lattice, hop)
-    for d in D_pde:
+    print("Diffusion coefficient tensor (ODE):")
+    D_ode = diffusion_coefficient_tensor_ODE(lattice, hop)
+    for d in D_ode:
         print(f"{d[0]:9.6f} {d[1]:9.6f} {d[2]:9.6f}")
     print("Diffusion coefficient tensor (MC):")
     D_mc = diffusion_coefficient_tensor_MC(lattice, hop)
@@ -221,14 +221,14 @@ def diffusion_coefficient_tensor(
     return D
 
 
-def diffusion_coefficient_tensor_PDE(
+def diffusion_coefficient_tensor_ODE(
     lattice: NDArray[np.float64],
     hop: List[Tuple[int, int, int, int, int, float]],
     max_steps: int = 200,
     size: int = 40,
     max_rate: float = 0.05
 ) -> NDArray[np.float64]:
-    """Calculate diffusion coefficient tensor from numerical solution of Partial Differential Equation (PDE)
+    """Calculate diffusion coefficient tensor from numerical solution of Ordinary Differential Equation (ODE)
 
     Parameters
     ----------
