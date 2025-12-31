@@ -8,8 +8,8 @@ from pathlib import Path
 from time import time
 from typing import List, Literal
 
-from utils.cif_reader import CifReader
-from utils.gjf_maker import GjfMaker
+from mcal.utils.cif_reader import CifReader
+from mcal.utils.gjf_maker import GjfMaker
 
 
 print = functools.partial(print, flush=True)

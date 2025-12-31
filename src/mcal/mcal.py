@@ -10,18 +10,18 @@ import numpy as np
 import pandas as pd
 from numpy.typing import NDArray
 
-from utils.cif_reader import CifReader
-from utils.gaus_log_reader import check_normal_termination
-from utils.gjf_maker import GjfMaker
-from calculations.hopping_mobility_model import (
+from mcal.utils.cif_reader import CifReader
+from mcal.utils.gaus_log_reader import check_normal_termination
+from mcal.utils.gjf_maker import GjfMaker
+from mcal.calculations.hopping_mobility_model import (
     diffusion_coefficient_tensor,
     diffusion_coefficient_tensor_MC,
     diffusion_coefficient_tensor_ODE,
     marcus_rate,
     mobility_tensor
 )
-from calculations.rcal import Rcal
-from calculations.tcal import Tcal
+from mcal.calculations.rcal import Rcal
+from mcal.calculations.tcal import Tcal
 
 
 print = functools.partial(print, flush=True)
@@ -386,20 +386,20 @@ def atom_weight(symbol: str) -> float:
 
 
 def cal_cen_of_weight(
-    symbols1: NDArray[np.str_],
+    symbols1: NDArray[str],
     coordinates1: NDArray[np.float64],
-    symbols2: Optional[NDArray[np.str_]] = None,
+    symbols2: Optional[NDArray[str]] = None,
     coordinates2: Optional[NDArray[np.float64]] = None,
 ) -> NDArray[np.float64]:
     """Calculate center of weight
 
     Parameters
     ----------
-    symbols1 : NDArray[np.str_]
+    symbols1 : NDArray[str]
         Symbols of atoms in one monomer
     coordinates1 : NDArray[np.float64]
         Coordinates of atoms in one monomer
-    symbols2 : Optional[NDArray[np.str_]], optional
+    symbols2 : Optional[NDArray[str]], optional
         Symbols of atoms in another monomer, by default None
     coordinates2 : Optional[NDArray[np.float64]], optional
         Coordinates of atoms in another monomer, by default None
@@ -425,20 +425,20 @@ def cal_cen_of_weight(
 
 
 def cal_distance_between_cen_of_weight(
-    symbols1: NDArray[np.str_],
+    symbols1: NDArray[str],
     coordinates1: NDArray[np.float64],
-    symbols2: NDArray[np.str_],
+    symbols2: NDArray[str],
     coordinates2: NDArray[np.float64],
 ) -> float:
     """Calculate distance between centers of weight
 
     Parameters
     ----------
-    symbols1 : NDArray[np.str_]
+    symbols1 : NDArray[str]
         Symbols of atoms in one monomer
     coordinates1 : NDArray[np.float64]
         Coordinates of atoms in one monomer
-    symbols2 : NDArray[np.str_]
+    symbols2 : NDArray[str]
         Symbols of atoms in another monomer
     coordinates2 : NDArray[np.float64]
         Coordinates of atoms in another monomer
@@ -473,20 +473,20 @@ def cal_eigenvalue_decomposition(mobility_tensor: NDArray[np.float64]) -> Tuple[
 
 
 def cal_min_distance(
-    symbols1: NDArray[np.str_],
+    symbols1: NDArray[str],
     coords1: NDArray[np.float64],
-    symbols2: NDArray[np.str_],
+    symbols2: NDArray[str],
     coords2: NDArray[np.float64],
 ) -> float:
     """Calculate minimum distance between two sets of atoms.
 
     Parameters
     ----------
-    symbols1 : NDArray[np.str_]
+    symbols1 : NDArray[str]
         Symbols of atoms in one monomer
     coords1 : NDArray[np.float64]
         Coordinates of atoms in one monomer
-    symbols2 : NDArray[np.str_]
+    symbols2 : NDArray[str]
         Symbols of atoms in another monomer
     coords2 : NDArray[np.float64]
         Coordinates of atoms in another monomer
@@ -514,20 +514,20 @@ def cal_min_distance(
 
 
 def cal_moment_of_inertia(
-    symbols1: NDArray[np.str_],
+    symbols1: NDArray[str],
     coordinates1: NDArray[np.float64],
-    symbols2: NDArray[np.str_],
+    symbols2: NDArray[str],
     coordinates2: NDArray[np.float64],
 ) -> Tuple[NDArray[np.float64], NDArray[np.float64]]:
     """Calculate moment of inertia and eigenvectors of the inertia tensor.
 
     Parameters
     ----------
-    symbols1 : NDArray[np.str_]
+    symbols1 : NDArray[str]
         Symbols of atoms in one monomer
     coordinates1 : NDArray[np.float64]
         Coordinates of atoms in one monomer
-    symbols2 : NDArray[np.str_]
+    symbols2 : NDArray[str]
         Symbols of atoms in another monomer
     coordinates2 : NDArray[np.float64]
         Coordinates of atoms in another monomer
@@ -626,7 +626,7 @@ def check_transfer_integral_completion(gjf_file: str, extension_log: str = '.log
 
 
 def create_reorg_gjf(
-    symbols: NDArray[np.str_],
+    symbols: NDArray[str],
     coordinates: NDArray[np.float64],
     basename: str,
     save_dir: str,
@@ -638,7 +638,7 @@ def create_reorg_gjf(
 
     Parameters
     ----------
-    symbols : NDArray[np.str_]
+    symbols : NDArray[str]
         Symbols of atoms
     coordinates : NDArray[np.float64]
         Coordinates of atoms
@@ -671,8 +671,8 @@ def create_reorg_gjf(
 
 
 def create_ti_gjf(
-    unique_mol: Dict[str, Union[NDArray[np.str_], NDArray[np.float64]]],
-    neighbor_mol: Dict[str, Union[NDArray[np.str_], NDArray[np.float64]]],
+    unique_mol: Dict[str, Union[NDArray[str], NDArray[np.float64]]],
+    neighbor_mol: Dict[str, Union[NDArray[str], NDArray[np.float64]]],
     gjf_basename: str,
     save_dir: str = '.',
     cpu: int = 4,
@@ -683,9 +683,9 @@ def create_ti_gjf(
 
     Parameters
     ----------
-    unique_mol : Dict[str, Union[NDArray[np.str_], NDArray[np.float64]]]
+    unique_mol : Dict[str, Union[NDArray[str], NDArray[np.float64]]]
         Dictionary containing symbols and coordinates of unique monomer
-    neighbor_mol : Dict[str, Union[NDArray[np.str_], NDArray[np.float64]]]
+    neighbor_mol : Dict[str, Union[NDArray[str], NDArray[np.float64]]]
         Dictionary containing symbols and coordinates of neighbor monomer
     gjf_basename : str
         Base name of gjf file
