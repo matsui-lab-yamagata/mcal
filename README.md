@@ -1,12 +1,12 @@
 # mcal: Program for the calculation of mobility tensor for organic semiconductor crystals
-[![Python](https://img.shields.io/badge/python-3.7%20or%20newer-blue)](https://www.python.org)
+[![Python](https://img.shields.io/badge/python-3.12%20or%20newer-blue)](https://www.python.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 # Overview
 `mcal.py` is a tool for calculating mobility tensors of organic semiconductors. It calculates transfer integrals and reorganization energy from crystal structures, and determines mobility tensors considering anisotropy and path continuity.
 
 # Requirements
-* Python 3.7 or newer
+* Python 3.12 or newer
 * NumPy
 * Pandas
 * Gaussian 09 or 16
@@ -14,12 +14,65 @@
 # Important notice
 * The path of the Gaussian must be set.
 
+# Installation
+
+## 1. Download the Repository
+
+### Download zip
+- Download the zip file from the repository, extract it, and navigate to the mcal directory using the `cd` command.
+
+### Using git
+```bash
+git clone https://github.com/matsui-lab-yamagata/mcal.git
+cd mcal
+```
+
+## 2. Installation Methods
+
+### Using pip
+
+```bash
+# install directly
+pip install .
+```
+
+### Using uv
+
+[uv](https://github.com/astral-sh/uv) is a fast Python package installer and resolver.
+
+```bash
+# Install the package
+uv pip install .
+```
+
+### Using conda
+
+```bash
+# Create a new conda environment
+conda create -n mcal python=3.12
+conda activate mcal
+
+# Install dependencies
+conda install numpy pandas
+
+# Install mcal
+pip install .
+```
+
+## Verify Installation
+
+After installation, you can verify by running:
+
+```bash
+mcal --help
+```
+
 # mcal Usage Manual
 
 ## Basic Usage
 
 ```bash
-python mcal.py <cif_filename or pkl_filenname> <osc_type> [options]
+mcal <cif_filename or pkl_filenname> <osc_type> [options]
 ```
 
 ### Required Arguments
@@ -34,10 +87,10 @@ python mcal.py <cif_filename or pkl_filenname> <osc_type> [options]
 
 ```bash
 # Calculate as p-type semiconductor
-python mcal.py xxx.cif p
+mcal xxx.cif p
 
 # Calculate as n-type semiconductor
-python mcal.py xxx.cif n
+mcal xxx.cif n
 ```
 
 ## Options
@@ -47,108 +100,105 @@ python mcal.py xxx.cif n
 #### `-M, --method <method>`
 Specify the calculation method used in Gaussian calculations.
 - **Default**: `B3LYP/6-31G(d,p)`
-- **Example**: `python mcal.py xxx.cif p -M "B3LYP/6-31G(d)"`
+- **Example**: `mcal xxx.cif p -M "B3LYP/6-31G(d)"`
 
 #### `-c, --cpu <number>`
 Specify the number of CPUs to use.
 - **Default**: `4`
-- **Example**: `python mcal.py xxx.cif p -c 8`
+- **Example**: `mcal xxx.cif p -c 8`
 
 #### `-m, --mem <memory>`
 Specify the amount of memory in GB.
 - **Default**: `10`
-- **Example**: `python mcal.py xxx.cif p -m 16`
+- **Example**: `mcal xxx.cif p -m 16`
 
 #### `-g, --g09`
 Use Gaussian 09 (default is Gaussian 16).
-- **Example**: `python mcal.py xxx.cif p -g`
+- **Example**: `mcal xxx.cif p -g`
 
 ### Calculation Control
 
 #### `-r, --read`
 Read results from existing log files without executing Gaussian.
-- **Example**: `python mcal.py xxx.cif p -r`
+- **Example**: `mcal xxx.cif p -r`
 
 #### `-rp, --read_pickle`
 Read results from existing pickle file without executing calculations.
-- **Example**: `python mcal.py xxx_result.pkl p -rp`
+- **Example**: `mcal xxx_result.pkl p -rp`
 
 #### `--resume`
 Resume calculation using existing results if log files terminated normally.
-- **Example**: `python mcal.py xxx.cif p --resume`
+- **Example**: `mcal xxx.cif p --resume`
 
 #### `--fullcal`
 Disable speedup processing using moment of inertia and distance between centers of weight, and calculate transfer integrals for all pairs.
-- **Example**: `python mcal.py xxx.cif p --fullcal`
+- **Example**: `mcal xxx.cif p --fullcal`
 
 #### `--cellsize <number>`
 Specify the number of unit cells to expand in each direction around the central unit cell for transfer integral calculations.
 - **Default**: `2` (creates 5×5×5 supercell)
 - **Examples**: 
-  - `python mcal.py xxx.cif p --cellsize 1` (creates 3×3×3 supercell)
-  - `python mcal.py xxx.cif p --cellsize 3` (creates 7×7×7 supercell)
+  - `mcal xxx.cif p --cellsize 1` (creates 3×3×3 supercell)
+  - `mcal xxx.cif p --cellsize 3` (creates 7×7×7 supercell)
 
 ### Output Settings
 
 #### `-p, --pickle`
 Save calculation results to a pickle file.
-- **Example**: `python mcal.py xxx.cif p -p`
+- **Example**: `mcal xxx.cif p -p`
 
 ### Diffusion Coefficient Calculation Methods
 
 #### `--mc`
 Calculate diffusion coefficient tensor using kinetic Monte Carlo method.
-- **Example**: `python mcal.py xxx.cif p --mc`
+- **Example**: `mcal xxx.cif p --mc`
 
 #### `--ode`
 Calculate diffusion coefficient tensor using Ordinary Differential Equation method.
-- **Example**: `python mcal.py xxx.cif p --ode`
+- **Example**: `mcal xxx.cif p --ode`
 
 ## Practical Usage Examples
 
 ### Basic Calculations
 ```bash
 # Calculate mobility of p-type xxx
-python mcal.py xxx.cif p
+mcal xxx.cif p
 
 # Use 8 CPUs and 16GB memory
-python mcal.py xxx.cif p -c 8 -m 16
+mcal xxx.cif p -c 8 -m 16
 ```
 
 ### High-Precision Calculations
 ```bash
 # Calculate transfer integrals for all pairs (high precision, time-consuming)
-python mcal.py xxx.cif p --fullcal
-
-# Use smaller supercell for faster calculation
-python mcal.py xxx.cif p --cellsize 1
+mcal xxx.cif p --fullcal
 
 # Use larger supercell to widen transfer integral calculation range
-python mcal.py xxx.cif p --cellsize 3
+mcal xxx.cif p --cellsize 3
 
 # Use different basis set
-python mcal.py xxx.cif p -M "B3LYP/6-311G(d,p)"
+mcal xxx.cif p -M "B3LYP/6-311G(d,p)"
 ```
 
 ### Reusing Results
 ```bash
 # Read from existing calculation results
-python mcal.py xxx.cif p -r
+mcal xxx.cif p -r
 
 # Read from existing pickle file
-python mcal.py xxx_result.pkl p -rp
+mcal xxx_result.pkl p -rp
 
 # Resume interrupted calculation
-python mcal.py xxx.cif p --resume
+mcal xxx.cif p --resume
 
 # Save results to pickle file
-python mcal.py xxx.cif p -p
+mcal xxx.cif p -p
 ```
 
 ### Comparing Diffusion Coefficients
 ```bash
 # Compare with normal calculation + kinetic Monte Carlo + ODE methods
-python mcal.py xxx.cif p --mc --ode
+mcal xxx.cif p --mc --ode
 ```
 
 ## Output
@@ -172,22 +222,25 @@ python mcal.py xxx.cif p --mc --ode
 ### If calculation stops midway
 ```bash
 # Resume with --resume option
-python mcal.py xxx.cif p --resume
+mcal xxx.cif p --resume
 ```
 
 ### Memory shortage error
 ```bash
 # Increase memory amount
-python mcal.py xxx.cif p -m 32
+mcal xxx.cif p -m 32
 ```
 
 ### To reduce calculation time
 ```bash
 # Enable speedup processing (default)
-python mcal.py xxx.cif p
+mcal xxx.cif p
+
+# Use smaller supercell for faster calculation
+mcal xxx.cif p --cellsize 1
 
 # Increase number of CPUs
-python mcal.py xxx.cif p -c 16
+mcal xxx.cif p -c 16
 ``` 
 
 # Authors

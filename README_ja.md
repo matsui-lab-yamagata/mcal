@@ -1,12 +1,12 @@
 # mcal: 有機半導体結晶の移動度テンソル計算プログラム
-[![Python](https://img.shields.io/badge/python-3.7%20or%20newer-blue)](https://www.python.org)
+[![Python](https://img.shields.io/badge/python-3.12%20or%20newer-blue)](https://www.python.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 # 概要
 `mcal.py`は有機半導体の移動度テンソルを計算するツールです。結晶構造から移動積分と再配列エネルギーを計算し、異方性と経路の連続性を考慮して移動度テンソルを算出します。
 
 # 必要環境
-* Python 3.7以降
+* Python 3.12以降
 * NumPy
 * Pandas
 * Gaussian 09または16
@@ -14,12 +14,65 @@
 # 注意事項
 * Gaussianのパスが設定されている必要があります。
 
+# インストール
+
+## 1. リポジトリのダウンロード
+
+### zipでダウンロード
+- リポジトリからzipファイルをダウンロードし、展開して、`cd`コマンドでmcalディレクトリに移動してください。
+
+### gitを使用
+```bash
+git clone https://github.com/matsui-lab-yamagata/mcal.git
+cd mcal
+```
+
+## 2. インストール方法
+
+### pipを使用
+
+```bash
+# 直接インストール
+pip install .
+```
+
+### uvを使用
+
+[uv](https://github.com/astral-sh/uv)は高速なPythonパッケージインストーラーです。
+
+```bash
+# パッケージをインストール
+uv pip install .
+```
+
+### condaを使用
+
+```bash
+# 新しいconda環境を作成
+conda create -n mcal python=3.12
+conda activate mcal
+
+# 依存関係をインストール
+conda install numpy pandas
+
+# mcalをインストール
+pip install .
+```
+
+## インストールの確認
+
+インストール後、以下のコマンドで確認できます：
+
+```bash
+mcal --help
+```
+
 # mcal 使用マニュアル
 
 ## 基本的な使用方法
 
 ```bash
-python mcal.py <cif_filename or pkl_filename> <osc_type> [オプション]
+mcal <cif_filename or pkl_filename> <osc_type> [オプション]
 ```
 
 ### 必須引数
@@ -34,10 +87,10 @@ python mcal.py <cif_filename or pkl_filename> <osc_type> [オプション]
 
 ```bash
 # p型半導体として計算
-python mcal.py xxx.cif p
+mcal xxx.cif p
 
 # n型半導体として計算
-python mcal.py xxx.cif n
+mcal xxx.cif n
 ```
 
 ## オプション
@@ -47,108 +100,105 @@ python mcal.py xxx.cif n
 #### `-M, --method <method>`
 Gaussianで使用する計算手法を指定します。
 - **デフォルト**: `B3LYP/6-31G(d,p)`
-- **例**: `python mcal.py xxx.cif p -M "B3LYP/6-31G(d)"`
+- **例**: `mcal xxx.cif p -M "B3LYP/6-31G(d)"`
 
 #### `-c, --cpu <number>`
 使用するCPU数を指定します。
 - **デフォルト**: `4`
-- **例**: `python mcal.py xxx.cif p -c 8`
+- **例**: `mcal xxx.cif p -c 8`
 
 #### `-m, --mem <memory>`
 メモリ量をGB単位で指定します。
 - **デフォルト**: `10`
-- **例**: `python mcal.py xxx.cif p -m 16`
+- **例**: `mcal xxx.cif p -m 16`
 
 #### `-g, --g09`
 Gaussian 09を使用します（デフォルトはGaussian 16）。
-- **例**: `python mcal.py xxx.cif p -g`
+- **例**: `mcal xxx.cif p -g`
 
 ### 計算制御
 
 #### `-r, --read`
 Gaussianを実行せずに既存のlogファイルから結果を読み取ります。
-- **例**: `python mcal.py xxx.cif p -r`
+- **例**: `mcal xxx.cif p -r`
 
 #### `-rp, --read_pickle`
 計算を実行せずに既存のpickleファイルから結果を読み取ります。
-- **例**: `python mcal.py xxx_result.pkl p -rp`
+- **例**: `mcal xxx_result.pkl p -rp`
 
 #### `--resume`
 ログファイルが正常に終了している場合、既存の結果を使用して計算を再開します。
-- **例**: `python mcal.py xxx.cif p --resume`
+- **例**: `mcal xxx.cif p --resume`
 
 #### `--fullcal`
 慣性モーメントと重心間距離を使用した高速化処理を無効にし、すべてのペアに対して移動積分を計算します。
-- **例**: `python mcal.py xxx.cif p --fullcal`
+- **例**: `mcal xxx.cif p --fullcal`
 
 #### `--cellsize <number>`
 移動積分計算のために中央単位格子の周りに各方向に拡張する単位格子数を指定します。
 - **デフォルト**: `2`（5×5×5のスーパーセルを作成）
 - **例**: 
-  - `python mcal.py xxx.cif p --cellsize 1`（3×3×3のスーパーセルを作成）
-  - `python mcal.py xxx.cif p --cellsize 3`（7×7×7のスーパーセルを作成）
+  - `mcal xxx.cif p --cellsize 1`（3×3×3のスーパーセルを作成）
+  - `mcal xxx.cif p --cellsize 3`（7×7×7のスーパーセルを作成）
 
 ### 出力設定
 
 #### `-p, --pickle`
 計算結果をpickleファイルに保存します。
-- **例**: `python mcal.py xxx.cif p -p`
+- **例**: `mcal xxx.cif p -p`
 
 ### 拡散係数計算手法
 
 #### `--mc`
 モンテカルロ法を使用して拡散係数テンソルを計算します。(テスト用)
-- **例**: `python mcal.py xxx.cif p --mc`
+- **例**: `mcal xxx.cif p --mc`
 
 #### `--ode`
 常微分方程式法を使用して拡散係数テンソルを計算します。(テスト用)
-- **例**: `python mcal.py xxx.cif p --ode`
+- **例**: `mcal xxx.cif p --ode`
 
 ## 使用例
 
 ### 基本的な計算
 ```bash
 # p型xxxの移動度を計算
-python mcal.py xxx.cif p
+mcal xxx.cif p
 
 # 8CPUと16GBメモリを使用
-python mcal.py xxx.cif p -c 8 -m 16
+mcal xxx.cif p -c 8 -m 16
 ```
 
 ### 高精度計算
 ```bash
 # すべてのペアに対して移動積分を計算（高精度、時間がかかる）
-python mcal.py xxx.cif p --fullcal
-
-# より小さなスーパーセルを使用して高速計算
-python mcal.py xxx.cif p --cellsize 1
+mcal xxx.cif p --fullcal
 
 # より大きなスーパーセルを使用して移動積分計算範囲を拡大
-python mcal.py xxx.cif p --cellsize 3
+mcal xxx.cif p --cellsize 3
 
 # 異なる基底関数セットを使用
-python mcal.py xxx.cif p -M "B3LYP/6-311G(d,p)"
+mcal xxx.cif p -M "B3LYP/6-311G(d,p)"
 ```
 
 ### 結果の再利用
 ```bash
 # 既存の計算結果から読み取り
-python mcal.py xxx.cif p -r
+mcal xxx.cif p -r
 
 # 既存のpickleファイルから読み取り
-python mcal.py xxx_result.pkl p -rp
+mcal xxx_result.pkl p -rp
 
 # 中断された計算を再開
-python mcal.py xxx.cif p --resume
+mcal xxx.cif p --resume
 
 # 結果をpickleファイルに保存
-python mcal.py xxx.cif p -p
+mcal xxx.cif p -p
 ```
 
 ### 拡散係数の比較
 ```bash
 # 通常計算 + モンテカルロ法 + ODEで比較
-python mcal.py xxx.cif p --mc --ode
+mcal xxx.cif p --mc --ode
 ```
 
 ## 出力
@@ -172,22 +222,25 @@ python mcal.py xxx.cif p --mc --ode
 ### 計算が途中で停止した場合
 ```bash
 # --resumeオプションで再開
-python mcal.py xxx.cif p --resume
+mcal xxx.cif p --resume
 ```
 
 ### メモリ不足エラーの場合
 ```bash
 # メモリ量を増やす
-python mcal.py xxx.cif p -m 32
+mcal xxx.cif p -m 32
 ```
 
 ### 計算時間を短縮するには
 ```bash
 # 高速化処理を有効にする（デフォルト）
-python mcal.py xxx.cif p
+mcal xxx.cif p
+
+# より小さなスーパーセルを使用して高速計算
+mcal xxx.cif p --cellsize 1
 
 # CPU数を増やす
-python mcal.py xxx.cif p -c 16
+mcal xxx.cif p -c 16
 ```
 
 # 著者

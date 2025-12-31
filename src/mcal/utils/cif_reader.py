@@ -126,7 +126,7 @@ class CifReader:
     def _make_adjacency_mat(self):
         """Determine bonding and create the adjacency matrix."""
         num_atoms = len(self.sym_symbols)
-        self.adjacency_mat = np.zeros((num_atoms, num_atoms), dtype=np.bool_)
+        self.adjacency_mat = np.zeros((num_atoms, num_atoms), dtype=bool)
 
         self.cart_coords = np.dot(self.sym_coords, self.lattice)
 
@@ -319,7 +319,7 @@ class CifReader:
             self.symbols = np.array(self.symbols)
             self.coordinates = np.array(self.coordinates)
 
-    def _search_connect_atoms(self, node: int, atoms: List[int], visited: NDArray[np.bool_], num_atoms: int) -> None:
+    def _search_connect_atoms(self, node: int, atoms: List[int], visited: NDArray[bool], num_atoms: int) -> None:
         """Find bonded atoms using depth-first search.
 
         Parameters
@@ -328,7 +328,7 @@ class CifReader:
             Index of the atom.
         atoms : List[int]
             List of bonded atoms.
-        visited : NDArray[np.bool_]
+        visited : NDArray[bool]
             Array of visited atoms.
         num_atoms : int
             Number of atoms.
@@ -539,12 +539,12 @@ class FileIO:
         self.coordinates_list = []
         self.adjacency_mat_list = []
 
-    def add_adjacency_mat(self, adjacency_mat: NDArray[np.bool_]) -> None:
+    def add_adjacency_mat(self, adjacency_mat: NDArray[bool]) -> None:
         """add adjacency matrix
 
         Parameters
         ----------
-        adjacency_mat : NDArray[np.bool_]
+        adjacency_mat : NDArray[bool]
             Adjacency matrix.
         """
         self.adjacency_mat_list.append(adjacency_mat)
