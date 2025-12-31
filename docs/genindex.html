@@ -1,0 +1,717 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="./">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="#"><link rel="search" title="Search" href="search.html">
+
+    <!-- Generated with Sphinx 9.0.4 and Furo 2025.12.19 --><title>Index - mcal 0.1.0 documentation</title>
+<link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="_static/autodoc_pydantic.css" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="index.html"><div class="brand">mcal 0.1.0 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
+  
+  <span class="sidebar-brand-text">mcal 0.1.0 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="modules.html">mcal</a><input aria-label="Toggle navigation of mcal" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="mcal.html">mcal package</a><input aria-label="Toggle navigation of mcal package" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="mcal.calculations.html">mcal.calculations package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mcal.utils.html">mcal.utils package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          
+<section class="genindex-section">
+  <h1 id="index">Index</h1>
+  <div class="genindex-jumpbox"><a href="#A"><strong>A</strong></a> | <a href="#C"><strong>C</strong></a> | <a href="#D"><strong>D</strong></a> | <a href="#E"><strong>E</strong></a> | <a href="#F"><strong>F</strong></a> | <a href="#G"><strong>G</strong></a> | <a href="#M"><strong>M</strong></a> | <a href="#O"><strong>O</strong></a> | <a href="#P"><strong>P</strong></a> | <a href="#R"><strong>R</strong></a> | <a href="#S"><strong>S</strong></a> | <a href="#T"><strong>T</strong></a> | <a href="#Z"><strong>Z</strong></a></div>
+</section>
+<section id="A" class="genindex-section">
+  <h2>A</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="mcal.utils.html#mcal.utils.cif_reader.FileIO.add_adjacency_mat">add_adjacency_mat() (mcal.utils.cif_reader.FileIO method)</a>
+</li>
+        <li><a href="mcal.utils.html#mcal.utils.cif_reader.FileIO.add_coordinates">add_coordinates() (mcal.utils.cif_reader.FileIO method)</a>
+</li>
+        <li><a href="mcal.utils.html#mcal.utils.gjf_maker.GjfMaker.add_link">add_link() (mcal.utils.gjf_maker.GjfMaker method)</a>
+</li>
+        <li><a href="mcal.utils.html#mcal.utils.gjf_maker.GjfMaker.add_root">add_root() (mcal.utils.gjf_maker.GjfMaker method)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="mcal.utils.html#mcal.utils.cif_reader.FileIO.add_symbols">add_symbols() (mcal.utils.cif_reader.FileIO method)</a>
+</li>
+        <li><a href="mcal.html#mcal.mcal.atom_weight">atom_weight() (in module mcal.mcal)</a>
+</li>
+        <li><a href="mcal.calculations.html#mcal.calculations.tcal.Tcal.atomic_pair_transfer_analysis">atomic_pair_transfer_analysis() (mcal.calculations.tcal.Tcal method)</a>
+</li>
+        <li><a href="mcal.utils.html#mcal.utils.cif_reader.CifReader.ATOMIC_WEIGHTS">ATOMIC_WEIGHTS (mcal.utils.cif_reader.CifReader attribute)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="C" class="genindex-section">
+  <h2>C</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="mcal.html#mcal.mcal.cal_cen_of_weight">cal_cen_of_weight() (in module mcal.mcal)</a>
+</li>
+        <li><a href="mcal.html#mcal.mcal.cal_distance_between_cen_of_weight">cal_distance_between_cen_of_weight() (in module mcal.mcal)</a>
+</li>
+        <li><a href="mcal.html#mcal.mcal.cal_eigenvalue_decomposition">cal_eigenvalue_decomposition() (in module mcal.mcal)</a>
+</li>
+        <li><a href="mcal.html#mcal.mcal.cal_min_distance">cal_min_distance() (in module mcal.mcal)</a>
+</li>
+        <li><a href="mcal.html#mcal.mcal.cal_moment_of_inertia">cal_moment_of_inertia() (in module mcal.mcal)</a>
+</li>
+        <li><a href="mcal.calculations.html#mcal.calculations.hopping_mobility_model.cal_pinv">cal_pinv() (in module mcal.calculations.hopping_mobility_model)</a>
+</li>
+        <li><a href="mcal.calculations.html#mcal.calculations.tcal.Tcal.cal_transfer_integrals">cal_transfer_integrals() (mcal.calculations.tcal.Tcal static method)</a>
+</li>
+        <li><a href="mcal.utils.html#mcal.utils.cif_reader.CifReader.calc_cen_of_weight">calc_cen_of_weight() (mcal.utils.cif_reader.CifReader method)</a>
+</li>
+        <li><a href="mcal.calculations.html#mcal.calculations.rcal.Rcal.calc_reorganization">calc_reorganization() (mcal.calculations.rcal.Rcal method)</a>
+</li>
+        <li><a href="mcal.calculations.html#mcal.calculations.rcal.Rcal.check_error_term">check_error_term() (mcal.calculations.rcal.Rcal static method)</a>
+</li>
+        <li><a href="mcal.calculations.html#mcal.calculations.rcal.Rcal.check_extension_log">check_extension_log() (mcal.calculations.rcal.Rcal method)</a>
+
+        <ul>
+          <li><a href="mcal.calculations.html#mcal.calculations.tcal.Tcal.check_extension_log">(mcal.calculations.tcal.Tcal method)</a>
+</li>
+        </ul></li>
+        <li><a href="mcal.utils.html#mcal.utils.gaus_log_reader.check_normal_termination">check_normal_termination() (in module mcal.utils.gaus_log_reader)</a>
+
+        <ul>
+          <li><a href="mcal.calculations.html#mcal.calculations.tcal.Tcal.check_normal_termination">(mcal.calculations.tcal.Tcal static method)</a>
+</li>
+        </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="mcal.html#mcal.mcal.check_reorganization_energy_completion">check_reorganization_energy_completion() (in module mcal.mcal)</a>
+</li>
+        <li><a href="mcal.html#mcal.mcal.check_transfer_integral_completion">check_transfer_integral_completion() (in module mcal.mcal)</a>
+</li>
+        <li><a href="mcal.utils.html#mcal.utils.cif_reader.CifReader">CifReader (class in mcal.utils.cif_reader)</a>
+</li>
+        <li><a href="mcal.utils.html#mcal.utils.gaus_log_reader.FileReader.close">close() (mcal.utils.gaus_log_reader.FileReader method)</a>
+</li>
+        <li><a href="mcal.utils.html#mcal.utils.cif_reader.CifReader.convert_cart_to_frac">convert_cart_to_frac() (mcal.utils.cif_reader.CifReader method)</a>
+</li>
+        <li><a href="mcal.utils.html#mcal.utils.cif_reader.CifReader.convert_frac_to_cart">convert_frac_to_cart() (mcal.utils.cif_reader.CifReader method)</a>
+</li>
+        <li><a href="mcal.calculations.html#mcal.calculations.tcal.Tcal.convert_xyz_to_gjf">convert_xyz_to_gjf() (mcal.calculations.tcal.Tcal method)</a>
+</li>
+        <li><a href="mcal.utils.html#mcal.utils.cif_reader.CifReader.COVALENT_RADII">COVALENT_RADII (mcal.utils.cif_reader.CifReader attribute)</a>
+</li>
+        <li><a href="mcal.utils.html#mcal.utils.gjf_maker.GjfMaker.create_chk_file">create_chk_file() (mcal.utils.gjf_maker.GjfMaker method)</a>
+</li>
+        <li><a href="mcal.calculations.html#mcal.calculations.tcal.Tcal.create_cube_file">create_cube_file() (mcal.calculations.tcal.Tcal method)</a>
+</li>
+        <li><a href="mcal.calculations.html#mcal.calculations.tcal.Tcal.create_monomer_file">create_monomer_file() (mcal.calculations.tcal.Tcal method)</a>
+</li>
+        <li><a href="mcal.html#mcal.mcal.create_reorg_gjf">create_reorg_gjf() (in module mcal.mcal)</a>
+</li>
+        <li><a href="mcal.utils.html#mcal.utils.gjf_maker.GjfMaker.create_rwf_file">create_rwf_file() (mcal.utils.gjf_maker.GjfMaker method)</a>
+</li>
+        <li><a href="mcal.html#mcal.mcal.create_ti_gjf">create_ti_gjf() (in module mcal.mcal)</a>
+</li>
+        <li><a href="mcal.calculations.html#mcal.calculations.tcal.Tcal.custom_atomic_pair_transfer_analysis">custom_atomic_pair_transfer_analysis() (mcal.calculations.tcal.Tcal method)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="D" class="genindex-section">
+  <h2>D</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="mcal.calculations.html#mcal.calculations.hopping_mobility_model.demo">demo() (in module mcal.calculations.hopping_mobility_model)</a>
+</li>
+        <li><a href="mcal.calculations.html#mcal.calculations.hopping_mobility_model.diffusion_coefficient_tensor">diffusion_coefficient_tensor() (in module mcal.calculations.hopping_mobility_model)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="mcal.calculations.html#mcal.calculations.hopping_mobility_model.diffusion_coefficient_tensor_MC">diffusion_coefficient_tensor_MC() (in module mcal.calculations.hopping_mobility_model)</a>
+</li>
+        <li><a href="mcal.calculations.html#mcal.calculations.hopping_mobility_model.diffusion_coefficient_tensor_ODE">diffusion_coefficient_tensor_ODE() (in module mcal.calculations.hopping_mobility_model)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="E" class="genindex-section">
+  <h2>E</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="mcal.utils.html#mcal.utils.cif_reader.CifReader.ELEMENT_PROP">ELEMENT_PROP (mcal.utils.cif_reader.CifReader attribute)</a>
+
+        <ul>
+          <li><a href="mcal.utils.html#mcal.utils.gjf_maker.GjfMaker.ELEMENT_PROP">(mcal.utils.gjf_maker.GjfMaker attribute)</a>
+</li>
+        </ul></li>
+        <li><a href="mcal.utils.html#mcal.utils.cif_reader.ElementPropertiesIsNotDefinedError">ElementPropertiesIsNotDefinedError</a>
+</li>
+        <li><a href="mcal.utils.html#mcal.utils.gjf_maker.GjfMaker.ELEMENTS_NUM">ELEMENTS_NUM (mcal.utils.gjf_maker.GjfMaker attribute)</a>
+</li>
+        <li><a href="mcal.calculations.html#mcal.calculations.tcal.Tcal.EV">EV (mcal.calculations.tcal.Tcal attribute)</a>
+</li>
+        <li><a href="mcal.utils.html#mcal.utils.cif_reader.CifReader.expand_mols">expand_mols() (mcal.utils.cif_reader.CifReader method)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="mcal.utils.html#mcal.utils.gjf_maker.GjfMaker.export_gjf">export_gjf() (mcal.utils.gjf_maker.GjfMaker method)</a>
+</li>
+        <li><a href="mcal.utils.html#mcal.utils.cif_reader.FileIO.export_mol_file">export_mol_file() (mcal.utils.cif_reader.FileIO method)</a>
+</li>
+        <li><a href="mcal.utils.html#mcal.utils.cif_reader.CifReader.export_unit_cell_file">export_unit_cell_file() (mcal.utils.cif_reader.CifReader method)</a>
+</li>
+        <li><a href="mcal.utils.html#mcal.utils.cif_reader.FileIO.export_xyz_file">export_xyz_file() (mcal.utils.cif_reader.FileIO method)</a>
+</li>
+        <li><a href="mcal.calculations.html#mcal.calculations.tcal.Tcal.extract_coordinates">extract_coordinates() (mcal.calculations.tcal.Tcal static method)</a>
+</li>
+        <li><a href="mcal.calculations.html#mcal.calculations.rcal.Rcal.extract_energy">extract_energy() (mcal.calculations.rcal.Rcal method)</a>
+</li>
+        <li><a href="mcal.calculations.html#mcal.calculations.tcal.Tcal.extract_num">extract_num() (mcal.calculations.tcal.Tcal static method)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="F" class="genindex-section">
+  <h2>F</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="mcal.utils.html#mcal.utils.cif_reader.FileIO">FileIO (class in mcal.utils.cif_reader)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="mcal.utils.html#mcal.utils.gaus_log_reader.FileReader">FileReader (class in mcal.utils.gaus_log_reader)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="G" class="genindex-section">
+  <h2>G</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="mcal.calculations.html#mcal.calculations.rcal.GausTermError">GausTermError</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="mcal.utils.html#mcal.utils.gjf_maker.GjfMaker">GjfMaker (class in mcal.utils.gjf_maker)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="M" class="genindex-section">
+  <h2>M</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="mcal.calculations.html#mcal.calculations.rcal.main">main() (in module mcal.calculations.rcal)</a>
+
+        <ul>
+          <li><a href="mcal.calculations.html#mcal.calculations.tcal.main">(in module mcal.calculations.tcal)</a>
+</li>
+          <li><a href="mcal.html#mcal.mcal.main">(in module mcal.mcal)</a>
+</li>
+        </ul></li>
+        <li><a href="mcal.calculations.html#mcal.calculations.hopping_mobility_model.marcus_rate">marcus_rate() (in module mcal.calculations.hopping_mobility_model)</a>
+</li>
+        <li>
+    mcal
+
+        <ul>
+          <li><a href="mcal.html#module-mcal">module</a>
+</li>
+        </ul></li>
+        <li>
+    mcal.calculations
+
+        <ul>
+          <li><a href="mcal.calculations.html#module-mcal.calculations">module</a>
+</li>
+        </ul></li>
+        <li>
+    mcal.calculations.hopping_mobility_model
+
+        <ul>
+          <li><a href="mcal.calculations.html#module-mcal.calculations.hopping_mobility_model">module</a>
+</li>
+        </ul></li>
+        <li>
+    mcal.calculations.rcal
+
+        <ul>
+          <li><a href="mcal.calculations.html#module-mcal.calculations.rcal">module</a>
+</li>
+        </ul></li>
+        <li>
+    mcal.calculations.tcal
+
+        <ul>
+          <li><a href="mcal.calculations.html#module-mcal.calculations.tcal">module</a>
+</li>
+        </ul></li>
+        <li>
+    mcal.mcal
+
+        <ul>
+          <li><a href="mcal.html#module-mcal.mcal">module</a>
+</li>
+        </ul></li>
+        <li>
+    mcal.utils
+
+        <ul>
+          <li><a href="mcal.utils.html#module-mcal.utils">module</a>
+</li>
+        </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li>
+    mcal.utils.cif_reader
+
+        <ul>
+          <li><a href="mcal.utils.html#module-mcal.utils.cif_reader">module</a>
+</li>
+        </ul></li>
+        <li>
+    mcal.utils.gaus_log_reader
+
+        <ul>
+          <li><a href="mcal.utils.html#module-mcal.utils.gaus_log_reader">module</a>
+</li>
+        </ul></li>
+        <li>
+    mcal.utils.gjf_maker
+
+        <ul>
+          <li><a href="mcal.utils.html#module-mcal.utils.gjf_maker">module</a>
+</li>
+        </ul></li>
+        <li><a href="mcal.calculations.html#mcal.calculations.hopping_mobility_model.mobility_tensor">mobility_tensor() (in module mcal.calculations.hopping_mobility_model)</a>
+</li>
+        <li>
+    module
+
+        <ul>
+          <li><a href="mcal.html#module-mcal">mcal</a>
+</li>
+          <li><a href="mcal.calculations.html#module-mcal.calculations">mcal.calculations</a>
+</li>
+          <li><a href="mcal.calculations.html#module-mcal.calculations.hopping_mobility_model">mcal.calculations.hopping_mobility_model</a>
+</li>
+          <li><a href="mcal.calculations.html#module-mcal.calculations.rcal">mcal.calculations.rcal</a>
+</li>
+          <li><a href="mcal.calculations.html#module-mcal.calculations.tcal">mcal.calculations.tcal</a>
+</li>
+          <li><a href="mcal.html#module-mcal.mcal">mcal.mcal</a>
+</li>
+          <li><a href="mcal.utils.html#module-mcal.utils">mcal.utils</a>
+</li>
+          <li><a href="mcal.utils.html#module-mcal.utils.cif_reader">mcal.utils.cif_reader</a>
+</li>
+          <li><a href="mcal.utils.html#module-mcal.utils.gaus_log_reader">mcal.utils.gaus_log_reader</a>
+</li>
+          <li><a href="mcal.utils.html#module-mcal.utils.gjf_maker">mcal.utils.gjf_maker</a>
+</li>
+        </ul></li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="O" class="genindex-section">
+  <h2>O</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="mcal.utils.html#mcal.utils.gjf_maker.GjfMaker.opt">opt() (mcal.utils.gjf_maker.GjfMaker method)</a>
+</li>
+        <li><a href="mcal.calculations.html#mcal.calculations.rcal.OSCTypeError">OSCTypeError</a>, <a href="mcal.html#mcal.mcal.OSCTypeError">[1]</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="mcal.calculations.html#mcal.calculations.tcal.Tcal.output_csv">output_csv() (mcal.calculations.tcal.Tcal static method)</a>
+</li>
+        <li><a href="mcal.utils.html#mcal.utils.gjf_maker.GjfMaker.output_detail">output_detail() (mcal.utils.gjf_maker.GjfMaker method)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="P" class="genindex-section">
+  <h2>P</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="mcal.calculations.html#mcal.calculations.tcal.PairAnalysis">PairAnalysis (class in mcal.calculations.tcal)</a>
+</li>
+        <li><a href="mcal.utils.html#mcal.utils.cif_reader.CifReader.parent_dir">parent_dir (mcal.utils.cif_reader.CifReader attribute)</a>
+
+        <ul>
+          <li><a href="mcal.utils.html#mcal.utils.gjf_maker.GjfMaker.parent_dir">(mcal.utils.gjf_maker.GjfMaker attribute)</a>
+</li>
+        </ul></li>
+        <li><a href="mcal.calculations.html#mcal.calculations.tcal.Tcal.print_apta">print_apta() (mcal.calculations.tcal.Tcal method)</a>
+</li>
+        <li><a href="mcal.calculations.html#mcal.calculations.tcal.PairAnalysis.print_element_pairs">print_element_pairs() (mcal.calculations.tcal.PairAnalysis method)</a>
+</li>
+        <li><a href="mcal.calculations.html#mcal.calculations.tcal.PairAnalysis.print_largest_pairs">print_largest_pairs() (mcal.calculations.tcal.PairAnalysis method)</a>
+</li>
+        <li><a href="mcal.calculations.html#mcal.calculations.tcal.Tcal.print_matrix">print_matrix() (mcal.calculations.tcal.Tcal static method)</a>
+</li>
+        <li><a href="mcal.html#mcal.mcal.print_mobility">print_mobility() (in module mcal.mcal)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="mcal.html#mcal.mcal.print_reorg_energy">print_reorg_energy() (in module mcal.mcal)</a>
+</li>
+        <li><a href="mcal.calculations.html#mcal.calculations.hopping_mobility_model.print_tensor">print_tensor() (in module mcal.calculations.hopping_mobility_model)</a>
+
+        <ul>
+          <li><a href="mcal.html#mcal.mcal.print_tensor">(in module mcal.mcal)</a>
+</li>
+        </ul></li>
+        <li><a href="mcal.calculations.html#mcal.calculations.rcal.Rcal.print_timestamp">print_timestamp() (mcal.calculations.rcal.Rcal static method)</a>
+
+        <ul>
+          <li><a href="mcal.calculations.html#mcal.calculations.tcal.Tcal.print_timestamp">(mcal.calculations.tcal.Tcal static method)</a>
+</li>
+        </ul></li>
+        <li><a href="mcal.calculations.html#mcal.calculations.tcal.Tcal.print_tranfer_integral_diff_levels">print_tranfer_integral_diff_levels() (mcal.calculations.tcal.Tcal method)</a>
+</li>
+        <li><a href="mcal.html#mcal.mcal.print_transfer_integral">print_transfer_integral() (in module mcal.mcal)</a>
+</li>
+        <li><a href="mcal.calculations.html#mcal.calculations.tcal.Tcal.print_transfer_integrals">print_transfer_integrals() (mcal.calculations.tcal.Tcal method)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="R" class="genindex-section">
+  <h2>R</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="mcal.calculations.html#mcal.calculations.rcal.Rcal">Rcal (class in mcal.calculations.rcal)</a>
+</li>
+        <li><a href="mcal.calculations.html#mcal.calculations.tcal.Tcal.read_dimer">read_dimer() (mcal.calculations.tcal.Tcal method)</a>
+</li>
+        <li><a href="mcal.calculations.html#mcal.calculations.tcal.Tcal.read_matrix">read_matrix() (mcal.calculations.tcal.Tcal static method)</a>
+</li>
+        <li><a href="mcal.calculations.html#mcal.calculations.tcal.Tcal.read_monomer1">read_monomer1() (mcal.calculations.tcal.Tcal method)</a>
+</li>
+        <li><a href="mcal.calculations.html#mcal.calculations.tcal.Tcal.read_monomer2">read_monomer2() (mcal.calculations.tcal.Tcal method)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="mcal.html#mcal.mcal.read_pickle">read_pickle() (in module mcal.mcal)</a>
+</li>
+        <li><a href="mcal.calculations.html#mcal.calculations.tcal.Tcal.read_symmetric_matrix">read_symmetric_matrix() (mcal.calculations.tcal.Tcal static method)</a>
+</li>
+        <li><a href="mcal.utils.html#mcal.utils.cif_reader.CifReader.remove_duplicates">remove_duplicates() (mcal.utils.cif_reader.CifReader method)</a>
+</li>
+        <li><a href="mcal.utils.html#mcal.utils.gjf_maker.GjfMaker.reset_variable">reset_variable() (mcal.utils.gjf_maker.GjfMaker method)</a>
+</li>
+        <li><a href="mcal.utils.html#mcal.utils.gaus_log_reader.FileReader.reversed_readline">reversed_readline() (mcal.utils.gaus_log_reader.FileReader method)</a>
+</li>
+        <li><a href="mcal.calculations.html#mcal.calculations.tcal.Tcal.run_gaussian">run_gaussian() (mcal.calculations.tcal.Tcal method)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="S" class="genindex-section">
+  <h2>S</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="mcal.utils.html#mcal.utils.gjf_maker.GjfMaker.set_charge_spin">set_charge_spin() (mcal.utils.gjf_maker.GjfMaker method)</a>
+</li>
+        <li><a href="mcal.utils.html#mcal.utils.gjf_maker.GjfMaker.set_coordinates">set_coordinates() (mcal.utils.gjf_maker.GjfMaker method)</a>
+</li>
+        <li><a href="mcal.utils.html#mcal.utils.gjf_maker.GjfMaker.set_function">set_function() (mcal.utils.gjf_maker.GjfMaker method)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="mcal.utils.html#mcal.utils.gjf_maker.GjfMaker.set_resource">set_resource() (mcal.utils.gjf_maker.GjfMaker method)</a>
+</li>
+        <li><a href="mcal.utils.html#mcal.utils.gjf_maker.GjfMaker.set_symbols">set_symbols() (mcal.utils.gjf_maker.GjfMaker method)</a>
+</li>
+        <li><a href="mcal.utils.html#mcal.utils.gjf_maker.GjfMaker.set_title">set_title() (mcal.utils.gjf_maker.GjfMaker method)</a>
+</li>
+        <li><a href="mcal.utils.html#mcal.utils.cif_reader.SymmetryIsNotDefinedError">SymmetryIsNotDefinedError</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="T" class="genindex-section">
+  <h2>T</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="mcal.calculations.html#mcal.calculations.tcal.Tcal">Tcal (class in mcal.calculations.tcal)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="Z" class="genindex-section">
+  <h2>Z</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="mcal.utils.html#mcal.utils.cif_reader.ZValueIsNotMatchError">ZValueIsNotMatchError</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2025, Hiroyuki Matsui, Koki Ozawa
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script src="_static/documentation_options.js?v=01f34227"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/scripts/furo.js?v=46bd48cc"></script>
+    </body>
+</html>
