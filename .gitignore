@@ -3,3 +3,7 @@ __pycache__/
 .venv/
 
 test*
+*.egg-info/
+/build/
+.buildinfo
+.doctrees/
