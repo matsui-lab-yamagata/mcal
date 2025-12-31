@@ -1,0 +1,35 @@
+[project]
+name = "mcal"
+version = "0.1.0"
+description = "Program for the calculation of mobility tensor for organic semiconductor crystals"
+requires-python = ">=3.12"
+dependencies = [
+    "numpy>=2.4.0",
+    "pandas>=2.3.3",
+]
+authors = [
+    {name = "Hiroyuki Matsui", email = "h-matsui@yz.yamagata-u.ac.jp"},
+    {name = "Koki Ozawa"},
+]
+readme = "README.md"
+license = {file = "LICENSE"}
+
+[dependency-groups]
+dev = [
+    "autodoc-pydantic>=2.2.0",
+    "furo>=2025.12.19",
+    "sphinx>=9.0.4",
+    "taskipy>=1.14.1",
+]
+
+[tool.taskipy.tasks]
+docs-generate = "sphinx-apidoc -f -o docs-src/source src/mcal && sphinx-build -M clean docs-src/source docs && sphinx-build -b html docs-src/source docs && touch docs/.nojekyll"
+
+[project.scripts]
+mcal = "mcal.mcal:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+mcal = ["constants/element_properties.csv"]
