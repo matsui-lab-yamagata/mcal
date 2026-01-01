@@ -9,29 +9,29 @@ mcal.calculations.hopping\_mobility\_model module
 
 .. automodule:: mcal.calculations.hopping_mobility_model
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:
 
 mcal.calculations.rcal module
 -----------------------------
 
 .. automodule:: mcal.calculations.rcal
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:
 
 mcal.calculations.tcal module
 -----------------------------
 
 .. automodule:: mcal.calculations.tcal
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:
 
 Module contents
 ---------------
 
 .. automodule:: mcal.calculations
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:

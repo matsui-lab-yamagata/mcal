@@ -2,7 +2,7 @@
 mcal |release| Documentation
 ==================================
 
-.. image:: https://img.shields.io/badge/python-3.12%20or%20newer-blue
+.. image:: https://img.shields.io/badge/python-3.9%20or%20newer-blue
    :target: https://www.python.org
    :alt: Python
 
@@ -29,7 +29,7 @@ Features
 Requirements
 ============
 
-* Python 3.12 or newer
+* Python 3.9 or newer
 * NumPy
 * Pandas
 * Gaussian 09 or 16
@@ -83,7 +83,7 @@ Using conda
 .. code-block:: bash
 
    # Create a new conda environment
-   conda create -n mcal python=3.12
+   conda create -n mcal python=3.9
    conda activate mcal
 
    # Install dependencies
