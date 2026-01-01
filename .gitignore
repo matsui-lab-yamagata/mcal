@@ -7,3 +7,5 @@ test*
 /build/
 .buildinfo
 .doctrees/
+.pypirc
+/dist/
