@@ -4,7 +4,6 @@ import random
 from typing import List, Tuple
 
 import numpy as np
-import numpy.linalg as LA
 from numpy.typing import NDArray
 
 

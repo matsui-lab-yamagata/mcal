@@ -370,7 +370,7 @@ class Rcal:
 
             f.write('#  Geom=Checkpoint\n')
             if is_opt:
-                f.write(f'#  Opt=Tight\n')
+                f.write('#  Opt=Tight\n')
             f.write('\n')
             f.write('Defalut Title\n')
             f.write('\n')
