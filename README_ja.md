@@ -1,12 +1,12 @@
 # mcal: 有機半導体結晶の移動度テンソル計算プログラム
-[![Python](https://img.shields.io/badge/python-3.12%20or%20newer-blue)](https://www.python.org)
+[![Python](https://img.shields.io/badge/python-3.9%20or%20newer-blue)](https://www.python.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 # 概要
 `mcal.py`は有機半導体の移動度テンソルを計算するツールです。結晶構造から移動積分と再配列エネルギーを計算し、異方性と経路の連続性を考慮して移動度テンソルを算出します。
 
 # 必要環境
-* Python 3.12以降
+* Python 3.9以降
 * NumPy
 * Pandas
 * Gaussian 09または16
@@ -49,7 +49,7 @@ uv pip install .
 
 ```bash
 # 新しいconda環境を作成
-conda create -n mcal python=3.12
+conda create -n mcal python=3.9
 conda activate mcal
 
 # 依存関係をインストール
