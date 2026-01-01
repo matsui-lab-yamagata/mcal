@@ -7,7 +7,6 @@ from time import time
 from typing import Dict, List, Literal, Optional, Tuple, Union
 
 import numpy as np
-import pandas as pd
 from numpy.typing import NDArray
 
 from mcal.utils.cif_reader import CifReader
