@@ -40,57 +40,10 @@ Requirements
 Installation
 ============
 
-1. Download the Repository
----------------------------
-
-Download zip
-~~~~~~~~~~~~
-
-Download the zip file from the repository, extract it, and navigate to the mcal directory using the ``cd`` command.
-
-Using git
-~~~~~~~~~
-
 .. code-block:: bash
 
-   git clone https://github.com/matsui-lab-yamagata/mcal.git
-   cd mcal
+   pip install yu-mcal
 
-2. Installation Methods
-------------------------
-
-Using pip
-~~~~~~~~~
-
-.. code-block:: bash
-
-   # install directly
-   pip install .
-
-Using uv
-~~~~~~~~
-
-`uv <https://github.com/astral-sh/uv>`_ is a fast Python package installer and resolver.
-
-.. code-block:: bash
-
-   # Install the package
-   uv pip install .
-
-Using conda
-~~~~~~~~~~~
-
-.. code-block:: bash
-
-   # Create a new conda environment
-   conda create -n mcal python=3.9
-   conda activate mcal
-
-   # Install dependencies
-   conda install numpy pandas
-
-   # Install mcal
-   pip install .
 
 Verify Installation
 -------------------
