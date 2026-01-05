@@ -1,6 +1,7 @@
 # mcal: Program for the calculation of mobility tensor for organic semiconductor crystals
 [![Python](https://img.shields.io/badge/python-3.9%20or%20newer-blue)](https://www.python.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![docs](https://img.shields.io/badge/docs-here-11419572)](https://matsui-lab-yamagata.github.io/mcal/)
 
 # Overview
 `mcal.py` is a tool for calculating mobility tensors of organic semiconductors. It calculates transfer integrals and reorganization energy from crystal structures, and determines mobility tensors considering anisotropy and path continuity.
