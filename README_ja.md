@@ -15,49 +15,10 @@
 * Gaussianのパスが設定されている必要があります。
 
 # インストール
-
-## 1. リポジトリのダウンロード
-
-### zipでダウンロード
-- リポジトリからzipファイルをダウンロードし、展開して、`cd`コマンドでmcalディレクトリに移動してください。
-
-### gitを使用
 ```bash
-git clone https://github.com/matsui-lab-yamagata/mcal.git
-cd mcal
+pip install yu-mcal
 ```
 
-## 2. インストール方法
-
-### pipを使用
-
-```bash
-# 直接インストール
-pip install .
-```
-
-### uvを使用
-
-[uv](https://github.com/astral-sh/uv)は高速なPythonパッケージインストーラーです。
-
-```bash
-# パッケージをインストール
-uv pip install .
-```
-
-### condaを使用
-
-```bash
-# 新しいconda環境を作成
-conda create -n mcal python=3.9
-conda activate mcal
-
-# 依存関係をインストール
-conda install numpy pandas
-
-# mcalをインストール
-pip install .
-```
 
 ## インストールの確認
 

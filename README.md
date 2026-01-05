@@ -15,49 +15,10 @@
 * The path of the Gaussian must be set.
 
 # Installation
-
-## 1. Download the Repository
-
-### Download zip
-- Download the zip file from the repository, extract it, and navigate to the mcal directory using the `cd` command.
-
-### Using git
 ```bash
-git clone https://github.com/matsui-lab-yamagata/mcal.git
-cd mcal
+pip install yu-mcal
 ```
 
-## 2. Installation Methods
-
-### Using pip
-
-```bash
-# install directly
-pip install .
-```
-
-### Using uv
-
-[uv](https://github.com/astral-sh/uv) is a fast Python package installer and resolver.
-
-```bash
-# Install the package
-uv pip install .
-```
-
-### Using conda
-
-```bash
-# Create a new conda environment
-conda create -n mcal python=3.9
-conda activate mcal
-
-# Install dependencies
-conda install numpy pandas
-
-# Install mcal
-pip install .
-```
 
 ## Verify Installation
 
