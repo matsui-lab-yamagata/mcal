@@ -140,7 +140,7 @@ def main():
     cif_path_without_ext = f'{directory}/{filename}'
 
     print('---------------------------------------')
-    print(' mcal 0.1.0 (2025/12/30) by Matsui Lab. ')
+    print(' mcal 0.1.1 (2026/01/08) by Matsui Lab. ')
     print('---------------------------------------')
 
     if args.read_pickle:
@@ -355,14 +355,18 @@ def main():
     Tcal.print_timestamp()
     end_time = time()
     elapsed_time = end_time - start_time
+    elapsed_time_h = int(elapsed_time // 3600)
+    elapsed_time_min = int((elapsed_time - elapsed_time_h * 3600) // 60)
+    elapsed_time_sec = int(elapsed_time - elapsed_time_h * 3600 - elapsed_time_min * 60)
+    elapsed_time_ms = (elapsed_time - elapsed_time_h * 3600 - elapsed_time_min * 60 - elapsed_time_sec) * 1000
     if elapsed_time < 1:
-        print(f'Elapsed Time: {elapsed_time*1000:.0f} ms')
+        print(f'Elapsed Time: {elapsed_time_ms:.0f} ms')
     elif elapsed_time < 60:
-        print(f'Elapsed Time: {elapsed_time:.0f} s')
+        print(f'Elapsed Time: {elapsed_time_sec} sec')
     elif elapsed_time < 3600:
-        print(f'Elapsed Time: {elapsed_time/60:.0f} min')
+        print(f'Elapsed Time: {elapsed_time_min} min {elapsed_time_sec} sec')
     else:
-        print(f'Elapsed Time: {elapsed_time/3600:.0f} h')
+        print(f'Elapsed Time: {elapsed_time_h} h {elapsed_time_min} min {elapsed_time_sec} sec')
 
 
 def atom_weight(symbol: str) -> float:
@@ -728,8 +732,9 @@ def print_mobility(value: NDArray[np.float64], vector: NDArray[np.float64], sim_
     sim_type : str
         Simulation type (MC or ODE)
     """
-    msg_value = 'Mobility value'
-    msg_vector = 'Mobility vector'
+    msg_value = 'Mobility eigenvalues (cm^2/Vs)'
+    msg_vector = 'Mobility eigenvectors'
+    direction = ['x', 'y', 'z']
 
     if sim_type:
         msg_value += f' ({sim_type})'
@@ -746,8 +751,9 @@ def print_mobility(value: NDArray[np.float64], vector: NDArray[np.float64], sim_
     print('-' * (len(msg_vector)+2))
     print(f' {msg_vector} ')
     print('-' * (len(msg_vector)+2))
-    for v in vector:
-        print(f"{v[0]:12.6g} {v[1]:12.6g} {v[2]:12.6g}")
+    print('       vector1      vector2      vector3')
+    for v, d in zip(vector, direction):
+        print(f'{d} {v[0]:12.6g} {v[1]:12.6g} {v[2]:12.6g}')
     print()
 
 
@@ -822,9 +828,9 @@ def read_pickle(file_name: str):
         print(f'{s}-th in (0,0,0) cell to {t}-th in ({i},{j},{k}) cell')
         print_transfer_integral(results['osc_type'], ti)
 
-    print_tensor(results['diffusion_coefficient_tensor'], msg="Diffusion coefficient tensor")
+    print_tensor(results['diffusion_coefficient_tensor'], msg="Diffusion coefficient tensor (cm^2/s)")
 
-    print_tensor(results['mobility_tensor'])
+    print_tensor(results['mobility_tensor'], msg="Mobility tensor (cm^2/Vs)")
 
     print_mobility(results['mobility_value'], results['mobility_vector'])
 
