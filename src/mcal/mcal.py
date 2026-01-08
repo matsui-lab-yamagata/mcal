@@ -139,9 +139,9 @@ def main():
     filename = cif_file.stem
     cif_path_without_ext = f'{directory}/{filename}'
 
-    print('---------------------------------------')
+    print('----------------------------------------')
     print(' mcal 0.1.1 (2026/01/08) by Matsui Lab. ')
-    print('---------------------------------------')
+    print('----------------------------------------')
 
     if args.read_pickle:
         read_pickle(args.file)
