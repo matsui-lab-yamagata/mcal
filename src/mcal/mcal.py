@@ -312,27 +312,27 @@ def main():
         hop.append((s, t, i, j, k, marcus_rate(ti, reorg_energy)))
 
     diffusion_coef_tensor = diffusion_coefficient_tensor(cif_reader.lattice * 1e-8, hop)
-    print_tensor(diffusion_coef_tensor, msg="Diffusion coefficient tensor")
+    print_tensor(diffusion_coef_tensor, msg="Diffusion coefficient tensor (cm^2/s)")
     mu = mobility_tensor(diffusion_coef_tensor)
-    print_tensor(mu)
+    print_tensor(mu, msg="Mobility tensor (cm^2/Vs)")
     value, vector = cal_eigenvalue_decomposition(mu)
     print_mobility(value, vector)
 
     ##### Simulate mobility tensor calculation using Monte Carlo method #####
     if args.mc:
         D_MC = diffusion_coefficient_tensor_MC(cif_reader.lattice * 1e-8, hop)
-        print_tensor(D_MC, msg="Diffusion coefficient tensor (MC)")
+        print_tensor(D_MC, msg="Diffusion coefficient tensor (cm^2/s) (MC)")
         mu_MC = mobility_tensor(D_MC)
-        print_tensor(mu_MC, msg="Mobility tensor (MC)")
+        print_tensor(mu_MC, msg="Mobility tensor (cm^2/Vs) (MC)")
         value_MC, vector_MC = cal_eigenvalue_decomposition(mu_MC)
         print_mobility(value_MC, vector_MC, sim_type='MC')
 
     ##### Simulate mobility tensor calculation using Ordinary Differential Equation method #####
     if args.ode:
         D_ODE = diffusion_coefficient_tensor_ODE(cif_reader.lattice * 1e-8, hop)
-        print_tensor(D_ODE, msg="Diffusion coefficient tensor (ODE)")
+        print_tensor(D_ODE, msg="Diffusion coefficient tensor (cm^2/s) (ODE)")
         mu_ODE = mobility_tensor(D_ODE)
-        print_tensor(mu_ODE, msg="Mobility tensor (ODE)")
+        print_tensor(mu_ODE, msg="Mobility tensor (cm^2/Vs) (ODE)")
         value_ODE, vector_ODE = cal_eigenvalue_decomposition(mu_ODE)
         print_mobility(value_ODE, vector_ODE, sim_type='ODE')
 
