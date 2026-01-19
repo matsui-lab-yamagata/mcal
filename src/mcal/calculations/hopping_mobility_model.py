@@ -79,7 +79,7 @@ def demo():
         print(f"{d[0]:9.6f} {d[1]:9.6f} {d[2]:9.6f}")
 
 
-def cal_pinv(array: NDArray[np.float64], rcond: float = 1e-9) -> NDArray[np.float64]:
+def cal_pinv(array: NDArray[np.float64], rcond: float = 1e-3) -> NDArray[np.float64]:
     """Calculate pseudo-inverse matrix using eigenvalue decomposition
 
     Parameters
