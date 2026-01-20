@@ -211,3 +211,6 @@ mcal xxx.cif p -c 16
 松井 弘之、尾沢 昂輝  
 Email: h-matsui[at]yz.yamagata-u.ac.jp  
 [at]を@に置き換えてください
+
+# 謝辞
+本研究はJSPS特別研究員奨励費、JP25KJ0647の助成を受けたものです。  
