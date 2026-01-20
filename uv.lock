@@ -1251,6 +1251,7 @@ dependencies = [
     { name = "numpy", version = "2.2.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.10.*'" },
     { name = "numpy", version = "2.4.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
     { name = "pandas" },
+    { name = "yu-tcal" },
 ]
 
 [package.dev-dependencies]
@@ -1267,6 +1268,7 @@ dev = [
 requires-dist = [
     { name = "numpy", specifier = ">=2.0.2" },
     { name = "pandas", specifier = ">=2.3.3" },
+    { name = "yu-tcal", specifier = "==3.1.0" },
 ]
 
 [package.metadata.requires-dev]
@@ -1275,6 +1277,20 @@ dev = [
     { name = "furo", specifier = ">=2025.12.19" },
     { name = "sphinx", specifier = ">=7.4.7" },
     { name = "taskipy", specifier = ">=1.14.1" },
+]
+
+[[package]]
+name = "yu-tcal"
+version = "3.1.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "numpy", version = "2.0.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
+    { name = "numpy", version = "2.2.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.10.*'" },
+    { name = "numpy", version = "2.4.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/3e/67/cdbadc22730037d37f2f0ee79f0cbbaf3a9f0fa238ed1e8a6bfd7c026207/yu_tcal-3.1.0.tar.gz", hash = "sha256:a61ac530ead5b659bb09e3b6f6c4c0863e5206d8a094dcf1ad901c87a8f82543", size = 54705406, upload-time = "2026-01-20T05:29:03.182Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/84/bc/752a05355957cc05e8a90094237cb42f0fdec587944fc752529616cd0c31/yu_tcal-3.1.0-py3-none-any.whl", hash = "sha256:a972ee3e9d50c8fdb9dd2751098aff1bfa362dacbac7b53a36f834e20dd45269", size = 14015, upload-time = "2026-01-20T05:28:57.156Z" },
 ]
 
 [[package]]
