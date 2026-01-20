@@ -8,6 +8,7 @@ from typing import Dict, List, Literal, Optional, Tuple, Union
 
 import numpy as np
 from numpy.typing import NDArray
+from tcal import Tcal
 
 from mcal.utils.cif_reader import CifReader
 from mcal.utils.gaus_log_reader import check_normal_termination
@@ -20,7 +21,6 @@ from mcal.calculations.hopping_mobility_model import (
     mobility_tensor
 )
 from mcal.calculations.rcal import Rcal
-from mcal.calculations.tcal import Tcal
 
 
 print = functools.partial(print, flush=True)
@@ -140,7 +140,7 @@ def main():
     cif_path_without_ext = f'{directory}/{filename}'
 
     print('----------------------------------------')
-    print(' mcal 0.1.3 (2026/01/20) by Matsui Lab. ')
+    print(' mcal 0.1.4 (2026/01/20) by Matsui Lab. ')
     print('----------------------------------------')
 
     if args.read_pickle:
