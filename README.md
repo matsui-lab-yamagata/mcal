@@ -10,6 +10,7 @@
 * Python 3.9 or newer
 * NumPy
 * Pandas
+* yu-tcal==3.1.0
 * Gaussian 09 or 16
 
 # Important notice
