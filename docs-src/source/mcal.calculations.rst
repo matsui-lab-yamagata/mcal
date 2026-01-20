@@ -20,14 +20,6 @@ mcal.calculations.rcal module
    :undoc-members:
    :show-inheritance:
 
-mcal.calculations.tcal module
------------------------------
-
-.. automodule:: mcal.calculations.tcal
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 Module contents
 ---------------
 
