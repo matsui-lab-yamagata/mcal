@@ -333,3 +333,8 @@ License
 This project is released under the MIT License.
 
 For more details, see the `LICENSE file on GitHub <https://github.com/matsui-lab-yamagata/mcal/blob/main/LICENSE>`_.
+
+Acknowledgements
+================
+
+This work was supported by JSPS Grant-in-Aid for JSPS Fellows Grant Number JP25KJ0647.
