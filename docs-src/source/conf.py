@@ -18,7 +18,7 @@ def get_version():
 project = "mcal"
 copyright = "2025, Hiroyuki Matsui, Koki Ozawa"
 author = "Hiroyuki Matsui, Koki Ozawa"
-release = get_version()
+# release = get_version()
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -26,6 +26,7 @@ release = get_version()
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
+    "sphinx.ext.viewcode",
     "sphinxcontrib.autodoc_pydantic"
 ]
 
