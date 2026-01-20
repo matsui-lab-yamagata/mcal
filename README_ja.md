@@ -11,6 +11,7 @@
 * Python 3.9以降
 * NumPy
 * Pandas
+* yu-tcal==3.1.0
 * Gaussian 09または16
 
 # 注意事項
