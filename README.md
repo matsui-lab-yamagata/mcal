@@ -210,3 +210,6 @@ mcal xxx.cif p -c 16
 Hiroyuki Matsui, Koki Ozawa  
 Email: h-matsui[at]yz.yamagata-u.ac.jp  
 Please replace [at] with @  
+
+# Acknowledgements
+This work was supported by JSPS Grant-in-Aid for JSPS Fellows Grant Number JP25KJ0647.  
