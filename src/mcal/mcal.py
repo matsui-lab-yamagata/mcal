@@ -140,7 +140,7 @@ def main():
     cif_path_without_ext = f'{directory}/{filename}'
 
     print('----------------------------------------')
-    print(' mcal 0.1.4 (2026/01/20) by Matsui Lab. ')
+    print(' mcal 0.1.5 (2026/01/28) by Matsui Lab. ')
     print('----------------------------------------')
 
     if args.read_pickle:
@@ -471,8 +471,8 @@ def cal_eigenvalue_decomposition(mobility_tensor: NDArray[np.float64]) -> Tuple[
     Tuple[NDArray[np.float64], NDArray[np.float64]]
         Eigenvalue(mobility value) and eigenvector(mobility vector)
     """
-    value, vector = np.linalg.eig(mobility_tensor)
-    return value, vector
+    value, vector = np.linalg.eigh(mobility_tensor)
+    return value[::-1], vector[:, ::-1]
 
 
 def cal_min_distance(
