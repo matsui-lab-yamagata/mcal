@@ -1,4 +1,4 @@
-"""CifReader beta (2025/10/30)"""
+"""CifReader beta (2026/01/28)"""
 import os
 import re
 from itertools import product
@@ -67,13 +67,16 @@ class CifReader:
         self._make_adjacency_mat()
         self._split_mols()
         self._put_unit_cell()
+        # Remove duplicates again as they may occur when moving atoms into the unit cell
         self.sym_symbols, self.sym_coords = self.remove_duplicates(self.sym_symbols, self.sym_coords)
         self._make_adjacency_mat()
         self._split_mols()
         self._calc_z_value()
 
         if self._ref_z_value != 0 and self.z_value != self._ref_z_value:
-            raise ZValueIsNotMatchError('Z value is not match.')
+            raise ZValueIsNotMatchError(
+                f'Z value is not match. Z value in cif file is {self._ref_z_value}, but calculated Z value is {self.z_value}.'
+            )
 
     def _calc_lattice(self):
         """Calculate lattice."""
@@ -293,10 +296,11 @@ class CifReader:
                         if '?' not in tmp_atom_data[atom_data_index['_atom_site_label']]:
                             if atom_data_index['_atom_site_type_symbol'] is None:
                                 symbol_label = tmp_atom_data[atom_data_index['_atom_site_label']]
-                                symbol = symbol_label
-                                for s in ['A', 'B', 'C']:
-                                    symbol = symbol.replace(s, '')
-                                symbol = re.sub(r'\d+', '', symbol)
+                                symbol = re.match(r'[A-Z][a-z]?', symbol_label)
+                                if symbol:
+                                    symbol = symbol.group(0)
+                                else:
+                                    raise ValueError(f'Symbol label {symbol_label} is not valid.')
                             else:
                                 symbol_label = tmp_atom_data[atom_data_index['_atom_site_label']]
                                 symbol = tmp_atom_data[atom_data_index['_atom_site_type_symbol']]
@@ -310,11 +314,10 @@ class CifReader:
                     # get symmetry operation information
                     elif is_read_sym:
                         if "'" in line:
-                            line = list(map(lambda x: x.strip().replace(' ', ''), line.split("'")))
-                            self.symmetry_pos.append(line[symmetry_data_index].lower())
+                            line = list(map(lambda x: x.strip().replace(' ', '').replace("'", ""), line.split()))
                         else:
                             line = list(map(lambda x: x.strip().replace(' ', ''), line.split()))
-                            self.symmetry_pos.append(line[symmetry_data_index].lower())
+                        self.symmetry_pos.append(line[symmetry_data_index].lower())
 
             self.symbols = np.array(self.symbols)
             self.coordinates = np.array(self.coordinates)
