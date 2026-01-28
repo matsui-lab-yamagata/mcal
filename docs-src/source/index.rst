@@ -32,6 +32,7 @@ Requirements
 * Python 3.9 or newer
 * NumPy
 * Pandas
+* Matplotlib
 * yu-tcal==3.1.0
 * Gaussian 09 or 16
 
@@ -176,6 +177,18 @@ Output Settings
 Save calculation results to a pickle file.
 
 * **Example**: ``mcal xxx.cif p -p``
+
+``--plot-plane <plane>``
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Plot mobility tensor as a 2D polar plot on specified crystallographic plane.
+
+* **Available planes**: ``ab``, ``ac``, ``ba``, ``bc``, ``ca``, ``cb``
+* **Default**: None (no plot generated)
+* **Examples**:
+
+  * ``mcal xxx.cif p --plot-plane ab`` (plot on ab-plane)
+  * ``mcal xxx.cif p --plot-plane bc`` (plot on bc-plane)
 
 Diffusion Coefficient Calculation Methods
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

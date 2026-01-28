@@ -11,6 +11,7 @@
 * Python 3.9以降
 * NumPy
 * Pandas
+* Matplotlib
 * yu-tcal==3.1.0
 * Gaussian 09または16
 
@@ -110,6 +111,14 @@ Gaussianを実行せずに既存のlogファイルから結果を読み取りま
 #### `-p, --pickle`
 計算結果をpickleファイルに保存します。
 - **例**: `mcal xxx.cif p -p`
+
+#### `--plot-plane <plane>`
+指定した結晶学的面上で移動度テンソルを2D極座標プロットで描画します。
+- **利用可能な面**: `ab`, `ac`, `ba`, `bc`, `ca`, `cb`
+- **デフォルト**: None（プロットは生成されません）
+- **例**: 
+  - `mcal xxx.cif p --plot-plane ab`（ab面にプロット）
+  - `mcal xxx.cif p --plot-plane bc`（bc面にプロット）
 
 ### 拡散係数計算手法
 
