@@ -267,6 +267,7 @@ and determines mobility tensors considering anisotropy and path continuity.</p>
 <li><p>Python 3.9 or newer</p></li>
 <li><p>NumPy</p></li>
 <li><p>Pandas</p></li>
+<li><p>Matplotlib</p></li>
 <li><p>yu-tcal==3.1.0</p></li>
 <li><p>Gaussian 09 or 16</p></li>
 </ul>
@@ -408,6 +409,20 @@ for transfer integral calculations.</p>
 <p>Save calculation results to a pickle file.</p>
 <ul class="simple">
 <li><p><strong>Example</strong>: <code class="docutils literal notranslate"><span class="pre">mcal</span> <span class="pre">xxx.cif</span> <span class="pre">p</span> <span class="pre">-p</span></code></p></li>
+</ul>
+</section>
+<section id="plot-plane-plane">
+<h5><code class="docutils literal notranslate"><span class="pre">--plot-plane</span> <span class="pre">&lt;plane&gt;</span></code><a class="headerlink" href="#plot-plane-plane" title="Link to this heading">¶</a></h5>
+<p>Plot mobility tensor as a 2D polar plot on specified crystallographic plane.</p>
+<ul class="simple">
+<li><p><strong>Available planes</strong>: <code class="docutils literal notranslate"><span class="pre">ab</span></code>, <code class="docutils literal notranslate"><span class="pre">ac</span></code>, <code class="docutils literal notranslate"><span class="pre">ba</span></code>, <code class="docutils literal notranslate"><span class="pre">bc</span></code>, <code class="docutils literal notranslate"><span class="pre">ca</span></code>, <code class="docutils literal notranslate"><span class="pre">cb</span></code></p></li>
+<li><p><strong>Default</strong>: None (no plot generated)</p></li>
+<li><p><strong>Examples</strong>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">mcal</span> <span class="pre">xxx.cif</span> <span class="pre">p</span> <span class="pre">--plot-plane</span> <span class="pre">ab</span></code> (plot on ab-plane)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mcal</span> <span class="pre">xxx.cif</span> <span class="pre">p</span> <span class="pre">--plot-plane</span> <span class="pre">bc</span></code> (plot on bc-plane)</p></li>
+</ul>
+</li>
 </ul>
 </section>
 </section>
@@ -653,6 +668,7 @@ mcal<span class="w"> </span>xxx.cif<span class="w"> </span>p<span class="w"> </s
 </li>
 <li><a class="reference internal" href="#output-settings">Output Settings</a><ul>
 <li><a class="reference internal" href="#p-pickle"><code class="docutils literal notranslate"><span class="pre">-p,</span> <span class="pre">--pickle</span></code></a></li>
+<li><a class="reference internal" href="#plot-plane-plane"><code class="docutils literal notranslate"><span class="pre">--plot-plane</span> <span class="pre">&lt;plane&gt;</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#diffusion-coefficient-calculation-methods">Diffusion Coefficient Calculation Methods</a><ul>

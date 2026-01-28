@@ -241,6 +241,9 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">time</span><span class="w"> </span><span class="kn">import</span> <span class="n">time</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib</span>
+<span class="n">matplotlib</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s1">&#39;Agg&#39;</span><span class="p">)</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">NDArray</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">tcal</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tcal</span>
@@ -270,40 +273,41 @@
 <span class="sd">    --------</span>
 <span class="sd">    Basic usage:</span>
 <span class="sd">        - Calculate p-type mobility for xxx crystal\n</span>
-<span class="sd">        $ python hop_mcal.py xxx.cif p</span>
+<span class="sd">        $ mcal xxx.cif p</span>
 
 <span class="sd">        - Calculate n-type mobility for xxx crystal\n</span>
-<span class="sd">        $ python hop_mcal.py xxx.cif n</span>
+<span class="sd">        $ mcal xxx.cif n</span>
 
 <span class="sd">    With resource options:</span>
 <span class="sd">        - Use 8 CPUs and 16GB memory\n</span>
-<span class="sd">        $ python hop_mcal.py xxx.cif p -c 8 -m 16</span>
+<span class="sd">        $ mcal xxx.cif p -c 8 -m 16</span>
 
 <span class="sd">        - Use different calculation method (default is B3LYP/6-31G(d,p))\n</span>
-<span class="sd">        $ python hop_mcal.py xxx.cif p -M &quot;B3LYP/6-311G(d,p)&quot;</span>
+<span class="sd">        $ mcal xxx.cif p -M &quot;B3LYP/6-311G(d,p)&quot;</span>
 
 <span class="sd">    High-precision calculation:</span>
 <span class="sd">        - Calculate all transfer integrals without speedup using moment of inertia and distance between centers of weight\n</span>
-<span class="sd">        $ python hop_mcal.py xxx.cif p --fullcal</span>
-
-<span class="sd">        - Expand calculation range to 3x3x3 supercell\n</span>
-<span class="sd">        $ python hop_mcal.py xxx.cif p --cellsize 1</span>
+<span class="sd">        $ mcal xxx.cif p --fullcal</span>
 
 <span class="sd">        - Expand calculation range to 5x5x5 supercell to widen transfer integral calculation range\n</span>
-<span class="sd">        $ python hop_mcal.py xxx.cif p --cellsize 2</span>
+<span class="sd">        $ mcal xxx.cif p --cellsize 2</span>
 
 <span class="sd">    Resume and save results:</span>
 <span class="sd">        - Resume from existing calculations\n</span>
-<span class="sd">        $ python hop_mcal.py xxx.cif p --resume</span>
+<span class="sd">        $ mcal xxx.cif p --resume</span>
 
 <span class="sd">        - Save results to pickle file\n</span>
-<span class="sd">        $ python hop_mcal.py xxx.cif p --pickle</span>
+<span class="sd">        $ mcal xxx.cif p --pickle</span>
 
 <span class="sd">        - Read results from existing pickle file\n</span>
-<span class="sd">        $ python hop_mcal.py xxx_result.pkl p -rp</span>
+<span class="sd">        $ mcal xxx_result.pkl p -rp</span>
 
 <span class="sd">        - Read results from existing log files without running Gaussian\n</span>
-<span class="sd">        $ python hop_mcal.py xxx.cif p -r</span>
+<span class="sd">        $ mcal xxx.cif p -r</span>
+
+<span class="sd">    Plot mobility tensor in 2D plane:</span>
+<span class="sd">        - Plot mobility tensor in 2D plane (Examples: ab, ac, ba, bc, ca, cb (default is ab))\n</span>
+<span class="sd">        $ python hop_mcal.py xxx.cif p --plot-plane ab</span>
 
 <span class="sd">    Compare calculation methods:</span>
 <span class="sd">        - Compare results using kinetic Monte Carlo and ODE methods\n</span>
@@ -357,6 +361,13 @@
         <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--plot-plane&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;plot mobility tensor in 2D plane (Examples: ab, ac, ba, bc, ca, cb (default is ab))&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;ab&#39;</span><span class="p">,</span> <span class="s1">&#39;ac&#39;</span><span class="p">,</span> <span class="s1">&#39;ba&#39;</span><span class="p">,</span> <span class="s1">&#39;bc&#39;</span><span class="p">,</span> <span class="s1">&#39;ca&#39;</span><span class="p">,</span> <span class="s1">&#39;cb&#39;</span><span class="p">],</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--resume&#39;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;resume calculation&#39;</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
@@ -377,11 +388,11 @@
     <span class="n">cif_path_without_ext</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">directory</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s1">&#39;</span>
 
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;----------------------------------------&#39;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39; mcal 0.1.6 (2026/01/29) by Matsui Lab. &#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39; mcal 0.2.0 (2026/01/29) by Matsui Lab. &#39;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;----------------------------------------&#39;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">read_pickle</span><span class="p">:</span>
-        <span class="n">read_pickle</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">file</span><span class="p">)</span>
+        <span class="n">read_pickle</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">file</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">plot_plane</span><span class="p">)</span>
         <span class="n">exit</span><span class="p">()</span>
 
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Calculate as </span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">osc_type</span><span class="si">}</span><span class="s1">-type organic semiconductor.&#39;</span><span class="p">)</span>
@@ -588,6 +599,9 @@
                 <span class="s1">&#39;mobility_value&#39;</span><span class="p">:</span> <span class="n">value</span><span class="p">,</span>
                 <span class="s1">&#39;mobility_vector&#39;</span><span class="p">:</span> <span class="n">vector</span>
             <span class="p">},</span> <span class="n">f</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">plot_plane</span><span class="p">:</span>
+        <span class="n">plot_mobility_2d</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">cif_path_without_ext</span><span class="si">}</span><span class="s1">_result.pkl&#39;</span><span class="p">),</span> <span class="n">mu</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">plot_plane</span><span class="p">)</span>
 
     <span class="n">Tcal</span><span class="o">.</span><span class="n">print_timestamp</span><span class="p">()</span>
     <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
@@ -988,6 +1002,72 @@
 
 
 
+<div class="viewcode-block" id="plot_mobility_2d">
+<a class="viewcode-back" href="../../mcal.html#mcal.mcal.plot_mobility_2d">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_mobility_2d</span><span class="p">(</span>
+    <span class="n">save_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
+    <span class="n">mobility_tensor</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span>
+    <span class="n">plane</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;ab&#39;</span><span class="p">,</span> <span class="s1">&#39;ac&#39;</span><span class="p">,</span> <span class="s1">&#39;ba&#39;</span><span class="p">,</span> <span class="s1">&#39;bc&#39;</span><span class="p">,</span> <span class="s1">&#39;ca&#39;</span><span class="p">,</span> <span class="s1">&#39;cb&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;ab&#39;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Plot mobility tensor in 2D plane.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    save_path : Path</span>
+<span class="sd">        Path to save the plot</span>
+<span class="sd">    mobility_tensor : NDArray[np.float64]</span>
+<span class="sd">        Mobility tensor</span>
+<span class="sd">    plane : Literal[&#39;ab&#39;, &#39;ac&#39;, &#39;ba&#39;, &#39;bc&#39;, &#39;ca&#39;, &#39;cb&#39;]</span>
+<span class="sd">        Plane to plot, by default &#39;ab&#39;</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        Invalid plane name</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">angle_list</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">360</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+    <span class="n">mobility_values</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">angle</span> <span class="ow">in</span> <span class="n">angle_list</span><span class="p">:</span>
+        <span class="n">phi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">plane</span> <span class="o">==</span> <span class="s1">&#39;ab&#39;</span><span class="p">:</span>
+            <span class="n">direction</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi</span><span class="p">),</span> <span class="mi">0</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="n">plane</span> <span class="o">==</span> <span class="s1">&#39;ba&#39;</span><span class="p">:</span>
+            <span class="n">direction</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi</span><span class="p">),</span> <span class="mi">0</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="n">plane</span> <span class="o">==</span> <span class="s1">&#39;bc&#39;</span><span class="p">:</span>
+            <span class="n">direction</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi</span><span class="p">)])</span>
+        <span class="k">elif</span> <span class="n">plane</span> <span class="o">==</span> <span class="s1">&#39;cb&#39;</span><span class="p">:</span>
+            <span class="n">direction</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi</span><span class="p">)])</span>
+        <span class="k">elif</span> <span class="n">plane</span> <span class="o">==</span> <span class="s1">&#39;ac&#39;</span><span class="p">:</span>
+            <span class="n">direction</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi</span><span class="p">)])</span>
+        <span class="k">elif</span> <span class="n">plane</span> <span class="o">==</span> <span class="s1">&#39;ca&#39;</span><span class="p">:</span>
+            <span class="n">direction</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi</span><span class="p">)])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Invalid plane: </span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s1">. Please choose from ab, ac, ba, bc, ca, cb.&#39;</span><span class="p">)</span>
+
+        <span class="n">mobility_value</span> <span class="o">=</span> <span class="n">direction</span> <span class="o">@</span> <span class="n">mobility_tensor</span> <span class="o">@</span> <span class="n">direction</span>
+        <span class="n">mobility_values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mobility_value</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;font.size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">12</span>
+    <span class="n">width_cm</span><span class="p">,</span> <span class="n">height_cm</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">8</span>
+    <span class="n">width_inch</span><span class="p">,</span> <span class="n">height_inch</span> <span class="o">=</span> <span class="n">width_cm</span> <span class="o">/</span> <span class="mf">2.54</span><span class="p">,</span> <span class="n">height_cm</span> <span class="o">/</span> <span class="mf">2.54</span>
+
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">subplot_kw</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;projection&#39;</span><span class="p">:</span> <span class="s1">&#39;polar&#39;</span><span class="p">},</span> <span class="n">tight_layout</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="n">width_inch</span><span class="p">,</span> <span class="n">height_inch</span><span class="p">))</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_theta_zero_location</span><span class="p">(</span><span class="s1">&#39;E&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">angle_list</span><span class="p">),</span> <span class="n">mobility_values</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_rlim</span><span class="p">(</span><span class="n">bottom</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">6</span><span class="p">))</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">R</span><span class="s1">&#39;Mobility [$\mathrm</span><span class="si">{cm}</span><span class="s1">^2 \mathrm</span><span class="si">{V}</span><span class="s1">^{-1} \mathrm</span><span class="si">{s}</span><span class="s1">^{-1}$]&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_label_coords</span><span class="p">(</span><span class="o">-</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_rlabel_position</span><span class="p">(</span><span class="mi">90</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">save_path</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">save_path</span><span class="o">.</span><span class="n">stem</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">.png&quot;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s1">&#39;tight&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+
 <div class="viewcode-block" id="print_mobility">
 <a class="viewcode-back" href="../../mcal.html#mcal.mcal.print_mobility">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">print_mobility</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">vector</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">sim_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;MC&#39;</span><span class="p">,</span> <span class="s1">&#39;ODE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
@@ -1093,13 +1173,23 @@
 
 <div class="viewcode-block" id="read_pickle">
 <a class="viewcode-back" href="../../mcal.html#mcal.mcal.read_pickle">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">read_pickle</span><span class="p">(</span><span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">read_pickle</span><span class="p">(</span>
+    <span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">plot_plane</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;ab&#39;</span><span class="p">,</span> <span class="s1">&#39;ac&#39;</span><span class="p">,</span> <span class="s1">&#39;ba&#39;</span><span class="p">,</span> <span class="s1">&#39;bc&#39;</span><span class="p">,</span> <span class="s1">&#39;ca&#39;</span><span class="p">,</span> <span class="s1">&#39;cb&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Read pickle file and plot mobility tensor in 2D plane.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    file_name : str</span>
+<span class="sd">        Path to the pickle file</span>
+<span class="sd">    plot_plane : Optional[Literal[&#39;ab&#39;, &#39;ac&#39;, &#39;ba&#39;, &#39;bc&#39;, &#39;ca&#39;, &#39;cb&#39;]]</span>
+<span class="sd">        Plane to plot, by default None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Input File Name: </span><span class="si">{</span><span class="n">file_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="n">results</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-
-    <span class="c1"># print(results)</span>
 
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Calculate as </span><span class="si">{</span><span class="n">results</span><span class="p">[</span><span class="s2">&quot;osc_type&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">-type organic semiconductor.&#39;</span><span class="p">)</span>
 
@@ -1114,7 +1204,10 @@
 
     <span class="n">print_tensor</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;mobility_tensor&#39;</span><span class="p">],</span> <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Mobility tensor (cm^2/Vs)&quot;</span><span class="p">)</span>
 
-    <span class="n">print_mobility</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;mobility_value&#39;</span><span class="p">],</span> <span class="n">results</span><span class="p">[</span><span class="s1">&#39;mobility_vector&#39;</span><span class="p">])</span></div>
+    <span class="n">print_mobility</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;mobility_value&#39;</span><span class="p">],</span> <span class="n">results</span><span class="p">[</span><span class="s1">&#39;mobility_vector&#39;</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="n">plot_plane</span><span class="p">:</span>
+        <span class="n">plot_mobility_2d</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="n">results</span><span class="p">[</span><span class="s1">&#39;mobility_tensor&#39;</span><span class="p">],</span> <span class="n">plot_plane</span><span class="p">)</span></div>
 
 
 

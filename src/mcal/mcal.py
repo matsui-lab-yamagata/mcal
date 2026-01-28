@@ -6,6 +6,9 @@ from pathlib import Path
 from time import time
 from typing import Dict, List, Literal, Optional, Tuple, Union
 
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
 import numpy as np
 from numpy.typing import NDArray
 from tcal import Tcal
@@ -33,40 +36,41 @@ def main():
     --------
     Basic usage:
         - Calculate p-type mobility for xxx crystal\n
-        $ python hop_mcal.py xxx.cif p
+        $ mcal xxx.cif p
 
         - Calculate n-type mobility for xxx crystal\n
-        $ python hop_mcal.py xxx.cif n
+        $ mcal xxx.cif n
 
     With resource options:
         - Use 8 CPUs and 16GB memory\n
-        $ python hop_mcal.py xxx.cif p -c 8 -m 16
+        $ mcal xxx.cif p -c 8 -m 16
 
         - Use different calculation method (default is B3LYP/6-31G(d,p))\n
-        $ python hop_mcal.py xxx.cif p -M "B3LYP/6-311G(d,p)"
+        $ mcal xxx.cif p -M "B3LYP/6-311G(d,p)"
 
     High-precision calculation:
         - Calculate all transfer integrals without speedup using moment of inertia and distance between centers of weight\n
-        $ python hop_mcal.py xxx.cif p --fullcal
-
-        - Expand calculation range to 3x3x3 supercell\n
-        $ python hop_mcal.py xxx.cif p --cellsize 1
+        $ mcal xxx.cif p --fullcal
 
         - Expand calculation range to 5x5x5 supercell to widen transfer integral calculation range\n
-        $ python hop_mcal.py xxx.cif p --cellsize 2
+        $ mcal xxx.cif p --cellsize 2
 
     Resume and save results:
         - Resume from existing calculations\n
-        $ python hop_mcal.py xxx.cif p --resume
+        $ mcal xxx.cif p --resume
 
         - Save results to pickle file\n
-        $ python hop_mcal.py xxx.cif p --pickle
+        $ mcal xxx.cif p --pickle
 
         - Read results from existing pickle file\n
-        $ python hop_mcal.py xxx_result.pkl p -rp
+        $ mcal xxx_result.pkl p -rp
 
         - Read results from existing log files without running Gaussian\n
-        $ python hop_mcal.py xxx.cif p -r
+        $ mcal xxx.cif p -r
+
+    Plot mobility tensor in 2D plane:
+        - Plot mobility tensor in 2D plane (Examples: ab, ac, ba, bc, ca, cb (default is ab))\n
+        $ python hop_mcal.py xxx.cif p --plot-plane ab
 
     Compare calculation methods:
         - Compare results using kinetic Monte Carlo and ODE methods\n
@@ -120,6 +124,13 @@ def main():
         action='store_true',
     )
     parser.add_argument(
+        '--plot-plane',
+        help='plot mobility tensor in 2D plane (Examples: ab, ac, ba, bc, ca, cb (default is ab))',
+        type=str,
+        default=None,
+        choices=['ab', 'ac', 'ba', 'bc', 'ca', 'cb'],
+    )
+    parser.add_argument(
         '--resume',
         help='resume calculation',
         action='store_true',
@@ -140,11 +151,11 @@ def main():
     cif_path_without_ext = f'{directory}/{filename}'
 
     print('----------------------------------------')
-    print(' mcal 0.1.6 (2026/01/29) by Matsui Lab. ')
+    print(' mcal 0.2.0 (2026/01/29) by Matsui Lab. ')
     print('----------------------------------------')
 
     if args.read_pickle:
-        read_pickle(args.file)
+        read_pickle(args.file, args.plot_plane)
         exit()
 
     print(f'\nCalculate as {args.osc_type}-type organic semiconductor.')
@@ -351,6 +362,9 @@ def main():
                 'mobility_value': value,
                 'mobility_vector': vector
             }, f)
+
+    if args.plot_plane:
+        plot_mobility_2d(Path(f'{cif_path_without_ext}_result.pkl'), mu, args.plot_plane)
 
     Tcal.print_timestamp()
     end_time = time()
@@ -720,6 +734,69 @@ def create_ti_gjf(
     gjf_maker.export_gjf(file_name=gjf_basename, save_dir=save_dir)
 
 
+def plot_mobility_2d(
+    save_path: Path,
+    mobility_tensor: NDArray[np.float64],
+    plane: Literal['ab', 'ac', 'ba', 'bc', 'ca', 'cb'] = 'ab'
+) -> None:
+    """Plot mobility tensor in 2D plane.
+
+    Parameters
+    ----------
+    save_path : Path
+        Path to save the plot
+    mobility_tensor : NDArray[np.float64]
+        Mobility tensor
+    plane : Literal['ab', 'ac', 'ba', 'bc', 'ca', 'cb']
+        Plane to plot, by default 'ab'
+
+    Raises
+    ------
+    ValueError
+        Invalid plane name
+    """
+    angle_list = np.arange(0, 360, 0.1)
+    mobility_values = []
+
+    for angle in angle_list:
+        phi = np.deg2rad(angle)
+        if plane == 'ab':
+            direction = np.array([np.cos(phi), np.sin(phi), 0])
+        elif plane == 'ba':
+            direction = np.array([np.sin(phi), np.cos(phi), 0])
+        elif plane == 'bc':
+            direction = np.array([0, np.cos(phi), np.sin(phi)])
+        elif plane == 'cb':
+            direction = np.array([0, np.sin(phi), np.cos(phi)])
+        elif plane == 'ac':
+            direction = np.array([np.cos(phi), 0, np.sin(phi)])
+        elif plane == 'ca':
+            direction = np.array([np.sin(phi), 0, np.cos(phi)])
+        else:
+            raise ValueError(f'Invalid plane: {plane}. Please choose from ab, ac, ba, bc, ca, cb.')
+
+        mobility_value = direction @ mobility_tensor @ direction
+        mobility_values.append(mobility_value)
+
+    plt.rcParams['font.size'] = 12
+    width_cm, height_cm = 20, 8
+    width_inch, height_inch = width_cm / 2.54, height_cm / 2.54
+
+    fig, ax = plt.subplots(subplot_kw={'projection': 'polar'}, tight_layout=True, figsize=(width_inch, height_inch))
+    ax.set_theta_zero_location('E')
+    ax.grid(True, linestyle='--', linewidth=0.5)
+    ax.plot(np.deg2rad(angle_list), mobility_values, linewidth=2)
+
+    ax.set_rlim(bottom=0)
+    ax.set_xticks(np.arange(0, 2*np.pi, np.pi/6))
+    ax.tick_params(axis="x", pad=5)
+    ax.set_ylabel(R'Mobility [$\mathrm{cm}^2 \mathrm{V}^{-1} \mathrm{s}^{-1}$]')
+    ax.yaxis.set_label_coords(-0.2, 0.5)
+    ax.set_rlabel_position(90)
+    plt.savefig(save_path.parent / f"{save_path.stem}_{plane}.png", dpi=300, bbox_inches='tight')
+    plt.close()
+
+
 def print_mobility(value: NDArray[np.float64], vector: NDArray[np.float64], sim_type: Literal['MC', 'ODE'] = ''):
     """Print mobility and mobility vector
 
@@ -811,13 +888,23 @@ def print_transfer_integral(osc_type: Literal['p', 'n'], transfer: float):
     print(f'{mol_orb[osc_type]}: {transfer:12.6g} eV\n')
 
 
-def read_pickle(file_name: str):
+def read_pickle(
+    file_name: str,
+    plot_plane: Optional[Literal['ab', 'ac', 'ba', 'bc', 'ca', 'cb']] = None
+) -> None:
+    """Read pickle file and plot mobility tensor in 2D plane.
+
+    Parameters
+    ----------
+    file_name : str
+        Path to the pickle file
+    plot_plane : Optional[Literal['ab', 'ac', 'ba', 'bc', 'ca', 'cb']]
+        Plane to plot, by default None
+    """
     print(f'\nInput File Name: {file_name}')
 
     with open(file_name, 'rb') as f:
         results = pickle.load(f)
-
-    # print(results)
 
     print(f'\nCalculate as {results["osc_type"]}-type organic semiconductor.')
 
@@ -833,6 +920,9 @@ def read_pickle(file_name: str):
     print_tensor(results['mobility_tensor'], msg="Mobility tensor (cm^2/Vs)")
 
     print_mobility(results['mobility_value'], results['mobility_vector'])
+
+    if plot_plane:
+        plot_mobility_2d(Path(file_name).with_suffix(''), results['mobility_tensor'], plot_plane)
 
 
 class OSCTypeError(Exception):

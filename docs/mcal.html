@@ -562,55 +562,74 @@
 <dt>Basic usage:</dt><dd><ul class="simple">
 <li><p>Calculate p-type mobility for xxx crystal</p></li>
 </ul>
-<p>$ python hop_mcal.py xxx.cif p</p>
+<p>$ mcal xxx.cif p</p>
 <ul class="simple">
 <li><p>Calculate n-type mobility for xxx crystal</p></li>
 </ul>
-<p>$ python hop_mcal.py xxx.cif n</p>
+<p>$ mcal xxx.cif n</p>
 </dd>
 <dt>With resource options:</dt><dd><ul class="simple">
 <li><p>Use 8 CPUs and 16GB memory</p></li>
 </ul>
-<p>$ python hop_mcal.py xxx.cif p -c 8 -m 16</p>
+<p>$ mcal xxx.cif p -c 8 -m 16</p>
 <ul class="simple">
 <li><p>Use different calculation method (default is B3LYP/6-31G(d,p))</p></li>
 </ul>
-<p>$ python hop_mcal.py xxx.cif p -M “B3LYP/6-311G(d,p)”</p>
+<p>$ mcal xxx.cif p -M “B3LYP/6-311G(d,p)”</p>
 </dd>
 <dt>High-precision calculation:</dt><dd><ul class="simple">
 <li><p>Calculate all transfer integrals without speedup using moment of inertia and distance between centers of weight</p></li>
 </ul>
-<p>$ python hop_mcal.py xxx.cif p –fullcal</p>
-<ul class="simple">
-<li><p>Expand calculation range to 3x3x3 supercell</p></li>
-</ul>
-<p>$ python hop_mcal.py xxx.cif p –cellsize 1</p>
+<p>$ mcal xxx.cif p –fullcal</p>
 <ul class="simple">
 <li><p>Expand calculation range to 5x5x5 supercell to widen transfer integral calculation range</p></li>
 </ul>
-<p>$ python hop_mcal.py xxx.cif p –cellsize 2</p>
+<p>$ mcal xxx.cif p –cellsize 2</p>
 </dd>
 <dt>Resume and save results:</dt><dd><ul class="simple">
 <li><p>Resume from existing calculations</p></li>
 </ul>
-<p>$ python hop_mcal.py xxx.cif p –resume</p>
+<p>$ mcal xxx.cif p –resume</p>
 <ul class="simple">
 <li><p>Save results to pickle file</p></li>
 </ul>
-<p>$ python hop_mcal.py xxx.cif p –pickle</p>
+<p>$ mcal xxx.cif p –pickle</p>
 <ul class="simple">
 <li><p>Read results from existing pickle file</p></li>
 </ul>
-<p>$ python hop_mcal.py xxx_result.pkl p -rp</p>
+<p>$ mcal xxx_result.pkl p -rp</p>
 <ul class="simple">
 <li><p>Read results from existing log files without running Gaussian</p></li>
 </ul>
-<p>$ python hop_mcal.py xxx.cif p -r</p>
+<p>$ mcal xxx.cif p -r</p>
+</dd>
+<dt>Plot mobility tensor in 2D plane:</dt><dd><ul class="simple">
+<li><p>Plot mobility tensor in 2D plane (Examples: ab, ac, ba, bc, ca, cb (default is ab))</p></li>
+</ul>
+<p>$ python hop_mcal.py xxx.cif p –plot-plane ab</p>
 </dd>
 <dt>Compare calculation methods:</dt><dd><ul class="simple">
 <li><p>Compare results using kinetic Monte Carlo and ODE methods</p></li>
 </ul>
 <p>$ python hop_mcal.py xxx.cif p –mc –ode</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mcal.mcal.plot_mobility_2d">
+<span class="sig-prename descclassname"><span class="pre">mcal.mcal.</span></span><span class="sig-name descname"><span class="pre">plot_mobility_2d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">save_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mobility_tensor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">float64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plane</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'ab'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'ac'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'ba'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'bc'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'ca'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'cb'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'ab'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/mcal/mcal.html#plot_mobility_2d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcal.mcal.plot_mobility_2d" title="Link to this definition">¶</a></dt>
+<dd><p>Plot mobility tensor in 2D plane.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>save_path</strong> (<em>Path</em>) – Path to save the plot</p></li>
+<li><p><strong>mobility_tensor</strong> (<em>NDArray</em><em>[</em><em>np.float64</em><em>]</em>) – Mobility tensor</p></li>
+<li><p><strong>plane</strong> (<em>Literal</em><em>[</em><em>'ab'</em><em>, </em><em>'ac'</em><em>, </em><em>'ba'</em><em>, </em><em>'bc'</em><em>, </em><em>'ca'</em><em>, </em><em>'cb'</em><em>]</em>) – Plane to plot, by default ‘ab’</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – Invalid plane name</p>
 </dd>
 </dl>
 </dd></dl>
@@ -674,8 +693,17 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="mcal.mcal.read_pickle">
-<span class="sig-prename descclassname"><span class="pre">mcal.mcal.</span></span><span class="sig-name descname"><span class="pre">read_pickle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcal/mcal.html#read_pickle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcal.mcal.read_pickle" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">mcal.mcal.</span></span><span class="sig-name descname"><span class="pre">read_pickle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_plane</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'ab'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'ac'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'ba'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'bc'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'ca'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'cb'</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/mcal/mcal.html#read_pickle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcal.mcal.read_pickle" title="Link to this definition">¶</a></dt>
+<dd><p>Read pickle file and plot mobility tensor in 2D plane.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file_name</strong> (<em>str</em>) – Path to the pickle file</p></li>
+<li><p><strong>plot_plane</strong> (<em>Optional</em><em>[</em><em>Literal</em><em>[</em><em>'ab'</em><em>, </em><em>'ac'</em><em>, </em><em>'ba'</em><em>, </em><em>'bc'</em><em>, </em><em>'ca'</em><em>, </em><em>'cb'</em><em>]</em><em>]</em>) – Plane to plot, by default None</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 </section>
 <section id="module-mcal">
@@ -754,6 +782,7 @@
 <li><a class="reference internal" href="#mcal.mcal.create_reorg_gjf"><code class="docutils literal notranslate"><span class="pre">create_reorg_gjf()</span></code></a></li>
 <li><a class="reference internal" href="#mcal.mcal.create_ti_gjf"><code class="docutils literal notranslate"><span class="pre">create_ti_gjf()</span></code></a></li>
 <li><a class="reference internal" href="#mcal.mcal.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li><a class="reference internal" href="#mcal.mcal.plot_mobility_2d"><code class="docutils literal notranslate"><span class="pre">plot_mobility_2d()</span></code></a></li>
 <li><a class="reference internal" href="#mcal.mcal.print_mobility"><code class="docutils literal notranslate"><span class="pre">print_mobility()</span></code></a></li>
 <li><a class="reference internal" href="#mcal.mcal.print_reorg_energy"><code class="docutils literal notranslate"><span class="pre">print_reorg_energy()</span></code></a></li>
 <li><a class="reference internal" href="#mcal.mcal.print_tensor"><code class="docutils literal notranslate"><span class="pre">print_tensor()</span></code></a></li>
