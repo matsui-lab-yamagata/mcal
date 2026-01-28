@@ -1,9 +1,10 @@
 [project]
 name = "yu-mcal"
-version = "0.1.6"
+version = "0.2.0"
 description = "Program for the calculation of mobility tensor for organic semiconductor crystals"
 requires-python = ">=3.9"
 dependencies = [
+    "matplotlib>=3.9.4",
     "numpy>=2.0.2",
     "pandas>=2.3.3",
     "yu-tcal==3.1.0",
