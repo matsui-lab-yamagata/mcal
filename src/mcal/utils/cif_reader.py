@@ -1,10 +1,11 @@
-"""CifReader beta (2026/01/28)"""
+"""CifReader beta (2026/01/29)"""
 import os
 import re
+import warnings
+from collections import deque
 from itertools import product
 from pathlib import Path
 from typing import Dict, List, Literal, Tuple
-import warnings
 
 import numpy as np
 import pandas as pd
@@ -67,6 +68,8 @@ class CifReader:
         self._make_adjacency_mat()
         self._split_mols()
         self._put_unit_cell()
+        self._unwrap_molecules()
+        self._put_unit_cell()
         # Remove duplicates again as they may occur when moving atoms into the unit cell
         self.sym_symbols, self.sym_coords = self.remove_duplicates(self.sym_symbols, self.sym_coords)
         self._make_adjacency_mat()
@@ -77,6 +80,14 @@ class CifReader:
             raise ZValueIsNotMatchError(
                 f'Z value is not match. Z value in cif file is {self._ref_z_value}, but calculated Z value is {self.z_value}.'
             )
+
+    def _apply_minimum_image(self):
+        """Apply minimum image convention."""
+        frac_diff = self.sym_coords[:, np.newaxis, :] - self.sym_coords[np.newaxis, :, :]
+        frac_diff = frac_diff - np.round(frac_diff)
+        cart_diff = np.dot(frac_diff, self.lattice)
+        distance = np.linalg.norm(cart_diff, axis=-1)
+        return distance
 
     def _calc_lattice(self):
         """Calculate lattice."""
@@ -131,7 +142,7 @@ class CifReader:
         num_atoms = len(self.sym_symbols)
         self.adjacency_mat = np.zeros((num_atoms, num_atoms), dtype=bool)
 
-        self.cart_coords = np.dot(self.sym_coords, self.lattice)
+        distance = self._apply_minimum_image()
 
         try:
             covalent_distance = np.array([self.COVALENT_RADII[symbol] for symbol in self.sym_symbols]) \
@@ -139,7 +150,6 @@ class CifReader:
         except KeyError:
             raise ElementPropertiesIsNotDefinedError('Element properties is not defined.')
 
-        distance = np.linalg.norm(self.cart_coords[:, np.newaxis, :] - self.cart_coords[np.newaxis, :, :], axis=-1)
         self.adjacency_mat[(distance <= covalent_distance * 1.3) & (distance != 0)] = 1
 
     def _operate_sym(self) -> None:
@@ -361,6 +371,35 @@ class CifReader:
             index_group.sort()
             sub_matrix = self.adjacency_mat[np.ix_(index_group, index_group)]
             self.sub_matrices.append(sub_matrix)
+
+    def _unwrap_molecules(self):
+        """Unwrap molecules using the adjacency matrix based on the minimum image convention."""
+        for atom_group in self.bonded_atoms:
+            if len(atom_group) <= 1:
+                continue
+
+            criterion_idx = atom_group[0]
+
+            # Depth-first search
+            visited = {criterion_idx}
+            stack = deque([criterion_idx])
+
+            while stack:
+                current_idx = stack.popleft()
+                current_coord = self.sym_coords[current_idx]
+
+                for neighbor_idx in atom_group:
+                    if neighbor_idx in visited:
+                        continue
+
+                    if self.adjacency_mat[current_idx, neighbor_idx]:
+                        # Minimum image convention
+                        frac_diff = self.sym_coords[neighbor_idx] - current_coord
+                        frac_diff = frac_diff - np.round(frac_diff)
+                        self.sym_coords[neighbor_idx] = current_coord + frac_diff
+
+                        visited.add(neighbor_idx)
+                        stack.append(neighbor_idx)
 
     def calc_cen_of_weight(self, coordinates: NDArray[np.float64]) -> NDArray[np.float64]:
         """Calculate center of weight.
