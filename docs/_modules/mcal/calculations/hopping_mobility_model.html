@@ -233,7 +233,7 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for mcal.calculations.hopping_mobility_model</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;hopping_mobility_model.py (2025/10/06)&quot;&quot;&quot;</span>
+<span></span><span class="sd">&quot;&quot;&quot;hopping_mobility_model.py (2026/01/29)&quot;&quot;&quot;</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
@@ -259,11 +259,11 @@
     <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">D</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">9.6f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">d</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">9.6f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">d</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">:</span><span class="s2">9.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Diffusion coefficient tensor (ODE):&quot;</span><span class="p">)</span>
-    <span class="n">D_ode</span> <span class="o">=</span> <span class="n">diffusion_coefficient_tensor_ODE</span><span class="p">(</span><span class="n">lattice</span><span class="p">,</span> <span class="n">hop</span><span class="p">)</span>
+    <span class="n">D_ode</span> <span class="o">=</span> <span class="n">_diffusion_coefficient_tensor_ODE</span><span class="p">(</span><span class="n">lattice</span><span class="p">,</span> <span class="n">hop</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">D_ode</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">9.6f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">d</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">9.6f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">d</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">:</span><span class="s2">9.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Diffusion coefficient tensor (MC):&quot;</span><span class="p">)</span>
-    <span class="n">D_mc</span> <span class="o">=</span> <span class="n">diffusion_coefficient_tensor_MC</span><span class="p">(</span><span class="n">lattice</span><span class="p">,</span> <span class="n">hop</span><span class="p">)</span>
+    <span class="n">D_mc</span> <span class="o">=</span> <span class="n">_diffusion_coefficient_tensor_MC</span><span class="p">(</span><span class="n">lattice</span><span class="p">,</span> <span class="n">hop</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">D_mc</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">9.6f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">d</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">9.6f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">d</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">:</span><span class="s2">9.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
@@ -280,11 +280,11 @@
     <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">D</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">9.6f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">d</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">9.6f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">d</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">:</span><span class="s2">9.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Diffusion coefficient tensor (ODE):&quot;</span><span class="p">)</span>
-    <span class="n">D_ode</span> <span class="o">=</span> <span class="n">diffusion_coefficient_tensor_ODE</span><span class="p">(</span><span class="n">lattice</span><span class="p">,</span> <span class="n">hop</span><span class="p">)</span>
+    <span class="n">D_ode</span> <span class="o">=</span> <span class="n">_diffusion_coefficient_tensor_ODE</span><span class="p">(</span><span class="n">lattice</span><span class="p">,</span> <span class="n">hop</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">D_ode</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">9.6f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">d</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">9.6f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">d</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">:</span><span class="s2">9.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Diffusion coefficient tensor (MC):&quot;</span><span class="p">)</span>
-    <span class="n">D_mc</span> <span class="o">=</span> <span class="n">diffusion_coefficient_tensor_MC</span><span class="p">(</span><span class="n">lattice</span><span class="p">,</span> <span class="n">hop</span><span class="p">)</span>
+    <span class="n">D_mc</span> <span class="o">=</span> <span class="n">_diffusion_coefficient_tensor_MC</span><span class="p">(</span><span class="n">lattice</span><span class="p">,</span> <span class="n">hop</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">D_mc</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">9.6f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">d</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">9.6f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">d</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">:</span><span class="s2">9.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
@@ -307,11 +307,11 @@
     <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">D</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">9.6f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">d</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">9.6f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">d</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">:</span><span class="s2">9.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Diffusion coefficient tensor (ODE):&quot;</span><span class="p">)</span>
-    <span class="n">D_ode</span> <span class="o">=</span> <span class="n">diffusion_coefficient_tensor_ODE</span><span class="p">(</span><span class="n">lattice</span><span class="p">,</span> <span class="n">hop</span><span class="p">)</span>
+    <span class="n">D_ode</span> <span class="o">=</span> <span class="n">_diffusion_coefficient_tensor_ODE</span><span class="p">(</span><span class="n">lattice</span><span class="p">,</span> <span class="n">hop</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">D_ode</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">9.6f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">d</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">9.6f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">d</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">:</span><span class="s2">9.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Diffusion coefficient tensor (MC):&quot;</span><span class="p">)</span>
-    <span class="n">D_mc</span> <span class="o">=</span> <span class="n">diffusion_coefficient_tensor_MC</span><span class="p">(</span><span class="n">lattice</span><span class="p">,</span> <span class="n">hop</span><span class="p">)</span>
+    <span class="n">D_mc</span> <span class="o">=</span> <span class="n">_diffusion_coefficient_tensor_MC</span><span class="p">(</span><span class="n">lattice</span><span class="p">,</span> <span class="n">hop</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">D_mc</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">9.6f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">d</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">9.6f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">d</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">:</span><span class="s2">9.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
@@ -470,12 +470,10 @@
 
 
 
-<div class="viewcode-block" id="diffusion_coefficient_tensor_ODE">
-<a class="viewcode-back" href="../../../mcal.calculations.html#mcal.calculations.hopping_mobility_model.diffusion_coefficient_tensor_ODE">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">diffusion_coefficient_tensor_ODE</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_diffusion_coefficient_tensor_ODE</span><span class="p">(</span>
     <span class="n">lattice</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span>
     <span class="n">hop</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]],</span>
-    <span class="n">max_steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">200</span><span class="p">,</span>
+    <span class="n">max_steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10000</span><span class="p">,</span>
     <span class="n">size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">40</span><span class="p">,</span>
     <span class="n">max_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
@@ -529,16 +527,13 @@
         <span class="n">avg_outer_product</span> <span class="o">+=</span> <span class="n">prob</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">l</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span><span class="n">vec</span><span class="p">,</span> <span class="n">vec</span><span class="p">)</span>
 
     <span class="n">D</span> <span class="o">=</span> <span class="n">avg_outer_product</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">max_steps</span> <span class="o">*</span> <span class="n">dt</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">D</span></div>
+    <span class="k">return</span> <span class="n">D</span>
 
 
-
-<div class="viewcode-block" id="diffusion_coefficient_tensor_MC">
-<a class="viewcode-back" href="../../../mcal.calculations.html#mcal.calculations.hopping_mobility_model.diffusion_coefficient_tensor_MC">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">diffusion_coefficient_tensor_MC</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_diffusion_coefficient_tensor_MC</span><span class="p">(</span>
     <span class="n">lattice</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span>
     <span class="n">hop</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]],</span>
-    <span class="n">steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+    <span class="n">steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10000</span><span class="p">,</span>
     <span class="n">particles</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10000</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate diffusion coefficient tensor from Monte Carlo simulation using Gillespie algorithm.</span>
@@ -593,8 +588,7 @@
 
     <span class="c1"># Calculate diffusion coefficient</span>
     <span class="n">D</span> <span class="o">=</span> <span class="n">sum_outer_product</span> <span class="o">/</span> <span class="p">(</span><span class="n">particles</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">max_time</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">D</span></div>
-
+    <span class="k">return</span> <span class="n">D</span>
 
 
 <div class="viewcode-block" id="print_tensor">
