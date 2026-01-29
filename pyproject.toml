@@ -1,6 +1,6 @@
 [project]
 name = "yu-mcal"
-version = "0.2.1"
+version = "0.3.0"
 description = "Program for the calculation of mobility tensor for organic semiconductor crystals"
 requires-python = ">=3.9"
 dependencies = [
