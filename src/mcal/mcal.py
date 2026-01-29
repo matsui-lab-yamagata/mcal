@@ -151,7 +151,7 @@ def main():
     cif_path_without_ext = f'{directory}/{filename}'
 
     print('----------------------------------------')
-    print(' mcal 0.2.0 (2026/01/29) by Matsui Lab. ')
+    print(' mcal 0.2.1 (2026/01/29) by Matsui Lab. ')
     print('----------------------------------------')
 
     if args.read_pickle:
@@ -364,7 +364,12 @@ def main():
             }, f)
 
     if args.plot_plane:
-        plot_mobility_2d(Path(f'{cif_path_without_ext}_result.pkl'), mu, args.plot_plane)
+        plot_mobility_2d(
+            Path(f'{cif_path_without_ext}_result.pkl'),
+            mu,
+            cif_reader.lattice,
+            args.plot_plane
+        )
 
     Tcal.print_timestamp()
     end_time = time()
@@ -737,6 +742,7 @@ def create_ti_gjf(
 def plot_mobility_2d(
     save_path: Path,
     mobility_tensor: NDArray[np.float64],
+    lattice: NDArray[np.float64],
     plane: Literal['ab', 'ac', 'ba', 'bc', 'ca', 'cb'] = 'ab'
 ) -> None:
     """Plot mobility tensor in 2D plane.
@@ -747,34 +753,46 @@ def plot_mobility_2d(
         Path to save the plot
     mobility_tensor : NDArray[np.float64]
         Mobility tensor
+    lattice : NDArray[np.float64]
+        Lattice vectors [Å]
     plane : Literal['ab', 'ac', 'ba', 'bc', 'ca', 'cb']
         Plane to plot, by default 'ab'
-
-    Raises
-    ------
-    ValueError
-        Invalid plane name
     """
-    angle_list = np.arange(0, 360, 0.1)
+    print(f"Plot mobility in {plane} plane.")
+    angle_list = np.arange(0, 360, 1)
     mobility_values = []
+
+    a_vec = lattice[0]
+    b_vec = lattice[1]
+    c_vec = lattice[2]
+    if plane == 'ab':
+        v1, v2, = a_vec, b_vec
+    elif plane == 'ba':
+        v1, v2, = b_vec, a_vec
+    elif plane == 'bc':
+        v1, v2, = b_vec, c_vec
+    elif plane == 'cb':
+        v1, v2, = c_vec, b_vec
+    elif plane == 'ac':
+        v1, v2, = a_vec, c_vec
+    elif plane == 'ca':
+        v1, v2 = c_vec, a_vec
+
+    # Angle between the two specified crystal axes
+    second_axis_angle = np.rad2deg(np.arccos(np.dot(v1, v2) / (np.linalg.norm(v1) * np.linalg.norm(v2))))
+    print('Crystal axis directions in the plotted plane:')
+    print(f'{plane[0]}-axis: 0.0 deg')
+    print(f'{plane[1]}-axis: {second_axis_angle:.1f} deg')
+    print()
+
+    # Gram–Schmidt orthonormalization
+    e1 = v1 / np.linalg.norm(v1)
+    e2 = v2 - np.dot(v2, e1) * e1
+    e2 = e2 / np.linalg.norm(e2)
 
     for angle in angle_list:
         phi = np.deg2rad(angle)
-        if plane == 'ab':
-            direction = np.array([np.cos(phi), np.sin(phi), 0])
-        elif plane == 'ba':
-            direction = np.array([np.sin(phi), np.cos(phi), 0])
-        elif plane == 'bc':
-            direction = np.array([0, np.cos(phi), np.sin(phi)])
-        elif plane == 'cb':
-            direction = np.array([0, np.sin(phi), np.cos(phi)])
-        elif plane == 'ac':
-            direction = np.array([np.cos(phi), 0, np.sin(phi)])
-        elif plane == 'ca':
-            direction = np.array([np.sin(phi), 0, np.cos(phi)])
-        else:
-            raise ValueError(f'Invalid plane: {plane}. Please choose from ab, ac, ba, bc, ca, cb.')
-
+        direction = np.cos(phi) * e1 + np.sin(phi) * e2
         mobility_value = direction @ mobility_tensor @ direction
         mobility_values.append(mobility_value)
 
@@ -922,7 +940,12 @@ def read_pickle(
     print_mobility(results['mobility_value'], results['mobility_vector'])
 
     if plot_plane:
-        plot_mobility_2d(Path(file_name).with_suffix(''), results['mobility_tensor'], plot_plane)
+        plot_mobility_2d(
+            Path(file_name).with_suffix(''),
+            results['mobility_tensor'],
+            results['lattice'],
+            plot_plane,
+        )
 
 
 class OSCTypeError(Exception):
