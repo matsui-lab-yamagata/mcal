@@ -18,8 +18,8 @@ from mcal.utils.gaus_log_reader import check_normal_termination
 from mcal.utils.gjf_maker import GjfMaker
 from mcal.calculations.hopping_mobility_model import (
     diffusion_coefficient_tensor,
-    diffusion_coefficient_tensor_MC,
-    diffusion_coefficient_tensor_ODE,
+    _diffusion_coefficient_tensor_MC,
+    _diffusion_coefficient_tensor_ODE,
     marcus_rate,
     mobility_tensor
 )
@@ -71,10 +71,6 @@ def main():
     Plot mobility tensor in 2D plane:
         - Plot mobility tensor in 2D plane (Examples: ab, ac, ba, bc, ca, cb (default is ab))\n
         $ python hop_mcal.py xxx.cif p --plot-plane ab
-
-    Compare calculation methods:
-        - Compare results using kinetic Monte Carlo and ODE methods\n
-        $ python hop_mcal.py xxx.cif p --mc --ode
     """
     # Error range for skipping calculation of transfer integrals using moment of inertia and distance between centers of weight.
     CENTER_OF_WEIGHT_ERROR = 1.0e-7
@@ -117,10 +113,10 @@ def main():
         help='do not process for speeding up using moment of inertia and distance between centers of weight',
         action='store_true',
     )
-    parser.add_argument('--mc', help='use Monte Carlo method to calculate diffusion coefficient', action='store_true')
+    parser.add_argument('--mc', help=argparse.SUPPRESS, action='store_true')
     parser.add_argument(
         '--ode',
-        help='use Ordinary Differential Equation method to calculate diffusion coefficient',
+        help=argparse.SUPPRESS,
         action='store_true',
     )
     parser.add_argument(
@@ -151,7 +147,7 @@ def main():
     cif_path_without_ext = f'{directory}/{filename}'
 
     print('----------------------------------------')
-    print(' mcal 0.2.1 (2026/01/29) by Matsui Lab. ')
+    print(' mcal 0.3.0 (2026/01/29) by Matsui Lab. ')
     print('----------------------------------------')
 
     if args.read_pickle:
@@ -331,7 +327,7 @@ def main():
 
     ##### Simulate mobility tensor calculation using Monte Carlo method #####
     if args.mc:
-        D_MC = diffusion_coefficient_tensor_MC(cif_reader.lattice * 1e-8, hop)
+        D_MC = _diffusion_coefficient_tensor_MC(cif_reader.lattice * 1e-8, hop)
         print_tensor(D_MC, msg="Diffusion coefficient tensor (cm^2/s) (MC)")
         mu_MC = mobility_tensor(D_MC)
         print_tensor(mu_MC, msg="Mobility tensor (cm^2/Vs) (MC)")
@@ -340,7 +336,7 @@ def main():
 
     ##### Simulate mobility tensor calculation using Ordinary Differential Equation method #####
     if args.ode:
-        D_ODE = diffusion_coefficient_tensor_ODE(cif_reader.lattice * 1e-8, hop)
+        D_ODE = _diffusion_coefficient_tensor_ODE(cif_reader.lattice * 1e-8, hop)
         print_tensor(D_ODE, msg="Diffusion coefficient tensor (cm^2/s) (ODE)")
         mu_ODE = mobility_tensor(D_ODE)
         print_tensor(mu_ODE, msg="Mobility tensor (cm^2/Vs) (ODE)")

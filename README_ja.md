@@ -120,16 +120,6 @@ Gaussianを実行せずに既存のlogファイルから結果を読み取りま
   - `mcal xxx.cif p --plot-plane ab`（ab面にプロット）
   - `mcal xxx.cif p --plot-plane bc`（bc面にプロット）
 
-### 拡散係数計算手法
-
-#### `--mc`
-モンテカルロ法を使用して拡散係数テンソルを計算します。(テスト用)
-- **例**: `mcal xxx.cif p --mc`
-
-#### `--ode`
-常微分方程式法を使用して拡散係数テンソルを計算します。(テスト用)
-- **例**: `mcal xxx.cif p --ode`
-
 ## 使用例
 
 ### 基本的な計算
@@ -166,12 +156,6 @@ mcal xxx.cif p --resume
 
 # 結果をpickleファイルに保存
 mcal xxx.cif p -p
-```
-
-### 拡散係数の比較
-```bash
-# 通常計算 + モンテカルロ法 + ODEで比較
-mcal xxx.cif p --mc --ode
 ```
 
 ## 出力

@@ -253,8 +253,8 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">mcal.utils.gjf_maker</span><span class="w"> </span><span class="kn">import</span> <span class="n">GjfMaker</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mcal.calculations.hopping_mobility_model</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">diffusion_coefficient_tensor</span><span class="p">,</span>
-    <span class="n">diffusion_coefficient_tensor_MC</span><span class="p">,</span>
-    <span class="n">diffusion_coefficient_tensor_ODE</span><span class="p">,</span>
+    <span class="n">_diffusion_coefficient_tensor_MC</span><span class="p">,</span>
+    <span class="n">_diffusion_coefficient_tensor_ODE</span><span class="p">,</span>
     <span class="n">marcus_rate</span><span class="p">,</span>
     <span class="n">mobility_tensor</span>
 <span class="p">)</span>
@@ -308,10 +308,6 @@
 <span class="sd">    Plot mobility tensor in 2D plane:</span>
 <span class="sd">        - Plot mobility tensor in 2D plane (Examples: ab, ac, ba, bc, ca, cb (default is ab))\n</span>
 <span class="sd">        $ python hop_mcal.py xxx.cif p --plot-plane ab</span>
-
-<span class="sd">    Compare calculation methods:</span>
-<span class="sd">        - Compare results using kinetic Monte Carlo and ODE methods\n</span>
-<span class="sd">        $ python hop_mcal.py xxx.cif p --mc --ode</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Error range for skipping calculation of transfer integrals using moment of inertia and distance between centers of weight.</span>
     <span class="n">CENTER_OF_WEIGHT_ERROR</span> <span class="o">=</span> <span class="mf">1.0e-7</span>
@@ -354,10 +350,10 @@
         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;do not process for speeding up using moment of inertia and distance between centers of weight&#39;</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--mc&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;use Monte Carlo method to calculate diffusion coefficient&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--mc&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="n">argparse</span><span class="o">.</span><span class="n">SUPPRESS</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--ode&#39;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;use Ordinary Differential Equation method to calculate diffusion coefficient&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">argparse</span><span class="o">.</span><span class="n">SUPPRESS</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
@@ -388,7 +384,7 @@
     <span class="n">cif_path_without_ext</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">directory</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s1">&#39;</span>
 
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;----------------------------------------&#39;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39; mcal 0.2.1 (2026/01/29) by Matsui Lab. &#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39; mcal 0.3.0 (2026/01/29) by Matsui Lab. &#39;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;----------------------------------------&#39;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">read_pickle</span><span class="p">:</span>
@@ -568,7 +564,7 @@
 
     <span class="c1">##### Simulate mobility tensor calculation using Monte Carlo method #####</span>
     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">mc</span><span class="p">:</span>
-        <span class="n">D_MC</span> <span class="o">=</span> <span class="n">diffusion_coefficient_tensor_MC</span><span class="p">(</span><span class="n">cif_reader</span><span class="o">.</span><span class="n">lattice</span> <span class="o">*</span> <span class="mf">1e-8</span><span class="p">,</span> <span class="n">hop</span><span class="p">)</span>
+        <span class="n">D_MC</span> <span class="o">=</span> <span class="n">_diffusion_coefficient_tensor_MC</span><span class="p">(</span><span class="n">cif_reader</span><span class="o">.</span><span class="n">lattice</span> <span class="o">*</span> <span class="mf">1e-8</span><span class="p">,</span> <span class="n">hop</span><span class="p">)</span>
         <span class="n">print_tensor</span><span class="p">(</span><span class="n">D_MC</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Diffusion coefficient tensor (cm^2/s) (MC)&quot;</span><span class="p">)</span>
         <span class="n">mu_MC</span> <span class="o">=</span> <span class="n">mobility_tensor</span><span class="p">(</span><span class="n">D_MC</span><span class="p">)</span>
         <span class="n">print_tensor</span><span class="p">(</span><span class="n">mu_MC</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Mobility tensor (cm^2/Vs) (MC)&quot;</span><span class="p">)</span>
@@ -577,7 +573,7 @@
 
     <span class="c1">##### Simulate mobility tensor calculation using Ordinary Differential Equation method #####</span>
     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">ode</span><span class="p">:</span>
-        <span class="n">D_ODE</span> <span class="o">=</span> <span class="n">diffusion_coefficient_tensor_ODE</span><span class="p">(</span><span class="n">cif_reader</span><span class="o">.</span><span class="n">lattice</span> <span class="o">*</span> <span class="mf">1e-8</span><span class="p">,</span> <span class="n">hop</span><span class="p">)</span>
+        <span class="n">D_ODE</span> <span class="o">=</span> <span class="n">_diffusion_coefficient_tensor_ODE</span><span class="p">(</span><span class="n">cif_reader</span><span class="o">.</span><span class="n">lattice</span> <span class="o">*</span> <span class="mf">1e-8</span><span class="p">,</span> <span class="n">hop</span><span class="p">)</span>
         <span class="n">print_tensor</span><span class="p">(</span><span class="n">D_ODE</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Diffusion coefficient tensor (cm^2/s) (ODE)&quot;</span><span class="p">)</span>
         <span class="n">mu_ODE</span> <span class="o">=</span> <span class="n">mobility_tensor</span><span class="p">(</span><span class="n">D_ODE</span><span class="p">)</span>
         <span class="n">print_tensor</span><span class="p">(</span><span class="n">mu_ODE</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Mobility tensor (cm^2/Vs) (ODE)&quot;</span><span class="p">)</span>

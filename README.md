@@ -119,16 +119,6 @@ Plot mobility tensor as a 2D polar plot on specified crystallographic plane.
   - `mcal xxx.cif p --plot-plane ab` (plot on ab-plane)
   - `mcal xxx.cif p --plot-plane bc` (plot on bc-plane)
 
-### Diffusion Coefficient Calculation Methods
-
-#### `--mc`
-Calculate diffusion coefficient tensor using kinetic Monte Carlo method.
-- **Example**: `mcal xxx.cif p --mc`
-
-#### `--ode`
-Calculate diffusion coefficient tensor using Ordinary Differential Equation method.
-- **Example**: `mcal xxx.cif p --ode`
-
 ## Practical Usage Examples
 
 ### Basic Calculations
@@ -165,12 +155,6 @@ mcal xxx.cif p --resume
 
 # Save results to pickle file
 mcal xxx.cif p -p
-```
-
-### Comparing Diffusion Coefficients
-```bash
-# Compare with normal calculation + kinetic Monte Carlo + ODE methods
-mcal xxx.cif p --mc --ode
 ```
 
 ## Output

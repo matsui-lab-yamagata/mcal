@@ -426,23 +426,6 @@ for transfer integral calculations.</p>
 </ul>
 </section>
 </section>
-<section id="diffusion-coefficient-calculation-methods">
-<h4>Diffusion Coefficient Calculation Methods<a class="headerlink" href="#diffusion-coefficient-calculation-methods" title="Link to this heading">¶</a></h4>
-<section id="mc">
-<h5><code class="docutils literal notranslate"><span class="pre">--mc</span></code><a class="headerlink" href="#mc" title="Link to this heading">¶</a></h5>
-<p>Calculate diffusion coefficient tensor using kinetic Monte Carlo method.</p>
-<ul class="simple">
-<li><p><strong>Example</strong>: <code class="docutils literal notranslate"><span class="pre">mcal</span> <span class="pre">xxx.cif</span> <span class="pre">p</span> <span class="pre">--mc</span></code></p></li>
-</ul>
-</section>
-<section id="ode">
-<h5><code class="docutils literal notranslate"><span class="pre">--ode</span></code><a class="headerlink" href="#ode" title="Link to this heading">¶</a></h5>
-<p>Calculate diffusion coefficient tensor using Ordinary Differential Equation method.</p>
-<ul class="simple">
-<li><p><strong>Example</strong>: <code class="docutils literal notranslate"><span class="pre">mcal</span> <span class="pre">xxx.cif</span> <span class="pre">p</span> <span class="pre">--ode</span></code></p></li>
-</ul>
-</section>
-</section>
 </section>
 <section id="practical-usage-examples">
 <h3>Practical Usage Examples<a class="headerlink" href="#practical-usage-examples" title="Link to this heading">¶</a></h3>
@@ -482,13 +465,6 @@ mcal<span class="w"> </span>xxx.cif<span class="w"> </span>p<span class="w"> </s
 
 <span class="c1"># Save results to pickle file</span>
 mcal<span class="w"> </span>xxx.cif<span class="w"> </span>p<span class="w"> </span>-p
-</pre></div>
-</div>
-</section>
-<section id="comparing-diffusion-coefficients">
-<h4>Comparing Diffusion Coefficients<a class="headerlink" href="#comparing-diffusion-coefficients" title="Link to this heading">¶</a></h4>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Compare with normal calculation + kinetic Monte Carlo + ODE methods</span>
-mcal<span class="w"> </span>xxx.cif<span class="w"> </span>p<span class="w"> </span>--mc<span class="w"> </span>--ode
 </pre></div>
 </div>
 </section>
@@ -671,18 +647,12 @@ mcal<span class="w"> </span>xxx.cif<span class="w"> </span>p<span class="w"> </s
 <li><a class="reference internal" href="#plot-plane-plane"><code class="docutils literal notranslate"><span class="pre">--plot-plane</span> <span class="pre">&lt;plane&gt;</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#diffusion-coefficient-calculation-methods">Diffusion Coefficient Calculation Methods</a><ul>
-<li><a class="reference internal" href="#mc"><code class="docutils literal notranslate"><span class="pre">--mc</span></code></a></li>
-<li><a class="reference internal" href="#ode"><code class="docutils literal notranslate"><span class="pre">--ode</span></code></a></li>
-</ul>
-</li>
 </ul>
 </li>
 <li><a class="reference internal" href="#practical-usage-examples">Practical Usage Examples</a><ul>
 <li><a class="reference internal" href="#basic-calculations">Basic Calculations</a></li>
 <li><a class="reference internal" href="#high-precision-calculations">High-Precision Calculations</a></li>
 <li><a class="reference internal" href="#reusing-results">Reusing Results</a></li>
-<li><a class="reference internal" href="#comparing-diffusion-coefficients">Comparing Diffusion Coefficients</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#output">Output</a><ul>
