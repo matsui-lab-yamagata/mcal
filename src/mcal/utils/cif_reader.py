@@ -1,4 +1,4 @@
-"""CifReader beta (2026/01/29)"""
+"""CifReader beta (2026/02/05)"""
 import os
 import re
 import warnings
@@ -220,9 +220,9 @@ class CifReader:
         for atom_idx in self.bonded_atoms:
             for i, c in enumerate(self.calc_cen_of_weight(self.sym_coords[atom_idx])):
                 if 1 <= c:
-                    change = -int(c)
+                    change = -np.floor(c)
                 elif c < 0:
-                    change = abs(int(c)) + 1
+                    change = np.ceil(np.abs(c))
                 else:
                     change = 0
                 self.sym_coords[atom_idx, i] += change
