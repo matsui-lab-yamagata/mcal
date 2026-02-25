@@ -5,22 +5,50 @@
 
 
 # 概要
-`mcal.py`は有機半導体の移動度テンソルを計算するツールです。結晶構造から移動積分と再配列エネルギーを計算し、異方性と経路の連続性を考慮して移動度テンソルを算出します。
+`mcal`は有機半導体の移動度テンソルを計算するツールです。結晶構造から移動積分と再配列エネルギーを計算し、異方性と経路の連続性を考慮して移動度テンソルを算出します。
 
 # 必要環境
 * Python 3.9以降
 * NumPy
 * Pandas
 * Matplotlib
-* yu-tcal==3.1.0
+* yu-tcal==4.0.2
+
+## 量子化学計算ツール
+以下のうちいずれか一つが必要です：
 * Gaussian 09または16
+* PySCF (macOS / Linux / WSL2(Windows Subsystem for Linux))
+* GPU4PySCF (macOS / Linux / WSL2(Windows Subsystem for Linux))
 
 # 注意事項
 * Gaussianのパスが設定されている必要があります。
+* PySCFはmacOS / Linux / WSL2(Windows Subsystem for Linux)でのみサポートされています。
 
 # インストール
-```bash
+## Gaussian 09または16を使用する場合（PySCFなし）
+```
 pip install yu-mcal
+```
+
+## PySCFを使用する場合（CPUのみ、macOS / Linux / WSL2）
+```
+pip install "yu-mcal[pyscf]"
+```
+
+## PySCFでGPUアクセラレーションを使用する場合（macOS / Linux / WSL2）
+### 1. インストールされているCUDA Toolkitのバージョンを確認する
+```
+nvcc --version
+```
+
+### 2. GPUアクセラレーション対応のmcalをインストールする
+CUDA Toolkitのバージョンが12.xの場合:
+```
+pip install "yu-mcal[gpu4pyscf-cuda12]"
+```
+CUDA Toolkitのバージョンが11.xの場合:
+```
+pip install "yu-mcal[gpu4pyscf-cuda11]"
 ```
 
 
@@ -63,7 +91,7 @@ mcal xxx.cif n
 ### 計算設定
 
 #### `-M, --method <method>`
-Gaussianで使用する計算手法を指定します。
+計算手法を指定します（GaussianおよびPySCF共通）。
 - **デフォルト**: `B3LYP/6-31G(d,p)`
 - **例**: `mcal xxx.cif p -M "B3LYP/6-31G(d)"`
 
@@ -81,10 +109,24 @@ Gaussianで使用する計算手法を指定します。
 Gaussian 09を使用します（デフォルトはGaussian 16）。
 - **例**: `mcal xxx.cif p -g`
 
+### PySCF設定
+
+#### `--pyscf`
+Gaussianの代わりにPySCFを使用して計算します。`yu-mcal[pyscf]`のインストールが必要です。
+- **例**: `mcal xxx.cif p --pyscf`
+
+#### `--gpu4pyscf`
+gpu4pyscfによるGPUアクセラレーションを使用します。`--pyscf`を指定しなくても自動的にPySCFモードが有効になります。`yu-mcal[gpu4pyscf-cuda11]`または`yu-mcal[gpu4pyscf-cuda12]`のインストールが必要です。
+- **例**: `mcal xxx.cif p --gpu4pyscf`
+
+#### `--cart`
+球面調和関数の代わりにデカルト基底関数を使用します（PySCFのみ）。
+- **例**: `mcal xxx.cif p --pyscf --cart`
+
 ### 計算制御
 
 #### `-r, --read`
-Gaussianを実行せずに既存のlogファイルから結果を読み取ります。
+計算を実行せずに既存のファイルから結果を読み取ります。Gaussianの場合はlogファイル、PySCFの場合はチェックポイント（`.chk`）ファイルを読み取ります。
 - **例**: `mcal xxx.cif p -r`
 
 #### `-rp, --read_pickle`
@@ -92,7 +134,7 @@ Gaussianを実行せずに既存のlogファイルから結果を読み取りま
 - **例**: `mcal xxx_result.pkl p -rp`
 
 #### `--resume`
-ログファイルが正常に終了している場合、既存の結果を使用して計算を再開します。
+既存の結果を使用して計算を再開します。Gaussianの場合はlogファイルの正常終了を確認し、PySCFの場合はチェックポイント（`.chk`）ファイルの存在を確認します。
 - **例**: `mcal xxx.cif p --resume`
 
 #### `--fullcal`
@@ -143,6 +185,24 @@ mcal xxx.cif p --cellsize 3
 mcal xxx.cif p -M "B3LYP/6-311G(d,p)"
 ```
 
+### PySCFを使用した計算
+```bash
+# PySCFで計算（CPU）
+mcal xxx.cif p --pyscf
+
+# PySCFでGPUアクセラレーションを使用（--pyscf不要）
+mcal xxx.cif p --gpu4pyscf
+
+# 8CPUと16GBメモリを使用してPySCFで計算
+mcal xxx.cif p --pyscf -c 8 -m 16
+
+# 中断されたPySCF計算を再開
+mcal xxx.cif p --pyscf --resume
+
+# 既存のPySCFチェックポイントファイルから読み取り
+mcal xxx.cif p --pyscf -r
+```
+
 ### 結果の再利用
 ```bash
 # 既存の計算結果から読み取り
@@ -166,6 +226,48 @@ mcal xxx.cif p -p
 - 拡散係数テンソル
 - 移動度テンソル
 - 移動度の固有値と固有ベクトル
+
+### 生成ファイル
+
+#### 再配列エネルギーのファイル
+
+再配列エネルギー計算では以下のファイルが生成されます（`c` = p型のカチオン、`a` = n型のアニオン）：
+
+##### Gaussian
+- `xxx_opt_n.gjf` / `xxx_opt_n.log` — 中性分子の構造最適化
+- `xxx_c.gjf` / `xxx_c.log`（または `xxx_a`）— 中性構造でのイオンのSPエネルギー計算
+- `xxx_opt_c.gjf` / `xxx_opt_c.log`（または `xxx_opt_a`）— イオンの構造最適化
+- `xxx_n.gjf` / `xxx_n.log` — イオン構造での中性分子のSPエネルギー計算
+
+##### PySCF
+- `xxx_opt_n.xyz` / `xxx_opt_n.chk` — 中性分子の構造最適化
+- `xxx_c.chk`（または `xxx_a.chk`）— 中性構造でのイオンのSPエネルギー計算
+- `xxx_opt_c.xyz` / `xxx_opt_c.chk`（または `xxx_opt_a`）— イオンの構造最適化
+- `xxx_n.chk` — イオン構造での中性分子のSPエネルギー計算
+
+#### 移動積分のファイル
+
+mcal は `(s_t_i_j_k)` という記法でファイルを生成します：
+
+| 記号 | 意味 |
+|------|------|
+| `s` | 参照ユニットセル (0,0,0) 内の分子インデックス |
+| `t` | 隣接ユニットセル内の分子インデックス |
+| `i` | **a** 軸方向の並進インデックス |
+| `j` | **b** 軸方向の並進インデックス |
+| `k` | **c** 軸方向の並進インデックス |
+
+**例：** `xxx-(0_0_1_0_0)` は (0,0,0) セルの 0 番目の分子と (1,0,0) セルの 0 番目の分子間の移動積分を表します。
+
+##### Gaussian
+- `xxx-(s_t_i_j_k).gjf` / `xxx-(s_t_i_j_k).log` — ダイマー
+- `xxx-(s_t_i_j_k)_m1.gjf` / `xxx-(s_t_i_j_k)_m1.log` — モノマー1
+- `xxx-(s_t_i_j_k)_m2.gjf` / `xxx-(s_t_i_j_k)_m2.log` — モノマー2
+
+##### PySCF
+- `xxx-(s_t_i_j_k).xyz` / `xxx-(s_t_i_j_k).chk` — ダイマー
+- `xxx-(s_t_i_j_k)_m1.chk` — モノマー1
+- `xxx-(s_t_i_j_k)_m2.chk` — モノマー2
 
 ## 注意事項
 
@@ -208,3 +310,7 @@ Email: h-matsui[at]yz.yamagata-u.ac.jp
 
 # 謝辞
 本研究はJSPS特別研究員奨励費、JP25KJ0647の助成を受けたものです。  
+
+# 参考文献
+[1] Qiming Sun et al., Recent developments in the PySCF program package, *J. Chem. Phys.* **2020**, *153*, 024109.  
+[2] Lee-Ping Wang, Chenchen Song, Geometry optimization made simple with translation and rotation coordinates, *J. Chem. Phys.* **2016**, *144*, 214108.  
