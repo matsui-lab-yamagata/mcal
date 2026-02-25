@@ -1,13 +1,13 @@
 [project]
 name = "yu-mcal"
-version = "0.3.1"
+version = "0.4.0"
 description = "Program for the calculation of mobility tensor for organic semiconductor crystals"
 requires-python = ">=3.9"
 dependencies = [
     "matplotlib>=3.9.4",
     "numpy>=2.0.2",
     "pandas>=2.3.3",
-    "yu-tcal==3.1.0",
+    "yu-tcal==4.0.2",
 ]
 authors = [
     {name = "Hiroyuki Matsui", email = "h-matsui@yz.yamagata-u.ac.jp"},
@@ -51,9 +51,28 @@ docs-generate = "sphinx-apidoc -f -o docs-src/source src/mcal && sphinx-build -M
 
 [project.scripts]
 mcal = "mcal.mcal:main"
+rcal = "mcal.calculations.rcal:main"
+
+[project.optional-dependencies]
+pyscf = [
+    "geometric>=1.1",
+    "pyscf>=2.12.1",
+]
+gpu4pyscf-cuda11 = [
+    "pyscf>=2.12.1",
+    "cutensor-cu11>=2.2.0",
+    "gpu4pyscf-cuda11x>=1.5.2",
+    "geometric>=1.1",
+]
+gpu4pyscf-cuda12 = [
+    "pyscf>=2.12.1",
+    "cutensor-cu12>=2.5.0",
+    "gpu4pyscf-cuda12x>=1.5.2",
+    "geometric>=1.1",
+]
 
 [tool.setuptools.packages.find]
 where = ["src"]
 
 [tool.setuptools.package-data]
-mcal = ["constants/element_properties.csv"]
+mcal = ["constants/element_properties.csv", "calculations/log.ini"]
