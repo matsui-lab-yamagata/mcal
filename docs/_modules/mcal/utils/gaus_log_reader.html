@@ -239,7 +239,7 @@
 
 
 <div class="viewcode-block" id="check_normal_termination">
-<a class="viewcode-back" href="../../../mcal.utils.html#mcal.utils.gaus_log_reader.check_normal_termination">[docs]</a>
+<a class="viewcode-back" href="../../../mcal.utils.html#mcal.check_normal_termination">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">check_normal_termination</span><span class="p">(</span><span class="n">log_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Check if the calculation terminated normally.</span>
 
@@ -266,7 +266,7 @@
 
 
 <div class="viewcode-block" id="FileReader">
-<a class="viewcode-back" href="../../../mcal.utils.html#mcal.utils.gaus_log_reader.FileReader">[docs]</a>
+<a class="viewcode-back" href="../../../mcal.utils.html#mcal.FileReader">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">FileReader</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;File reader that reads line by line from the end.</span>
 
@@ -298,13 +298,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
 <div class="viewcode-block" id="FileReader.close">
-<a class="viewcode-back" href="../../../mcal.utils.html#mcal.utils.gaus_log_reader.FileReader.close">[docs]</a>
+<a class="viewcode-back" href="../../../mcal.utils.html#mcal.FileReader.close">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="FileReader.reversed_readline">
-<a class="viewcode-back" href="../../../mcal.utils.html#mcal.utils.gaus_log_reader.FileReader.reversed_readline">[docs]</a>
+<a class="viewcode-back" href="../../../mcal.utils.html#mcal.FileReader.reversed_readline">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">reversed_readline</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">lines</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">reversed_block_end</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">reversed_block_start</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="c1"># ファイルポインタを現在のブロックの開始位置に設定</span>

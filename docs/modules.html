@@ -249,6 +249,7 @@
 <li class="toctree-l4"><a class="reference internal" href="mcal.calculations.html#submodules">Submodules</a></li>
 <li class="toctree-l4"><a class="reference internal" href="mcal.calculations.html#module-mcal.calculations.hopping_mobility_model">mcal.calculations.hopping_mobility_model module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="mcal.calculations.html#module-mcal.calculations.rcal">mcal.calculations.rcal module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mcal.calculations.html#module-mcal.calculations.rcal_pyscf">mcal.calculations.rcal_pyscf module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="mcal.calculations.html#module-mcal.calculations">Module contents</a></li>
 </ul>
 </li>
@@ -272,9 +273,13 @@
 <li class="toctree-l3"><a class="reference internal" href="mcal.html#mcal.mcal.cal_min_distance"><code class="docutils literal notranslate"><span class="pre">cal_min_distance()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="mcal.html#mcal.mcal.cal_moment_of_inertia"><code class="docutils literal notranslate"><span class="pre">cal_moment_of_inertia()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="mcal.html#mcal.mcal.check_reorganization_energy_completion"><code class="docutils literal notranslate"><span class="pre">check_reorganization_energy_completion()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mcal.html#mcal.mcal.check_reorganization_energy_completion_pyscf"><code class="docutils literal notranslate"><span class="pre">check_reorganization_energy_completion_pyscf()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="mcal.html#mcal.mcal.check_transfer_integral_completion"><code class="docutils literal notranslate"><span class="pre">check_transfer_integral_completion()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mcal.html#mcal.mcal.check_transfer_integral_completion_pyscf"><code class="docutils literal notranslate"><span class="pre">check_transfer_integral_completion_pyscf()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="mcal.html#mcal.mcal.create_reorg_gjf"><code class="docutils literal notranslate"><span class="pre">create_reorg_gjf()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mcal.html#mcal.mcal.create_reorg_xyz"><code class="docutils literal notranslate"><span class="pre">create_reorg_xyz()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="mcal.html#mcal.mcal.create_ti_gjf"><code class="docutils literal notranslate"><span class="pre">create_ti_gjf()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mcal.html#mcal.mcal.create_ti_xyz"><code class="docutils literal notranslate"><span class="pre">create_ti_xyz()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="mcal.html#mcal.mcal.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="mcal.html#mcal.mcal.plot_mobility_2d"><code class="docutils literal notranslate"><span class="pre">plot_mobility_2d()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="mcal.html#mcal.mcal.print_mobility"><code class="docutils literal notranslate"><span class="pre">print_mobility()</span></code></a></li>
@@ -284,7 +289,70 @@
 <li class="toctree-l3"><a class="reference internal" href="mcal.html#mcal.mcal.read_pickle"><code class="docutils literal notranslate"><span class="pre">read_pickle()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="mcal.html#module-mcal">Module contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mcal.html#module-mcal">Module contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="mcal.html#mcal.CifReader"><code class="docutils literal notranslate"><span class="pre">CifReader</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="mcal.html#mcal.CifReader.ATOMIC_WEIGHTS"><code class="docutils literal notranslate"><span class="pre">CifReader.ATOMIC_WEIGHTS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mcal.html#mcal.CifReader.COVALENT_RADII"><code class="docutils literal notranslate"><span class="pre">CifReader.COVALENT_RADII</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mcal.html#mcal.CifReader.ELEMENT_PROP"><code class="docutils literal notranslate"><span class="pre">CifReader.ELEMENT_PROP</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mcal.html#mcal.CifReader.calc_cen_of_weight"><code class="docutils literal notranslate"><span class="pre">CifReader.calc_cen_of_weight()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mcal.html#mcal.CifReader.convert_cart_to_frac"><code class="docutils literal notranslate"><span class="pre">CifReader.convert_cart_to_frac()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mcal.html#mcal.CifReader.convert_frac_to_cart"><code class="docutils literal notranslate"><span class="pre">CifReader.convert_frac_to_cart()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mcal.html#mcal.CifReader.expand_mols"><code class="docutils literal notranslate"><span class="pre">CifReader.expand_mols()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mcal.html#mcal.CifReader.export_unit_cell_file"><code class="docutils literal notranslate"><span class="pre">CifReader.export_unit_cell_file()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mcal.html#mcal.CifReader.parent_dir"><code class="docutils literal notranslate"><span class="pre">CifReader.parent_dir</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mcal.html#mcal.CifReader.remove_duplicates"><code class="docutils literal notranslate"><span class="pre">CifReader.remove_duplicates()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="mcal.html#mcal.FileReader"><code class="docutils literal notranslate"><span class="pre">FileReader</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="mcal.html#mcal.FileReader.close"><code class="docutils literal notranslate"><span class="pre">FileReader.close()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mcal.html#mcal.FileReader.reversed_readline"><code class="docutils literal notranslate"><span class="pre">FileReader.reversed_readline()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="mcal.html#mcal.GjfMaker"><code class="docutils literal notranslate"><span class="pre">GjfMaker</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="mcal.html#mcal.GjfMaker.ELEMENTS_NUM"><code class="docutils literal notranslate"><span class="pre">GjfMaker.ELEMENTS_NUM</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mcal.html#mcal.GjfMaker.ELEMENT_PROP"><code class="docutils literal notranslate"><span class="pre">GjfMaker.ELEMENT_PROP</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mcal.html#mcal.GjfMaker.add_link"><code class="docutils literal notranslate"><span class="pre">GjfMaker.add_link()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mcal.html#mcal.GjfMaker.add_root"><code class="docutils literal notranslate"><span class="pre">GjfMaker.add_root()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mcal.html#mcal.GjfMaker.create_chk_file"><code class="docutils literal notranslate"><span class="pre">GjfMaker.create_chk_file()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mcal.html#mcal.GjfMaker.create_rwf_file"><code class="docutils literal notranslate"><span class="pre">GjfMaker.create_rwf_file()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mcal.html#mcal.GjfMaker.export_gjf"><code class="docutils literal notranslate"><span class="pre">GjfMaker.export_gjf()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mcal.html#mcal.GjfMaker.opt"><code class="docutils literal notranslate"><span class="pre">GjfMaker.opt()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mcal.html#mcal.GjfMaker.output_detail"><code class="docutils literal notranslate"><span class="pre">GjfMaker.output_detail()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mcal.html#mcal.GjfMaker.parent_dir"><code class="docutils literal notranslate"><span class="pre">GjfMaker.parent_dir</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mcal.html#mcal.GjfMaker.reset_variable"><code class="docutils literal notranslate"><span class="pre">GjfMaker.reset_variable()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mcal.html#mcal.GjfMaker.set_charge_spin"><code class="docutils literal notranslate"><span class="pre">GjfMaker.set_charge_spin()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mcal.html#mcal.GjfMaker.set_coordinates"><code class="docutils literal notranslate"><span class="pre">GjfMaker.set_coordinates()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mcal.html#mcal.GjfMaker.set_function"><code class="docutils literal notranslate"><span class="pre">GjfMaker.set_function()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mcal.html#mcal.GjfMaker.set_resource"><code class="docutils literal notranslate"><span class="pre">GjfMaker.set_resource()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mcal.html#mcal.GjfMaker.set_symbols"><code class="docutils literal notranslate"><span class="pre">GjfMaker.set_symbols()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mcal.html#mcal.GjfMaker.set_title"><code class="docutils literal notranslate"><span class="pre">GjfMaker.set_title()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="mcal.html#mcal.Rcal"><code class="docutils literal notranslate"><span class="pre">Rcal</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="mcal.html#mcal.Rcal.calc_reorganization"><code class="docutils literal notranslate"><span class="pre">Rcal.calc_reorganization()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mcal.html#mcal.Rcal.check_error_term"><code class="docutils literal notranslate"><span class="pre">Rcal.check_error_term()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mcal.html#mcal.Rcal.check_extension_log"><code class="docutils literal notranslate"><span class="pre">Rcal.check_extension_log()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mcal.html#mcal.Rcal.extract_energy"><code class="docutils literal notranslate"><span class="pre">Rcal.extract_energy()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mcal.html#mcal.Rcal.print_timestamp"><code class="docutils literal notranslate"><span class="pre">Rcal.print_timestamp()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="mcal.html#mcal.RcalPySCF"><code class="docutils literal notranslate"><span class="pre">RcalPySCF</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="mcal.html#mcal.RcalPySCF.HARTREE_TO_EV"><code class="docutils literal notranslate"><span class="pre">RcalPySCF.HARTREE_TO_EV</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mcal.html#mcal.RcalPySCF.calc_reorganization"><code class="docutils literal notranslate"><span class="pre">RcalPySCF.calc_reorganization()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="mcal.html#mcal.atom_weight"><code class="docutils literal notranslate"><span class="pre">atom_weight()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mcal.html#mcal.cal_cen_of_weight"><code class="docutils literal notranslate"><span class="pre">cal_cen_of_weight()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mcal.html#mcal.cal_distance_between_cen_of_weight"><code class="docutils literal notranslate"><span class="pre">cal_distance_between_cen_of_weight()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mcal.html#mcal.cal_min_distance"><code class="docutils literal notranslate"><span class="pre">cal_min_distance()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mcal.html#mcal.cal_moment_of_inertia"><code class="docutils literal notranslate"><span class="pre">cal_moment_of_inertia()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mcal.html#mcal.cal_pinv"><code class="docutils literal notranslate"><span class="pre">cal_pinv()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mcal.html#mcal.check_normal_termination"><code class="docutils literal notranslate"><span class="pre">check_normal_termination()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mcal.html#mcal.diffusion_coefficient_tensor"><code class="docutils literal notranslate"><span class="pre">diffusion_coefficient_tensor()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mcal.html#mcal.marcus_rate"><code class="docutils literal notranslate"><span class="pre">marcus_rate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mcal.html#mcal.mobility_tensor"><code class="docutils literal notranslate"><span class="pre">mobility_tensor()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

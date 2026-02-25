@@ -251,15 +251,15 @@
 
 
 <div class="viewcode-block" id="main">
-<a class="viewcode-back" href="../../../mcal.calculations.html#mcal.calculations.rcal.main">[docs]</a>
+<a class="viewcode-back" href="../../../mcal.calculations.html#mcal.main">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;This code is to execute rcal for command line.&quot;&quot;&quot;</span>
     <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;file&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;cif file name or gjf file name&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;file&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;cif file name or gjf file name or xyz file name&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;osc_type&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;organic semiconductor type&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;-M&#39;</span><span class="p">,</span> <span class="s1">&#39;--method&#39;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;calculation method used in Gaussian calculations (default is B3LYP/6-31G(d,p)). &#39;</span> \
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;calculation method used in calculations (default is B3LYP/6-31G(d,p)). &#39;</span> \
             <span class="o">+</span> <span class="s1">&#39;But if you use a gjf file instead of a cif file, the method in the gjf file will be used&#39;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="s1">&#39;B3LYP/6-31G(d,p)&#39;</span><span class="p">,</span>
@@ -279,14 +279,24 @@
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-g&#39;</span><span class="p">,</span> <span class="s1">&#39;--g09&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;use Gaussian 09 (default is Gaussian 16)&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-r&#39;</span><span class="p">,</span> <span class="s1">&#39;--read&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;read log files without executing Gaussian&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--pyscf&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;use PySCF instead of Gaussian (input file must be a xyz file)&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--gpu4pyscf&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;use GPU acceleration via gpu4pyscf (PySCF only)&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--cart&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;use Cartesian basis functions (PySCF only)&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">)</span>
     <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
 
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;---------------------------------------&#39;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39; rcal beta (2025/06/21) by Matsui Lab. &#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39; rcal beta (2026/02/23) by Matsui Lab. &#39;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;---------------------------------------&#39;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Input File Name: </span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">file</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
     <span class="n">Rcal</span><span class="o">.</span><span class="n">print_timestamp</span><span class="p">()</span>
     <span class="n">before</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">osc_type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;p&#39;</span><span class="p">:</span>
+        <span class="n">osc_type</span> <span class="o">=</span> <span class="s1">&#39;p&#39;</span>
+    <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">osc_type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;n&#39;</span><span class="p">:</span>
+        <span class="n">osc_type</span> <span class="o">=</span> <span class="s1">&#39;n&#39;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">OSCTypeError</span>
 
     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.cif&#39;</span><span class="p">):</span>
         <span class="n">cif_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">file</span><span class="p">)</span>
@@ -299,43 +309,65 @@
         <span class="n">coordinates</span> <span class="o">=</span> <span class="n">cif_reader</span><span class="o">.</span><span class="n">unique_coords</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">coordinates</span> <span class="o">=</span> <span class="n">cif_reader</span><span class="o">.</span><span class="n">convert_frac_to_cart</span><span class="p">(</span><span class="n">coordinates</span><span class="p">)</span>
 
-        <span class="n">gjf_maker</span> <span class="o">=</span> <span class="n">GjfMaker</span><span class="p">()</span>
-        <span class="n">gjf_maker</span><span class="o">.</span><span class="n">create_chk_file</span><span class="p">()</span>
-        <span class="n">gjf_maker</span><span class="o">.</span><span class="n">output_detail</span><span class="p">()</span>
-        <span class="n">gjf_maker</span><span class="o">.</span><span class="n">opt</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">pyscf</span> <span class="ow">or</span> <span class="n">args</span><span class="o">.</span><span class="n">gpu4pyscf</span><span class="p">:</span>
+            <span class="n">xyz_file</span> <span class="o">=</span> <span class="n">directory</span> <span class="o">/</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s1">.xyz&#39;</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">xyz_file</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">symbols</span><span class="p">)</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">symbol</span><span class="p">,</span> <span class="n">coordinate</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">symbols</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">):</span>
+                    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">symbol</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">coordinate</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s1">.6f</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">coordinate</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s1">.6f</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">coordinate</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">:</span><span class="s1">.6f</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">gjf_maker</span> <span class="o">=</span> <span class="n">GjfMaker</span><span class="p">()</span>
+            <span class="n">gjf_maker</span><span class="o">.</span><span class="n">create_chk_file</span><span class="p">()</span>
+            <span class="n">gjf_maker</span><span class="o">.</span><span class="n">output_detail</span><span class="p">()</span>
+            <span class="n">gjf_maker</span><span class="o">.</span><span class="n">opt</span><span class="p">()</span>
 
-        <span class="n">gjf_maker</span><span class="o">.</span><span class="n">set_symbols</span><span class="p">(</span><span class="n">symbols</span><span class="p">)</span>
-        <span class="n">gjf_maker</span><span class="o">.</span><span class="n">set_coordinates</span><span class="p">(</span><span class="n">coordinates</span><span class="p">)</span>
-        <span class="n">gjf_maker</span><span class="o">.</span><span class="n">set_function</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">method</span><span class="p">)</span>
-        <span class="n">gjf_maker</span><span class="o">.</span><span class="n">set_charge_spin</span><span class="p">(</span><span class="n">charge</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-        <span class="n">gjf_maker</span><span class="o">.</span><span class="n">set_resource</span><span class="p">(</span><span class="n">cpu_num</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">cpu</span><span class="p">,</span> <span class="n">mem_num</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">mem</span><span class="p">)</span>
+            <span class="n">gjf_maker</span><span class="o">.</span><span class="n">set_symbols</span><span class="p">(</span><span class="n">symbols</span><span class="p">)</span>
+            <span class="n">gjf_maker</span><span class="o">.</span><span class="n">set_coordinates</span><span class="p">(</span><span class="n">coordinates</span><span class="p">)</span>
+            <span class="n">gjf_maker</span><span class="o">.</span><span class="n">set_function</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">method</span><span class="p">)</span>
+            <span class="n">gjf_maker</span><span class="o">.</span><span class="n">set_charge_spin</span><span class="p">(</span><span class="n">charge</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">gjf_maker</span><span class="o">.</span><span class="n">set_resource</span><span class="p">(</span><span class="n">cpu_num</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">cpu</span><span class="p">,</span> <span class="n">mem_num</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">mem</span><span class="p">)</span>
 
-        <span class="n">gjf_maker</span><span class="o">.</span><span class="n">export_gjf</span><span class="p">(</span>
-            <span class="n">file_name</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">file_path_without_ext</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
-            <span class="n">chk_rwf_name</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">file_path_without_ext</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
-        <span class="p">)</span>
+            <span class="n">gjf_maker</span><span class="o">.</span><span class="n">export_gjf</span><span class="p">(</span>
+                <span class="n">file_name</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">file_path_without_ext</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+                <span class="n">chk_rwf_name</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">file_path_without_ext</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="p">)</span>
     <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.gjf&#39;</span><span class="p">):</span>
         <span class="n">gjf_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">file</span><span class="p">)</span>
         <span class="n">directory</span> <span class="o">=</span> <span class="n">gjf_file</span><span class="o">.</span><span class="n">parent</span>
         <span class="n">filename</span> <span class="o">=</span> <span class="n">gjf_file</span><span class="o">.</span><span class="n">stem</span>
 
         <span class="n">file_path_without_ext</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">directory</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s1">&#39;</span>
+    <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.xyz&#39;</span><span class="p">):</span>
+        <span class="n">xyz_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">file</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Input file must be a cif file or a gjf file.&#39;</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">osc_type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;p&#39;</span><span class="p">:</span>
-        <span class="n">rcal</span> <span class="o">=</span> <span class="n">Rcal</span><span class="p">(</span><span class="n">gjf_file</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">file_path_without_ext</span><span class="si">}</span><span class="s1">.gjf&#39;</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">osc_type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;n&#39;</span><span class="p">:</span>
-        <span class="n">rcal</span> <span class="o">=</span> <span class="n">Rcal</span><span class="p">(</span><span class="n">gjf_file</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">file_path_without_ext</span><span class="si">}</span><span class="s1">.gjf&#39;</span><span class="p">,</span> <span class="n">osc_type</span><span class="o">=</span><span class="s1">&#39;n&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">pyscf</span> <span class="ow">or</span> <span class="n">args</span><span class="o">.</span><span class="n">gpu4pyscf</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">mcal.calculations.rcal_pyscf</span><span class="w"> </span><span class="kn">import</span> <span class="n">RcalPySCF</span>
+        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Error: PySCF is not installed.&quot;</span><span class="p">)</span>
+            <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">rcal</span> <span class="o">=</span> <span class="n">RcalPySCF</span><span class="p">(</span>
+            <span class="n">xyz_file</span><span class="o">=</span><span class="n">xyz_file</span><span class="p">,</span>
+            <span class="n">osc_type</span><span class="o">=</span><span class="n">osc_type</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">method</span><span class="p">,</span>
+            <span class="n">use_gpu</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">gpu4pyscf</span><span class="p">,</span>
+            <span class="n">ncore</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">cpu</span><span class="p">,</span>
+            <span class="n">max_memory_gb</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">mem</span><span class="p">,</span>
+            <span class="n">cart</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">cart</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">reorg_energy</span> <span class="o">=</span> <span class="n">rcal</span><span class="o">.</span><span class="n">calc_reorganization</span><span class="p">(</span><span class="n">only_read</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">read</span><span class="p">,</span> <span class="n">is_output_detail</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">OSCTypeError</span>
+        <span class="n">rcal</span> <span class="o">=</span> <span class="n">Rcal</span><span class="p">(</span><span class="n">input_file</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">file_path_without_ext</span><span class="si">}</span><span class="s1">.gjf&#39;</span><span class="p">,</span> <span class="n">osc_type</span><span class="o">=</span><span class="n">osc_type</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;gjf&#39;</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">g09</span><span class="p">:</span>
-        <span class="n">gau_com</span> <span class="o">=</span> <span class="s1">&#39;g09&#39;</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">gau_com</span> <span class="o">=</span> <span class="s1">&#39;g16&#39;</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">g09</span><span class="p">:</span>
+            <span class="n">gau_com</span> <span class="o">=</span> <span class="s1">&#39;g09&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">gau_com</span> <span class="o">=</span> <span class="s1">&#39;g16&#39;</span>
 
-    <span class="n">reorg_energy</span> <span class="o">=</span> <span class="n">rcal</span><span class="o">.</span><span class="n">calc_reorganization</span><span class="p">(</span><span class="n">gau_com</span><span class="o">=</span><span class="n">gau_com</span><span class="p">,</span> <span class="n">only_read</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">read</span><span class="p">,</span> <span class="n">is_output_detail</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">reorg_energy</span> <span class="o">=</span> <span class="n">rcal</span><span class="o">.</span><span class="n">calc_reorganization</span><span class="p">(</span><span class="n">gau_com</span><span class="o">=</span><span class="n">gau_com</span><span class="p">,</span> <span class="n">only_read</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">read</span><span class="p">,</span> <span class="n">is_output_detail</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="nb">print</span><span class="p">()</span>
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;-----------------------&#39;</span><span class="p">)</span>
@@ -351,26 +383,29 @@
 
 
 <div class="viewcode-block" id="Rcal">
-<a class="viewcode-back" href="../../../mcal.calculations.html#mcal.calculations.rcal.Rcal">[docs]</a>
+<a class="viewcode-back" href="../../../mcal.calculations.html#mcal.Rcal">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Rcal</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate organization energy.&quot;&quot;&quot;</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gjf_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">osc_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;p&#39;</span><span class="p">,</span> <span class="s1">&#39;n&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;p&#39;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate reorganization energy.&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">osc_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;p&#39;</span><span class="p">,</span> <span class="s1">&#39;n&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;p&#39;</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;gjf&#39;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize Rcal.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        gjf_file : str</span>
+<span class="sd">        input_file : str</span>
 <span class="sd">            gjf file name.</span>
 <span class="sd">        osc_type : Literal[&#39;p&#39;, &#39;n&#39;]</span>
 <span class="sd">            organic semiconductor type, &#39;p&#39; is positive, &#39;n&#39; is negative, by default &#39;p&#39;.</span>
+<span class="sd">        fmt : str</span>
+<span class="sd">            input file format, &#39;gjf&#39; or &#39;xyz&#39;, by default &#39;gjf&#39;.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">gjf_file</span> <span class="o">=</span> <span class="n">gjf_file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_file</span> <span class="o">=</span> <span class="n">input_file</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ion</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_extension_log</span> <span class="o">=</span> <span class="s1">&#39;.log&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_gjf_lines</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;%&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;#&#39;</span><span class="p">:</span> <span class="p">[]}</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_input_gjf</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">fmt</span> <span class="o">==</span> <span class="s1">&#39;gjf&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_input_gjf</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="n">osc_type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;p&#39;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ion</span> <span class="o">=</span> <span class="s1">&#39;c&#39;</span>
@@ -378,7 +413,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">ion</span> <span class="o">=</span> <span class="s1">&#39;a&#39;</span>
 
 <div class="viewcode-block" id="Rcal.check_error_term">
-<a class="viewcode-back" href="../../../mcal.calculations.html#mcal.calculations.rcal.Rcal.check_error_term">[docs]</a>
+<a class="viewcode-back" href="../../../mcal.calculations.html#mcal.Rcal.check_error_term">[docs]</a>
     <span class="o">@</span> <span class="nb">staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">check_error_term</span><span class="p">(</span><span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -401,7 +436,7 @@
 
 
 <div class="viewcode-block" id="Rcal.print_timestamp">
-<a class="viewcode-back" href="../../../mcal.calculations.html#mcal.calculations.rcal.Rcal.print_timestamp">[docs]</a>
+<a class="viewcode-back" href="../../../mcal.calculations.html#mcal.Rcal.print_timestamp">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">print_timestamp</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Print timestamp.&quot;&quot;&quot;</span>
@@ -414,7 +449,7 @@
 
 
 <div class="viewcode-block" id="Rcal.calc_reorganization">
-<a class="viewcode-back" href="../../../mcal.calculations.html#mcal.calculations.rcal.Rcal.calc_reorganization">[docs]</a>
+<a class="viewcode-back" href="../../../mcal.calculations.html#mcal.Rcal.calc_reorganization">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">calc_reorganization</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">gau_com</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;g16&#39;</span><span class="p">,</span>
@@ -441,7 +476,7 @@
 <span class="sd">        float</span>
 <span class="sd">            reorganization energy [eV].</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">file_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gjf_file</span><span class="p">)</span>
+        <span class="n">file_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_file</span><span class="p">)</span>
         <span class="n">filename</span> <span class="o">=</span> <span class="n">file_path</span><span class="o">.</span><span class="n">stem</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;_opt_n&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
         <span class="n">directory</span> <span class="o">=</span> <span class="n">file_path</span><span class="o">.</span><span class="n">parent</span>
         <span class="n">basename</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">directory</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s1">&#39;</span>
@@ -451,16 +486,16 @@
         <span class="c1"># 中性分子の構造最適化とエネルギー計算</span>
         <span class="n">only_read_opt_n</span> <span class="o">=</span> <span class="n">only_read</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">only_read</span> <span class="ow">and</span> <span class="s1">&#39;opt_neutral&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">skip_specified_cal</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&gt;&#39;</span><span class="p">,</span> <span class="n">gau_com</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">gjf_file</span><span class="p">)</span>
-            <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="n">gau_com</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">gjf_file</span><span class="p">])</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&gt;&#39;</span><span class="p">,</span> <span class="n">gau_com</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_file</span><span class="p">)</span>
+            <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="n">gau_com</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_file</span><span class="p">])</span>
 
         <span class="n">skip_opt_neutral</span> <span class="o">=</span> <span class="kc">True</span> <span class="k">if</span> <span class="s1">&#39;opt_neutral&#39;</span> <span class="ow">in</span> <span class="n">skip_specified_cal</span> <span class="k">else</span> <span class="kc">False</span>
 
-        <span class="n">energy</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">extract_energy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gjf_file</span><span class="p">,</span> <span class="n">only_read</span><span class="o">=</span><span class="n">only_read_opt_n</span><span class="p">,</span> <span class="n">is_output_detail</span><span class="o">=</span><span class="n">is_output_detail</span><span class="p">,</span> <span class="n">skip_cal</span><span class="o">=</span><span class="n">skip_opt_neutral</span><span class="p">))</span>
+        <span class="n">energy</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">extract_energy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_file</span><span class="p">,</span> <span class="n">only_read</span><span class="o">=</span><span class="n">only_read_opt_n</span><span class="p">,</span> <span class="n">is_output_detail</span><span class="o">=</span><span class="n">is_output_detail</span><span class="p">,</span> <span class="n">skip_cal</span><span class="o">=</span><span class="n">skip_opt_neutral</span><span class="p">))</span>
 
         <span class="c1"># カチオンかアニオンのエネルギー計算</span>
         <span class="n">only_read_ion</span> <span class="o">=</span> <span class="n">only_read</span>
-        <span class="n">previous_name</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gjf_file</span><span class="p">)</span>
+        <span class="n">previous_name</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_file</span><span class="p">)</span>
         <span class="n">gjf</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">basename</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ion</span><span class="si">}</span><span class="s1">.gjf&#39;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">only_read</span> <span class="ow">and</span> <span class="s1">&#39;ion&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">skip_specified_cal</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_create_gjf</span><span class="p">(</span><span class="n">file_name</span><span class="o">=</span><span class="n">gjf</span><span class="p">,</span> <span class="n">prevous_name</span><span class="o">=</span><span class="n">previous_name</span><span class="p">,</span> <span class="n">ion</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ion</span><span class="p">)</span>
@@ -502,7 +537,7 @@
 
 
 <div class="viewcode-block" id="Rcal.check_extension_log">
-<a class="viewcode-back" href="../../../mcal.calculations.html#mcal.calculations.rcal.Rcal.check_extension_log">[docs]</a>
+<a class="viewcode-back" href="../../../mcal.calculations.html#mcal.Rcal.check_extension_log">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">check_extension_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gjf</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Check the extension of log file.</span>
 
@@ -518,7 +553,7 @@
 
 
 <div class="viewcode-block" id="Rcal.extract_energy">
-<a class="viewcode-back" href="../../../mcal.calculations.html#mcal.calculations.rcal.Rcal.extract_energy">[docs]</a>
+<a class="viewcode-back" href="../../../mcal.calculations.html#mcal.Rcal.extract_energy">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">extract_energy</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">gjf</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -639,7 +674,7 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_input_gjf</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Input link 0 command and root options from gjf file.&quot;&quot;&quot;</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gjf_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;%&#39;</span><span class="p">):</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_gjf_lines</span><span class="p">[</span><span class="s1">&#39;%&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
@@ -651,7 +686,7 @@
 
 
 <div class="viewcode-block" id="GausTermError">
-<a class="viewcode-back" href="../../../mcal.calculations.html#mcal.calculations.rcal.GausTermError">[docs]</a>
+<a class="viewcode-back" href="../../../mcal.calculations.html#mcal.GausTermError">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">GausTermError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Exception for Gaussian error termination.&quot;&quot;&quot;</span>
     <span class="k">pass</span></div>
@@ -659,7 +694,7 @@
 
 
 <div class="viewcode-block" id="OSCTypeError">
-<a class="viewcode-back" href="../../../mcal.calculations.html#mcal.calculations.rcal.OSCTypeError">[docs]</a>
+<a class="viewcode-back" href="../../../mcal.calculations.html#mcal.OSCTypeError">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">OSCTypeError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Exception for organic semiconductor type.&quot;&quot;&quot;</span>
     <span class="k">pass</span></div>

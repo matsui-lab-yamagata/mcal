@@ -243,7 +243,7 @@
 
 
 <div class="viewcode-block" id="GjfMaker">
-<a class="viewcode-back" href="../../../mcal.utils.html#mcal.utils.gjf_maker.GjfMaker">[docs]</a>
+<a class="viewcode-back" href="../../../mcal.utils.html#mcal.GjfMaker">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">GjfMaker</span><span class="p">:</span>
     <span class="n">parent_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span>
     <span class="n">ELEMENT_PROP</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">parent_dir</span><span class="si">}</span><span class="s1">/constants/element_properties.csv&#39;</span><span class="p">)</span>
@@ -277,7 +277,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_root_space</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span>
 
 <div class="viewcode-block" id="GjfMaker.add_link">
-<a class="viewcode-back" href="../../../mcal.utils.html#mcal.utils.gjf_maker.GjfMaker.add_link">[docs]</a>
+<a class="viewcode-back" href="../../../mcal.utils.html#mcal.GjfMaker.add_link">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">add_link</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Add the link of the gjf file.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">create_chk_file</span><span class="p">()</span>
@@ -287,7 +287,7 @@
 
 
 <div class="viewcode-block" id="GjfMaker.add_root">
-<a class="viewcode-back" href="../../../mcal.utils.html#mcal.utils.gjf_maker.GjfMaker.add_root">[docs]</a>
+<a class="viewcode-back" href="../../../mcal.utils.html#mcal.GjfMaker.add_root">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">add_root</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Add the root of the gjf file.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">root</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;#&#39;</span><span class="p">:</span>
@@ -296,21 +296,21 @@
 
 
 <div class="viewcode-block" id="GjfMaker.create_chk_file">
-<a class="viewcode-back" href="../../../mcal.utils.html#mcal.utils.gjf_maker.GjfMaker.create_chk_file">[docs]</a>
+<a class="viewcode-back" href="../../../mcal.utils.html#mcal.GjfMaker.create_chk_file">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">create_chk_file</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create the chk file.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_is_chk_file</span> <span class="o">=</span> <span class="kc">True</span></div>
 
 
 <div class="viewcode-block" id="GjfMaker.create_rwf_file">
-<a class="viewcode-back" href="../../../mcal.utils.html#mcal.utils.gjf_maker.GjfMaker.create_rwf_file">[docs]</a>
+<a class="viewcode-back" href="../../../mcal.utils.html#mcal.GjfMaker.create_rwf_file">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">create_rwf_file</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create the rwf file.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_is_rwf_file</span> <span class="o">=</span> <span class="kc">True</span></div>
 
 
 <div class="viewcode-block" id="GjfMaker.export_gjf">
-<a class="viewcode-back" href="../../../mcal.utils.html#mcal.utils.gjf_maker.GjfMaker.export_gjf">[docs]</a>
+<a class="viewcode-back" href="../../../mcal.utils.html#mcal.GjfMaker.export_gjf">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">export_gjf</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -381,7 +381,7 @@
 
 
 <div class="viewcode-block" id="GjfMaker.opt">
-<a class="viewcode-back" href="../../../mcal.utils.html#mcal.utils.gjf_maker.GjfMaker.opt">[docs]</a>
+<a class="viewcode-back" href="../../../mcal.utils.html#mcal.GjfMaker.opt">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">opt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tight</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the optimization option of the gjf file.</span>
 
@@ -397,7 +397,7 @@
 
 
 <div class="viewcode-block" id="GjfMaker.output_detail">
-<a class="viewcode-back" href="../../../mcal.utils.html#mcal.utils.gjf_maker.GjfMaker.output_detail">[docs]</a>
+<a class="viewcode-back" href="../../../mcal.utils.html#mcal.GjfMaker.output_detail">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">output_detail</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Output the detail to log file.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_detail</span> <span class="o">=</span> <span class="kc">True</span>
@@ -407,7 +407,7 @@
 
 
 <div class="viewcode-block" id="GjfMaker.reset_variable">
-<a class="viewcode-back" href="../../../mcal.utils.html#mcal.utils.gjf_maker.GjfMaker.reset_variable">[docs]</a>
+<a class="viewcode-back" href="../../../mcal.utils.html#mcal.GjfMaker.reset_variable">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">reset_variable</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Reset the variables of the gjf file.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_root</span> <span class="o">=</span> <span class="p">[]</span>
@@ -418,7 +418,7 @@
 
 
 <div class="viewcode-block" id="GjfMaker.set_charge_spin">
-<a class="viewcode-back" href="../../../mcal.utils.html#mcal.utils.gjf_maker.GjfMaker.set_charge_spin">[docs]</a>
+<a class="viewcode-back" href="../../../mcal.utils.html#mcal.GjfMaker.set_charge_spin">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">set_charge_spin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">charge</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">spin</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the charge and spin of the molecule.</span>
 
@@ -433,7 +433,7 @@
 
 
 <div class="viewcode-block" id="GjfMaker.set_coordinates">
-<a class="viewcode-back" href="../../../mcal.utils.html#mcal.utils.gjf_maker.GjfMaker.set_coordinates">[docs]</a>
+<a class="viewcode-back" href="../../../mcal.utils.html#mcal.GjfMaker.set_coordinates">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">set_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the coordinates of the molecule.</span>
 
@@ -446,7 +446,7 @@
 
 
 <div class="viewcode-block" id="GjfMaker.set_function">
-<a class="viewcode-back" href="../../../mcal.utils.html#mcal.utils.gjf_maker.GjfMaker.set_function">[docs]</a>
+<a class="viewcode-back" href="../../../mcal.utils.html#mcal.GjfMaker.set_function">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">set_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the function of the gjf file.</span>
 
@@ -463,7 +463,7 @@
 
 
 <div class="viewcode-block" id="GjfMaker.set_resource">
-<a class="viewcode-back" href="../../../mcal.utils.html#mcal.utils.gjf_maker.GjfMaker.set_resource">[docs]</a>
+<a class="viewcode-back" href="../../../mcal.utils.html#mcal.GjfMaker.set_resource">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">set_resource</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cpu_num</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">mem_num</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">mem_unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;GB&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the number of cpu and memory.</span>
 
@@ -481,7 +481,7 @@
 
 
 <div class="viewcode-block" id="GjfMaker.set_symbols">
-<a class="viewcode-back" href="../../../mcal.utils.html#mcal.utils.gjf_maker.GjfMaker.set_symbols">[docs]</a>
+<a class="viewcode-back" href="../../../mcal.utils.html#mcal.GjfMaker.set_symbols">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">set_symbols</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">symbols</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the symbols of the molecule.</span>
 
@@ -494,7 +494,7 @@
 
 
 <div class="viewcode-block" id="GjfMaker.set_title">
-<a class="viewcode-back" href="../../../mcal.utils.html#mcal.utils.gjf_maker.GjfMaker.set_title">[docs]</a>
+<a class="viewcode-back" href="../../../mcal.utils.html#mcal.GjfMaker.set_title">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">set_title</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the title of the gjf file.</span>
 

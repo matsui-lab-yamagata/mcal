@@ -248,7 +248,7 @@
 
 
 <div class="viewcode-block" id="demo">
-<a class="viewcode-back" href="../../../mcal.calculations.html#mcal.calculations.hopping_mobility_model.demo">[docs]</a>
+<a class="viewcode-back" href="../../../mcal.calculations.html#mcal.demo">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">demo</span><span class="p">():</span>
     <span class="c1"># 一次元系で、粒子は1 sごとに0.01の確率で右へ1 m、0.01の確率で左へ1 m移動し、0.98の確率でその場に留まる。</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">One-dimensional system&quot;</span><span class="p">)</span>
@@ -318,7 +318,7 @@
 
 
 <div class="viewcode-block" id="cal_pinv">
-<a class="viewcode-back" href="../../../mcal.calculations.html#mcal.calculations.hopping_mobility_model.cal_pinv">[docs]</a>
+<a class="viewcode-back" href="../../../mcal.calculations.html#mcal.cal_pinv">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">cal_pinv</span><span class="p">(</span><span class="n">array</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">rcond</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-3</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate pseudo-inverse matrix using eigenvalue decomposition</span>
 
@@ -359,7 +359,7 @@
 
 
 <div class="viewcode-block" id="marcus_rate">
-<a class="viewcode-back" href="../../../mcal.calculations.html#mcal.calculations.hopping_mobility_model.marcus_rate">[docs]</a>
+<a class="viewcode-back" href="../../../mcal.calculations.html#mcal.marcus_rate">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">marcus_rate</span><span class="p">(</span><span class="n">transfer</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">reorganization</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">T</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">300.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate hopping rate (1/s) from transfer integral (eV) and reorganization energy (eV)</span>
 
@@ -388,7 +388,7 @@
 
 
 <div class="viewcode-block" id="mobility_tensor">
-<a class="viewcode-back" href="../../../mcal.calculations.html#mcal.calculations.hopping_mobility_model.mobility_tensor">[docs]</a>
+<a class="viewcode-back" href="../../../mcal.calculations.html#mcal.mobility_tensor">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">mobility_tensor</span><span class="p">(</span><span class="n">D</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">T</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">300.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate mobility tensor from diffusion coefficient tensor</span>
 
@@ -409,7 +409,7 @@
 
 
 <div class="viewcode-block" id="diffusion_coefficient_tensor">
-<a class="viewcode-back" href="../../../mcal.calculations.html#mcal.calculations.hopping_mobility_model.diffusion_coefficient_tensor">[docs]</a>
+<a class="viewcode-back" href="../../../mcal.calculations.html#mcal.diffusion_coefficient_tensor">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">diffusion_coefficient_tensor</span><span class="p">(</span>
     <span class="n">lattice</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span>
     <span class="n">hop</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span>
@@ -592,7 +592,7 @@
 
 
 <div class="viewcode-block" id="print_tensor">
-<a class="viewcode-back" href="../../../mcal.calculations.html#mcal.calculations.hopping_mobility_model.print_tensor">[docs]</a>
+<a class="viewcode-back" href="../../../mcal.calculations.html#mcal.print_tensor">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">print_tensor</span><span class="p">(</span><span class="n">tensor</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">msg</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;Mobility tensor&#39;</span><span class="p">):</span>
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;-&#39;</span> <span class="o">*</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span><span class="o">+</span><span class="mi">2</span><span class="p">))</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39; </span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s1"> &#39;</span><span class="p">)</span>
