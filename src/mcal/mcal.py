@@ -2,6 +2,7 @@
 import argparse
 import functools
 import pickle
+import shutil
 from pathlib import Path
 from time import time
 from typing import Dict, List, Literal, Optional, Tuple, Union
@@ -110,7 +111,7 @@ def main():
     )
     parser.add_argument(
         '--fullcal',
-        help='do not process for speeding up using moment of inertia and distance between centers of weight',
+        help='disable all speedup processing: (1) pair screening by moment of inertia and center-of-mass distance, and (2) monomer result caching (skipping redundant SCF calculations for repeated molecule types). All monomer calculations are performed from scratch.',
         action='store_true',
     )
     parser.add_argument('--mc', help=argparse.SUPPRESS, action='store_true')
@@ -249,6 +250,7 @@ def main():
     ##### Calculate transfer integrals #####
     transfer_integrals = []
     mom_dis_ti = [] # Store moment of inertia, distance between centers of weight and transfer integral
+    center_mol_log_paths = {i: None for i in range(cif_reader.z_value)}
 
     expand_mols = cif_reader.expand_mols(args.cellsize)
     for s in range(len(cif_reader.unique_symbols.keys())):
@@ -290,7 +292,7 @@ def main():
                 is_run_ti = True
                 same_ti = 0
 
-                # skip calculation of transfer integrals using moment of inertia and distance between centers of weight.
+                # Skip calculation of transfer integrals using moment of inertia and distance between centers of weight.
                 if not args.fullcal:
                     for m, d, ti in mom_dis_ti:
                         if (np.all(m - MOMENT_OF_INERTIA_ERROR < moment) and np.all(moment < m + MOMENT_OF_INERTIA_ERROR)) and (d - CENTER_OF_WEIGHT_ERROR < distance < d + CENTER_OF_WEIGHT_ERROR):
@@ -301,6 +303,18 @@ def main():
                 if is_run_ti:
                     input_name = f'{filename}-({s}_{t}_{i}_{j}_{k})'
                     input_file = f'{directory}/{input_name}'
+
+                    # The log file extension is not yet determined here, so the path will be appended later.
+                    skip_monomer_num = []
+                    if not args.fullcal:
+                        if center_mol_log_paths[s] is not None:
+                            skip_monomer_num.append(1)
+                        if (i, j, k) == (0, 0, 0) and center_mol_log_paths[t] is not None:
+                            skip_monomer_num.append(2)
+                        if not skip_monomer_num:
+                            skip_monomer_num.append(0)
+                    else:
+                        skip_monomer_num.append(0)
 
                     if pyscf_mode:
                         tcal = TcalPySCF(
@@ -327,7 +341,7 @@ def main():
                                 save_dir=directory,
                             )
                             print(f'Calculate transfer integral from {s}-th in (0,0,0) cell to {t}-th in ({i},{j},{k}) cell.')
-                            tcal.run_pyscf()
+                            tcal.run_pyscf(skip_monomer_num=skip_monomer_num)
                         else:
                             print()
                             print(f'Skip calculation of transfer integral from {s}-th in (0,0,0) cell to {t}-th in ({i},{j},{k}) cell.')
@@ -337,7 +351,7 @@ def main():
                         is_normal_term = False
                         if args.resume:
                             tcal.check_extension_log()
-                            is_normal_term = check_transfer_integral_completion(input_file, extension_log=tcal._extension_log)
+                            is_normal_term = check_transfer_integral_completion(input_file, extension_log=tcal.extension_log)
 
                         if not args.read and not is_normal_term:
                             print()
@@ -358,12 +372,25 @@ def main():
                             else:
                                 gaussian_command = 'g16'
                             print(f'Calculate transfer integral from {s}-th in (0,0,0) cell to {t}-th in ({i},{j},{k}) cell.')
-                            tcal.run_gaussian(gaussian_command)
+                            tcal.run_gaussian(gaussian_command, skip_monomer_num=skip_monomer_num)
                         else:
                             print()
                             print(f'Skip calculation of transfer integral from {s}-th in (0,0,0) cell to {t}-th in ({i},{j},{k}) cell.')
 
                         tcal.check_extension_log()
+
+                    # Add log file path to center_mol_log_paths and copy log file
+                    if 1 not in skip_monomer_num:
+                        center_mol_log_paths[s] = f'{input_file}_m1{tcal.extension_log}'
+                    else:
+                        print(f'Copy {center_mol_log_paths[s]} to {input_file}_m1{tcal.extension_log}')
+                        shutil.copy2(center_mol_log_paths[s], f'{input_file}_m1{tcal.extension_log}')
+
+                    if 2 not in skip_monomer_num and (i, j, k) == (0, 0, 0):
+                        center_mol_log_paths[t] = f'{input_file}_m2{tcal.extension_log}'
+                    elif 2 in skip_monomer_num and (i, j, k) == (0, 0, 0):
+                        print(f'Copy {center_mol_log_paths[t]} to {input_file}_m2{tcal.extension_log}')
+                        shutil.copy2(center_mol_log_paths[t], f'{input_file}_m2{tcal.extension_log}')
 
                     tcal.read_monomer1()
                     tcal.read_monomer2()
