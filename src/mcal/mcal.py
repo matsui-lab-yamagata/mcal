@@ -111,7 +111,12 @@ def main():
     )
     parser.add_argument(
         '--fullcal',
-        help='disable all speedup processing: (1) pair screening by moment of inertia and center-of-mass distance, and (2) monomer result caching (skipping redundant SCF calculations for repeated molecule types). All monomer calculations are performed from scratch.',
+        help='disable pair screening and monomer caching; calculate all pairs and monomers from scratch',
+        action='store_true',
+    )
+    parser.add_argument(
+        '--no-monomer-cache',
+        help='disable monomer caching; calculate all monomers from scratch',
         action='store_true',
     )
     parser.add_argument('--mc', help=argparse.SUPPRESS, action='store_true')
@@ -306,10 +311,10 @@ def main():
 
                     # The log file extension is not yet determined here, so the path will be appended later.
                     skip_monomer_num = []
-                    if not args.fullcal:
+                    if (not args.fullcal) and (not args.no_monomer_cache):
                         if center_mol_log_paths[s] is not None:
                             skip_monomer_num.append(1)
-                        if (i, j, k) == (0, 0, 0) and center_mol_log_paths[t] is not None:
+                        if center_mol_log_paths[t] is not None:
                             skip_monomer_num.append(2)
                         if not skip_monomer_num:
                             skip_monomer_num.append(0)
@@ -386,9 +391,9 @@ def main():
                         print(f'Copy {center_mol_log_paths[s]} to {input_file}_m1{tcal.extension_log}')
                         shutil.copy2(center_mol_log_paths[s], f'{input_file}_m1{tcal.extension_log}')
 
-                    if 2 not in skip_monomer_num and (i, j, k) == (0, 0, 0):
+                    if 2 not in skip_monomer_num:
                         center_mol_log_paths[t] = f'{input_file}_m2{tcal.extension_log}'
-                    elif 2 in skip_monomer_num and (i, j, k) == (0, 0, 0):
+                    else:
                         print(f'Copy {center_mol_log_paths[t]} to {input_file}_m2{tcal.extension_log}')
                         shutil.copy2(center_mol_log_paths[t], f'{input_file}_m2{tcal.extension_log}')
 
