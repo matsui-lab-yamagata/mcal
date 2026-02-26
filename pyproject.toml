@@ -7,7 +7,7 @@ dependencies = [
     "matplotlib>=3.9.4",
     "numpy>=2.0.2",
     "pandas>=2.3.3",
-    "yu-tcal==4.0.2",
+    "yu-tcal==4.0.3",
 ]
 authors = [
     {name = "Hiroyuki Matsui", email = "h-matsui@yz.yamagata-u.ac.jp"},
