@@ -137,8 +137,15 @@ Resume calculation using existing results. With Gaussian, checks log file termin
 - **Example**: `mcal xxx.cif p --resume`
 
 #### `--fullcal`
-Disable speedup processing using moment of inertia and distance between centers of weight, and calculate transfer integrals for all pairs.
+Disable all speedup processing and calculate transfer integrals for all pairs from scratch. The following two optimizations are disabled:
+1. **Pair screening**: pairs are normally skipped based on moment of inertia and center-of-mass distance; `--fullcal` disables this screening
+2. **Monomer caching**: monomer SCF calculations for the same molecule type are normally skipped by reusing a previously computed result file; `--fullcal` forces all monomer calculations to be performed from scratch
 - **Example**: `mcal xxx.cif p --fullcal`
+
+#### `--no-monomer-cache`
+Disable only monomer caching. Pair screening remains active. All monomer SCF calculations are performed from scratch instead of reusing previously computed result files.
+When performing detailed transfer integral analysis using <a href="https://github.com/matsui-lab-yamagata/tcal" target="_blank">tcal</a>, it is recommended to use this option.
+- **Example**: `mcal xxx.cif p --no-monomer-cache`
 
 #### `--cellsize <number>`
 Specify the number of unit cells to expand in each direction around the central unit cell for transfer integral calculations.
@@ -270,7 +277,7 @@ mcal generates calculation files named using the `(s_t_i_j_k)` notation:
 
 ## Notes
 
-1. **Calculation Time**: Calculation time varies significantly depending on the number of molecules and cell size
+1. **Calculation Time**: Calculation time varies significantly depending on the number of molecules and cell size. By default, two speedup mechanisms are enabled: pair pre-screening (skipping pairs unlikely to have significant transfer integrals) and monomer caching (reusing the isolated-molecule SCF result for molecule types already computed). Use `--fullcal` to disable both.
 2. **Memory Usage**: Ensure sufficient memory for large systems
 3. **Gaussian Installation**: Gaussian 09 or Gaussian 16 is required
 4. **Dependencies**: Make sure all required Python libraries are installed
