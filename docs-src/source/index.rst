@@ -33,7 +33,7 @@ Requirements
 * NumPy
 * Pandas
 * Matplotlib
-* yu-tcal==4.0.2
+* yu-tcal==4.0.3
 
 Quantum Chemistry Calculation Tools
 ------------------------------------
