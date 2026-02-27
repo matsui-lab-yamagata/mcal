@@ -2,6 +2,7 @@
 import argparse
 import functools
 import pickle
+import shutil
 from pathlib import Path
 from time import time
 from typing import Dict, List, Literal, Optional, Tuple, Union
@@ -110,7 +111,12 @@ def main():
     )
     parser.add_argument(
         '--fullcal',
-        help='do not process for speeding up using moment of inertia and distance between centers of weight',
+        help='disable pair screening and monomer caching; calculate all pairs and monomers from scratch',
+        action='store_true',
+    )
+    parser.add_argument(
+        '--no-monomer-cache',
+        help='disable monomer caching; calculate all monomers from scratch',
         action='store_true',
     )
     parser.add_argument('--mc', help=argparse.SUPPRESS, action='store_true')
@@ -131,9 +137,34 @@ def main():
         help='resume calculation',
         action='store_true',
     )
+    parser.add_argument('--pyscf', help='use PySCF instead of Gaussian', action='store_true')
+    parser.add_argument('--gpu4pyscf', help='use GPU acceleration via gpu4pyscf', action='store_true')
+    parser.add_argument('--cart', help='use Cartesian basis functions (PySCF only)', action='store_true')
     args = parser.parse_args()
 
     args.osc_type = args.osc_type.lower()
+
+    pyscf_mode = args.pyscf or args.gpu4pyscf
+    if pyscf_mode:
+        try:
+            from tcal import TcalPySCF
+            from mcal.calculations.rcal_pyscf import RcalPySCF
+        except ImportError:
+            print('Error: PySCF is not installed.')
+            print('PySCF is supported on macOS/Linux/WSL2.(Windows Subsystem for Linux) only.')
+            print('')
+            print('Install options:')
+            print('  CPU only:       pip install "yu-mcal[pyscf]"')
+            print('  GPU (CUDA 12):  pip install "yu-mcal[gpu4pyscf-cuda12]"')
+            print('  GPU (CUDA 11):  pip install "yu-mcal[gpu4pyscf-cuda11]"')
+            exit(1)
+
+    if args.osc_type == 'p':
+        osc_type = 'p'
+    elif args.osc_type == 'n':
+        osc_type = 'n'
+    else:
+        raise OSCTypeError
 
     if args.g09:
         gau_com = 'g09'
@@ -147,7 +178,7 @@ def main():
     cif_path_without_ext = f'{directory}/{filename}'
 
     print('----------------------------------------')
-    print(' mcal 0.3.1 (2026/02/05) by Matsui Lab. ')
+    print(' mcal 0.4.0 (2026/02/27) by Matsui Lab. ')
     print('----------------------------------------')
 
     if args.read_pickle:
@@ -169,41 +200,62 @@ def main():
     coordinates = cif_reader.unique_coords[0]
     coordinates = cif_reader.convert_frac_to_cart(coordinates)
 
-    if not args.read:
-        print('Create gjf for reorganization energy.')
-        create_reorg_gjf(
-            symbols,
-            coordinates,
-            filename,
-            directory,
-            args.cpu,
-            args.mem,
-            args.method,
+    if pyscf_mode:
+        if not args.read:
+            print('Create xyz for reorganization energy.')
+            create_reorg_xyz(symbols, coordinates, filename, directory)
+
+        rcal = RcalPySCF(
+            xyz_file=f'{cif_path_without_ext}_opt_n.xyz',
+            osc_type=osc_type,
+            method=args.method,
+            use_gpu=args.gpu4pyscf,
+            ncore=args.cpu,
+            max_memory_gb=args.mem,
+            cart=args.cart,
         )
 
-    if args.osc_type == 'p':
-        rcal = Rcal(gjf_file=f'{cif_path_without_ext}_opt_n.gjf')
-    elif args.osc_type == 'n':
-        rcal = Rcal(gjf_file=f'{cif_path_without_ext}_opt_n.gjf', osc_type='n')
-    else:
-        raise OSCTypeError
+        skip_specified_cal = []
+        if args.read:
+            print('Skip calculation of reorganization energy.')
+        elif args.resume:
+            skip_specified_cal = check_reorganization_energy_completion_pyscf(cif_path_without_ext, args.osc_type)
+        else:
+            print('Calculate reorganization energy.')
 
-    skip_specified_cal = []
-    if args.read:
-        print('Skip calculation of reorganization energy.')
-    elif args.resume:
-        rcal.check_extension_log(f'{cif_path_without_ext}_opt_n.gjf')
-        skip_specified_cal = check_reorganization_energy_completion(cif_path_without_ext, args.osc_type, extension_log=rcal._extension_log)
+        reorg_energy = rcal.calc_reorganization(only_read=args.read, is_output_detail=True, skip_specified_cal=skip_specified_cal)
     else:
-        print('Calculate reorganization energy.')
+        if not args.read:
+            print('Create gjf for reorganization energy.')
+            create_reorg_gjf(
+                symbols,
+                coordinates,
+                filename,
+                directory,
+                args.cpu,
+                args.mem,
+                args.method,
+            )
 
-    reorg_energy = rcal.calc_reorganization(gau_com=gau_com, only_read=args.read, is_output_detail=True, skip_specified_cal=skip_specified_cal)
+        rcal = Rcal(input_file=f'{cif_path_without_ext}_opt_n.gjf', osc_type=osc_type)
+
+        skip_specified_cal = []
+        if args.read:
+            print('Skip calculation of reorganization energy.')
+        elif args.resume:
+            rcal.check_extension_log(f'{cif_path_without_ext}_opt_n.gjf')
+            skip_specified_cal = check_reorganization_energy_completion(cif_path_without_ext, args.osc_type, extension_log=rcal._extension_log)
+        else:
+            print('Calculate reorganization energy.')
+
+        reorg_energy = rcal.calc_reorganization(gau_com=gau_com, only_read=args.read, is_output_detail=True, skip_specified_cal=skip_specified_cal)
 
     print_reorg_energy(args.osc_type, reorg_energy)
 
     ##### Calculate transfer integrals #####
     transfer_integrals = []
     mom_dis_ti = [] # Store moment of inertia, distance between centers of weight and transfer integral
+    center_mol_log_paths = {i: None for i in range(cif_reader.z_value)}
 
     expand_mols = cif_reader.expand_mols(args.cellsize)
     for s in range(len(cif_reader.unique_symbols.keys())):
@@ -245,7 +297,7 @@ def main():
                 is_run_ti = True
                 same_ti = 0
 
-                # skip calculation of transfer integrals using moment of inertia and distance between centers of weight.
+                # Skip calculation of transfer integrals using moment of inertia and distance between centers of weight.
                 if not args.fullcal:
                     for m, d, ti in mom_dis_ti:
                         if (np.all(m - MOMENT_OF_INERTIA_ERROR < moment) and np.all(moment < m + MOMENT_OF_INERTIA_ERROR)) and (d - CENTER_OF_WEIGHT_ERROR < distance < d + CENTER_OF_WEIGHT_ERROR):
@@ -254,41 +306,97 @@ def main():
                             break
 
                 if is_run_ti:
-                    gjf_name = f'{filename}-({s}_{t}_{i}_{j}_{k})'
-                    gjf_file = f'{directory}/{gjf_name}'
+                    input_name = f'{filename}-({s}_{t}_{i}_{j}_{k})'
+                    input_file = f'{directory}/{input_name}'
 
-                    tcal = Tcal(gjf_file)
-
-                    is_normal_term = False
-                    if args.resume:
-                        tcal.check_extension_log()
-                        is_normal_term = check_transfer_integral_completion(gjf_file, extension_log=tcal._extension_log)
-
-                    if not args.read and not is_normal_term:
-                        print()
-                        print('Create gjf for transfer integral.')
-                        create_ti_gjf(
-                            {'symbols': unique_symbols, 'coordinates': unique_coords},
-                            {'symbols': symbols, 'coordinates': coordinates},
-                            gjf_basename=gjf_name,
-                            save_dir=directory,
-                            cpu=args.cpu,
-                            mem=args.mem,
-                            method=args.method,
-                        )
-                        tcal.create_monomer_file()
-
-                        if args.g09:
-                            gaussian_command = 'g09'
-                        else:
-                            gaussian_command = 'g16'
-                        print(f'Calculate transfer integral from {s}-th in (0,0,0) cell to {t}-th in ({i},{j},{k}) cell.')
-                        tcal.run_gaussian(gaussian_command)
+                    # The log file extension is not yet determined here, so the path will be appended later.
+                    skip_monomer_num = []
+                    if (not args.fullcal) and (not args.no_monomer_cache):
+                        if center_mol_log_paths[s] is not None:
+                            skip_monomer_num.append(1)
+                        if center_mol_log_paths[t] is not None:
+                            skip_monomer_num.append(2)
+                        if not skip_monomer_num:
+                            skip_monomer_num.append(0)
                     else:
-                        print()
-                        print(f'Skip calculation of transfer integral from {s}-th in (0,0,0) cell to {t}-th in ({i},{j},{k}) cell.')
+                        skip_monomer_num.append(0)
 
-                    tcal.check_extension_log()
+                    if pyscf_mode:
+                        tcal = TcalPySCF(
+                            input_file,
+                            monomer1_atom_num=len(unique_symbols),
+                            method=args.method,
+                            use_gpu=args.gpu4pyscf,
+                            ncore=args.cpu,
+                            max_memory_gb=args.mem,
+                            cart=args.cart,
+                        )
+
+                        is_normal_term = False
+                        if args.resume:
+                            is_normal_term = check_transfer_integral_completion_pyscf(input_file)
+
+                        if not args.read and not is_normal_term:
+                            print()
+                            print('Create xyz for transfer integral.')
+                            create_ti_xyz(
+                                {'symbols': unique_symbols, 'coordinates': unique_coords},
+                                {'symbols': symbols, 'coordinates': coordinates},
+                                input_basename=input_name,
+                                save_dir=directory,
+                            )
+                            print(f'Calculate transfer integral from {s}-th in (0,0,0) cell to {t}-th in ({i},{j},{k}) cell.')
+                            tcal.run_pyscf(skip_monomer_num=skip_monomer_num)
+                        else:
+                            print()
+                            print(f'Skip calculation of transfer integral from {s}-th in (0,0,0) cell to {t}-th in ({i},{j},{k}) cell.')
+                    else:
+                        tcal = Tcal(input_file)
+
+                        is_normal_term = False
+                        if args.resume:
+                            tcal.check_extension_log()
+                            is_normal_term = check_transfer_integral_completion(input_file, extension_log=tcal.extension_log)
+
+                        if not args.read and not is_normal_term:
+                            print()
+                            print('Create gjf for transfer integral.')
+                            create_ti_gjf(
+                                {'symbols': unique_symbols, 'coordinates': unique_coords},
+                                {'symbols': symbols, 'coordinates': coordinates},
+                                gjf_basename=input_name,
+                                save_dir=directory,
+                                cpu=args.cpu,
+                                mem=args.mem,
+                                method=args.method,
+                            )
+                            tcal.create_monomer_file()
+
+                            if args.g09:
+                                gaussian_command = 'g09'
+                            else:
+                                gaussian_command = 'g16'
+                            print(f'Calculate transfer integral from {s}-th in (0,0,0) cell to {t}-th in ({i},{j},{k}) cell.')
+                            tcal.run_gaussian(gaussian_command, skip_monomer_num=skip_monomer_num)
+                        else:
+                            print()
+                            print(f'Skip calculation of transfer integral from {s}-th in (0,0,0) cell to {t}-th in ({i},{j},{k}) cell.')
+
+                        tcal.check_extension_log()
+
+                    # Add log file path to center_mol_log_paths and copy log file
+                    if 1 not in skip_monomer_num:
+                        center_mol_log_paths[s] = f'{input_file}_m1{tcal.extension_log}'
+                    else:
+                        print(f'Copy {center_mol_log_paths[s]} to {input_file}_m1{tcal.extension_log}')
+                        shutil.copy2(center_mol_log_paths[s], f'{input_file}_m1{tcal.extension_log}')
+
+                    if 2 not in skip_monomer_num:
+                        center_mol_log_paths[t] = f'{input_file}_m2{tcal.extension_log}'
+                    else:
+                        print(f'Copy {center_mol_log_paths[t]} to {input_file}_m2{tcal.extension_log}')
+                        shutil.copy2(center_mol_log_paths[t], f'{input_file}_m2{tcal.extension_log}')
+
                     tcal.read_monomer1()
                     tcal.read_monomer2()
                     tcal.read_dimer()
@@ -686,6 +794,126 @@ def create_reorg_gjf(
         save_dir=save_dir,
         chk_rwf_name=f'{save_dir}/{basename}_opt_n'
     )
+
+
+def create_reorg_xyz(
+    symbols: NDArray[str],
+    coordinates: NDArray[np.float64],
+    basename: str,
+    save_dir: str,
+) -> None:
+    """Create xyz file for reorganization energy calculation.
+
+    Parameters
+    ----------
+    symbols : NDArray[str]
+        Symbols of atoms
+    coordinates : NDArray[np.float64]
+        Coordinates of atoms
+    basename : str
+        Base name of xyz file
+    save_dir : str
+        Directory to save xyz file
+    """
+    xyz_path = f'{save_dir}/{basename}_opt_n.xyz'
+    with open(xyz_path, 'w', encoding='utf-8') as f:
+        f.write(f'{len(symbols)}\n{basename}\n')
+        for sym, coord in zip(symbols, coordinates):
+            f.write(f'{sym} {coord[0]:.6f} {coord[1]:.6f} {coord[2]:.6f}\n')
+
+
+def create_ti_xyz(
+    unique_mol: Dict[str, Union[NDArray[str], NDArray[np.float64]]],
+    neighbor_mol: Dict[str, Union[NDArray[str], NDArray[np.float64]]],
+    input_basename: str,
+    save_dir: str = '.',
+) -> None:
+    """Create xyz file for transfer integral calculation (dimer).
+
+    Parameters
+    ----------
+    unique_mol : Dict[str, Union[NDArray[str], NDArray[np.float64]]]
+        Dictionary containing symbols and coordinates of unique monomer
+    neighbor_mol : Dict[str, Union[NDArray[str], NDArray[np.float64]]]
+        Dictionary containing symbols and coordinates of neighbor monomer
+    input_basename : str
+        Base name of xyz file
+    save_dir : str
+        Directory to save xyz file, by default '.'
+    """
+    syms1 = unique_mol['symbols']
+    coords1 = unique_mol['coordinates']
+    syms2 = neighbor_mol['symbols']
+    coords2 = neighbor_mol['coordinates']
+    n_total = len(syms1) + len(syms2)
+    xyz_path = f'{save_dir}/{input_basename}.xyz'
+    with open(xyz_path, 'w', encoding='utf-8') as f:
+        f.write(f'{n_total}\n{input_basename}\n')
+        for sym, coord in zip(syms1, coords1):
+            f.write(f'{sym} {coord[0]:.6f} {coord[1]:.6f} {coord[2]:.6f}\n')
+        for sym, coord in zip(syms2, coords2):
+            f.write(f'{sym} {coord[0]:.6f} {coord[1]:.6f} {coord[2]:.6f}\n')
+
+
+def check_reorganization_energy_completion_pyscf(
+    cif_path_without_ext: str,
+    osc_type: Literal['p', 'n'],
+) -> List[Literal['opt_neutral', 'opt_ion', 'neutral', 'ion']]:
+    """Check if PySCF reorganization energy calculations are completed.
+
+    Parameters
+    ----------
+    cif_path_without_ext : str
+        Base path of cif file (without extension)
+    osc_type : Literal['p', 'n']
+        Semiconductor type (p-type or n-type)
+
+    Returns
+    -------
+    List[Literal['opt_neutral', 'opt_ion', 'neutral', 'ion']]
+        List of calculations to skip
+    """
+    from pyscf import lib as pyscf_lib
+    skip_specified_cal = []
+    opt_n_chk = f'{cif_path_without_ext}_opt_n.chk'
+    if Path(opt_n_chk).exists() and pyscf_lib.chkfile.load(opt_n_chk, 'job_status/completed') is not None:
+        skip_specified_cal.append('opt_neutral')
+    n_chk = f'{cif_path_without_ext}_n.chk'
+    if Path(n_chk).exists() and pyscf_lib.chkfile.load(n_chk, 'job_status/completed') is not None:
+        skip_specified_cal.append('neutral')
+
+    ion = 'c' if osc_type == 'p' else 'a'
+    opt_ion_chk = f'{cif_path_without_ext}_opt_{ion}.chk'
+    if Path(opt_ion_chk).exists() and pyscf_lib.chkfile.load(opt_ion_chk, 'job_status/completed') is not None:
+        skip_specified_cal.append('opt_ion')
+    ion_chk = f'{cif_path_without_ext}_{ion}.chk'
+    if Path(ion_chk).exists() and pyscf_lib.chkfile.load(ion_chk, 'job_status/completed') is not None:
+        skip_specified_cal.append('ion')
+
+    return skip_specified_cal
+
+
+def check_transfer_integral_completion_pyscf(input_file: str) -> bool:
+    """Check if TcalPySCF calculation is completed by reading job_status/completed from all chkfiles.
+
+    Parameters
+    ----------
+    input_file : str
+        Base path of input file (without extension)
+
+    Returns
+    -------
+    bool
+        True if all chkfiles (dimer, monomer1, monomer2) have job_status/completed flag
+    """
+    from pyscf import lib as pyscf_lib
+    for suffix in ['', '_m1', '_m2']:
+        chkfile = f'{input_file}{suffix}.chk'
+        if not Path(chkfile).exists():
+            return False
+        if pyscf_lib.chkfile.load(chkfile, 'job_status/completed') is None:
+            return False
+    return True
 
 
 def create_ti_gjf(

@@ -20,6 +20,14 @@ mcal.calculations.rcal module
    :undoc-members:
    :show-inheritance:
 
+mcal.calculations.rcal\_pyscf module
+------------------------------------
+
+.. automodule:: mcal.calculations.rcal_pyscf
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Module contents
 ---------------
 

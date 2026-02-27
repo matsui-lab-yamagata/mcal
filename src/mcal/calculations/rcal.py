@@ -18,11 +18,11 @@ print = functools.partial(print, flush=True)
 def main():
     """This code is to execute rcal for command line."""
     parser = argparse.ArgumentParser()
-    parser.add_argument('file', help='cif file name or gjf file name', type=str)
+    parser.add_argument('file', help='cif file name or gjf file name or xyz file name', type=str)
     parser.add_argument('osc_type', help='organic semiconductor type', type=str)
     parser.add_argument(
         '-M', '--method',
-        help='calculation method used in Gaussian calculations (default is B3LYP/6-31G(d,p)). ' \
+        help='calculation method used in calculations (default is B3LYP/6-31G(d,p)). ' \
             + 'But if you use a gjf file instead of a cif file, the method in the gjf file will be used',
         type=str,
         default='B3LYP/6-31G(d,p)',
@@ -42,14 +42,24 @@ def main():
     )
     parser.add_argument('-g', '--g09', help='use Gaussian 09 (default is Gaussian 16)', action='store_true')
     parser.add_argument('-r', '--read', help='read log files without executing Gaussian', action='store_true')
+    parser.add_argument('--pyscf', help='use PySCF instead of Gaussian (input file must be a xyz file)', action='store_true')
+    parser.add_argument('--gpu4pyscf', help='use GPU acceleration via gpu4pyscf (PySCF only)', action='store_true')
+    parser.add_argument("--cart", help="use Cartesian basis functions (PySCF only)", action='store_true')
     args = parser.parse_args()
 
     print('---------------------------------------')
-    print(' rcal beta (2025/06/21) by Matsui Lab. ')
+    print(' rcal beta (2026/02/23) by Matsui Lab. ')
     print('---------------------------------------')
     print(f'\nInput File Name: {args.file}')
     Rcal.print_timestamp()
     before = time()
+
+    if args.osc_type.lower() == 'p':
+        osc_type = 'p'
+    elif args.osc_type.lower() == 'n':
+        osc_type = 'n'
+    else:
+        raise OSCTypeError
 
     if args.file.endswith('.cif'):
         cif_file = Path(args.file)
@@ -62,43 +72,65 @@ def main():
         coordinates = cif_reader.unique_coords[0]
         coordinates = cif_reader.convert_frac_to_cart(coordinates)
 
-        gjf_maker = GjfMaker()
-        gjf_maker.create_chk_file()
-        gjf_maker.output_detail()
-        gjf_maker.opt()
+        if args.pyscf or args.gpu4pyscf:
+            xyz_file = directory / f'{filename}.xyz'
+            with open(xyz_file, 'w') as f:
+                f.write(f'{len(symbols)}\n')
+                f.write(f'{filename}\n')
+                for symbol, coordinate in zip(symbols, coordinates):
+                    f.write(f'{symbol} {coordinate[0]:.6f} {coordinate[1]:.6f} {coordinate[2]:.6f}\n')
+        else:
+            gjf_maker = GjfMaker()
+            gjf_maker.create_chk_file()
+            gjf_maker.output_detail()
+            gjf_maker.opt()
 
-        gjf_maker.set_symbols(symbols)
-        gjf_maker.set_coordinates(coordinates)
-        gjf_maker.set_function(args.method)
-        gjf_maker.set_charge_spin(charge=0, spin=1)
-        gjf_maker.set_resource(cpu_num=args.cpu, mem_num=args.mem)
+            gjf_maker.set_symbols(symbols)
+            gjf_maker.set_coordinates(coordinates)
+            gjf_maker.set_function(args.method)
+            gjf_maker.set_charge_spin(charge=0, spin=1)
+            gjf_maker.set_resource(cpu_num=args.cpu, mem_num=args.mem)
 
-        gjf_maker.export_gjf(
-            file_name=f'{file_path_without_ext}',
-            chk_rwf_name=f'{file_path_without_ext}',
-        )
+            gjf_maker.export_gjf(
+                file_name=f'{file_path_without_ext}',
+                chk_rwf_name=f'{file_path_without_ext}',
+            )
     elif args.file.endswith('.gjf'):
         gjf_file = Path(args.file)
         directory = gjf_file.parent
         filename = gjf_file.stem
 
         file_path_without_ext = f'{directory}/{filename}'
+    elif args.file.endswith('.xyz'):
+        xyz_file = Path(args.file)
     else:
         raise ValueError('Input file must be a cif file or a gjf file.')
 
-    if args.osc_type.lower() == 'p':
-        rcal = Rcal(gjf_file=f'{file_path_without_ext}.gjf')
-    elif args.osc_type.lower() == 'n':
-        rcal = Rcal(gjf_file=f'{file_path_without_ext}.gjf', osc_type='n')
+    if args.pyscf or args.gpu4pyscf:
+        try:
+            from mcal.calculations.rcal_pyscf import RcalPySCF
+        except ImportError:
+            print("Error: PySCF is not installed.")
+            exit(1)
+        rcal = RcalPySCF(
+            xyz_file=xyz_file,
+            osc_type=osc_type,
+            method=args.method,
+            use_gpu=args.gpu4pyscf,
+            ncore=args.cpu,
+            max_memory_gb=args.mem,
+            cart=args.cart,
+        )
+        reorg_energy = rcal.calc_reorganization(only_read=args.read, is_output_detail=True)
     else:
-        raise OSCTypeError
+        rcal = Rcal(input_file=f'{file_path_without_ext}.gjf', osc_type=osc_type, fmt='gjf')
 
-    if args.g09:
-        gau_com = 'g09'
-    else:
-        gau_com = 'g16'
+        if args.g09:
+            gau_com = 'g09'
+        else:
+            gau_com = 'g16'
 
-    reorg_energy = rcal.calc_reorganization(gau_com=gau_com, only_read=args.read, is_output_detail=True)
+        reorg_energy = rcal.calc_reorganization(gau_com=gau_com, only_read=args.read, is_output_detail=True)
 
     print()
     print('-----------------------')
@@ -113,24 +145,27 @@ def main():
 
 
 class Rcal:
-    """Calculate organization energy."""
-    def __init__(self, gjf_file: str, osc_type: Literal['p', 'n'] = 'p'):
+    """Calculate reorganization energy."""
+    def __init__(self, input_file: str, osc_type: Literal['p', 'n'] = 'p', fmt='gjf'):
         """
         Initialize Rcal.
 
         Parameters
         ----------
-        gjf_file : str
+        input_file : str
             gjf file name.
         osc_type : Literal['p', 'n']
             organic semiconductor type, 'p' is positive, 'n' is negative, by default 'p'.
+        fmt : str
+            input file format, 'gjf' or 'xyz', by default 'gjf'.
         """
-        self.gjf_file = gjf_file
+        self.input_file = input_file
         self.ion = None
         self._extension_log = '.log'
         self._gjf_lines = {'%': [], '#': []}
 
-        self._input_gjf()
+        if fmt == 'gjf':
+            self._input_gjf()
 
         if osc_type.lower() == 'p':
             self.ion = 'c'
@@ -193,7 +228,7 @@ class Rcal:
         float
             reorganization energy [eV].
         """
-        file_path = Path(self.gjf_file)
+        file_path = Path(self.input_file)
         filename = file_path.stem.replace('_opt_n', '')
         directory = file_path.parent
         basename = f'{directory}/{filename}'
@@ -203,16 +238,16 @@ class Rcal:
         # 中性分子の構造最適化とエネルギー計算
         only_read_opt_n = only_read
         if not only_read and 'opt_neutral' not in skip_specified_cal:
-            print('>', gau_com, self.gjf_file)
-            subprocess.run([gau_com, self.gjf_file])
+            print('>', gau_com, self.input_file)
+            subprocess.run([gau_com, self.input_file])
 
         skip_opt_neutral = True if 'opt_neutral' in skip_specified_cal else False
 
-        energy.append(self.extract_energy(self.gjf_file, only_read=only_read_opt_n, is_output_detail=is_output_detail, skip_cal=skip_opt_neutral))
+        energy.append(self.extract_energy(self.input_file, only_read=only_read_opt_n, is_output_detail=is_output_detail, skip_cal=skip_opt_neutral))
 
         # カチオンかアニオンのエネルギー計算
         only_read_ion = only_read
-        previous_name, _ = os.path.splitext(self.gjf_file)
+        previous_name, _ = os.path.splitext(self.input_file)
         gjf = f'{basename}_{self.ion}.gjf'
         if not only_read and 'ion' not in skip_specified_cal:
             self._create_gjf(file_name=gjf, prevous_name=previous_name, ion=self.ion)
@@ -384,7 +419,7 @@ class Rcal:
 
     def _input_gjf(self) -> None:
         """Input link 0 command and root options from gjf file."""
-        with open(self.gjf_file, 'r') as f:
+        with open(self.input_file, 'r') as f:
             for line in f:
                 if line.startswith('%'):
                     self._gjf_lines['%'].append(line)

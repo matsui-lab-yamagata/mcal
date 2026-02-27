@@ -241,9 +241,9 @@
         <article role="main" id="furo-main-content">
           <section id="mcal-documentation">
 <h1>mcal Documentation<a class="headerlink" href="#mcal-documentation" title="Link to this heading">¶</a></h1>
-<a class="reference external image-reference" href="https://www.python.org"><img alt="Python" src="https://img.shields.io/badge/python-3.9%20or%20newer-blue" />
+<a class="reference external image-reference" href="https://www.python.org" rel="noreferrer" target="_blank"><img alt="Python" src="https://img.shields.io/badge/python-3.9%20or%20newer-blue" />
 </a>
-<a class="reference external image-reference" href="https://opensource.org/licenses/MIT"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-blue.svg" />
+<a class="reference external image-reference" href="https://opensource.org/licenses/MIT" rel="noreferrer" target="_blank"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-blue.svg" />
 </a>
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">¶</a></h2>
@@ -254,7 +254,7 @@ and determines mobility tensors considering anisotropy and path continuity.</p>
 <h3>Features<a class="headerlink" href="#features" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Read crystal structures from CIF files</p></li>
-<li><p>Quantum chemical calculations using Gaussian 09/16</p></li>
+<li><p>Quantum chemical calculations using Gaussian 09/16 or PySCF</p></li>
 <li><p>Calculation of transfer integrals</p></li>
 <li><p>Calculation of reorganization energy</p></li>
 <li><p>Computation of mobility tensors and eigenvalues</p></li>
@@ -268,19 +268,57 @@ and determines mobility tensors considering anisotropy and path continuity.</p>
 <li><p>NumPy</p></li>
 <li><p>Pandas</p></li>
 <li><p>Matplotlib</p></li>
-<li><p>yu-tcal==3.1.0</p></li>
+<li><p>yu-tcal==4.0.3</p></li>
+</ul>
+<section id="quantum-chemistry-calculation-tools">
+<h3>Quantum Chemistry Calculation Tools<a class="headerlink" href="#quantum-chemistry-calculation-tools" title="Link to this heading">¶</a></h3>
+<p>At least one of the following is required:</p>
+<ul class="simple">
 <li><p>Gaussian 09 or 16</p></li>
+<li><p>PySCF (macOS / Linux / WSL2(Windows Subsystem for Linux))</p></li>
+<li><p>GPU4PySCF (macOS / Linux / WSL2(Windows Subsystem for Linux))</p></li>
 </ul>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
-<p>The path to Gaussian must be set in your environment.</p>
+<p>When using Gaussian, the path to Gaussian must be set in your environment.
+PySCF is supported on macOS / Linux. Windows users must use WSL2.</p>
 </div>
+</section>
 </section>
 <section id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Link to this heading">¶</a></h2>
+<section id="using-gaussian-09-or-16-without-pyscf">
+<h3>Using Gaussian 09 or 16 (without PySCF)<a class="headerlink" href="#using-gaussian-09-or-16-without-pyscf" title="Link to this heading">¶</a></h3>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>yu-mcal
 </pre></div>
 </div>
+</section>
+<section id="using-pyscf-cpu-only-macos-linux-wsl2">
+<h3>Using PySCF (CPU only, macOS / Linux / WSL2)<a class="headerlink" href="#using-pyscf-cpu-only-macos-linux-wsl2" title="Link to this heading">¶</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;yu-mcal[pyscf]&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="using-gpu-acceleration-with-pyscf-macos-linux-wsl2">
+<h3>Using GPU acceleration with PySCF (macOS / Linux / WSL2)<a class="headerlink" href="#using-gpu-acceleration-with-pyscf-macos-linux-wsl2" title="Link to this heading">¶</a></h3>
+<ol class="arabic simple">
+<li><p>Check your installed CUDA Toolkit version:</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>nvcc<span class="w"> </span>--version
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>Install mcal with GPU acceleration:</p></li>
+</ol>
+<p>If your CUDA Toolkit version is 12.x:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;yu-mcal[gpu4pyscf-cuda12]&quot;</span>
+</pre></div>
+</div>
+<p>If your CUDA Toolkit version is 11.x:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;yu-mcal[gpu4pyscf-cuda11]&quot;</span>
+</pre></div>
+</div>
+</section>
 <section id="verify-installation">
 <h3>Verify Installation<a class="headerlink" href="#verify-installation" title="Link to this heading">¶</a></h3>
 <p>After installation, you can verify by running:</p>
@@ -326,7 +364,7 @@ mcal<span class="w"> </span>xxx.cif<span class="w"> </span>n
 <h4>Calculation Settings<a class="headerlink" href="#calculation-settings" title="Link to this heading">¶</a></h4>
 <section id="m-method-method">
 <h5><code class="docutils literal notranslate"><span class="pre">-M,</span> <span class="pre">--method</span> <span class="pre">&lt;method&gt;</span></code><a class="headerlink" href="#m-method-method" title="Link to this heading">¶</a></h5>
-<p>Specify the calculation method used in Gaussian calculations.</p>
+<p>Specify the calculation method (used in both Gaussian and PySCF calculations).</p>
 <ul class="simple">
 <li><p><strong>Default</strong>: <code class="docutils literal notranslate"><span class="pre">B3LYP/6-31G(d,p)</span></code></p></li>
 <li><p><strong>Example</strong>: <code class="docutils literal notranslate"><span class="pre">mcal</span> <span class="pre">xxx.cif</span> <span class="pre">p</span> <span class="pre">-M</span> <span class="pre">&quot;B3LYP/6-31G(d)&quot;</span></code></p></li>
@@ -356,11 +394,37 @@ mcal<span class="w"> </span>xxx.cif<span class="w"> </span>n
 </ul>
 </section>
 </section>
+<section id="pyscf-settings">
+<h4>PySCF Settings<a class="headerlink" href="#pyscf-settings" title="Link to this heading">¶</a></h4>
+<section id="pyscf">
+<h5><code class="docutils literal notranslate"><span class="pre">--pyscf</span></code><a class="headerlink" href="#pyscf" title="Link to this heading">¶</a></h5>
+<p>Use PySCF instead of Gaussian for all calculations. Requires <code class="docutils literal notranslate"><span class="pre">yu-mcal[pyscf]</span></code>.</p>
+<ul class="simple">
+<li><p><strong>Example</strong>: <code class="docutils literal notranslate"><span class="pre">mcal</span> <span class="pre">xxx.cif</span> <span class="pre">p</span> <span class="pre">--pyscf</span></code></p></li>
+</ul>
+</section>
+<section id="gpu4pyscf">
+<h5><code class="docutils literal notranslate"><span class="pre">--gpu4pyscf</span></code><a class="headerlink" href="#gpu4pyscf" title="Link to this heading">¶</a></h5>
+<p>Use GPU acceleration via gpu4pyscf. Automatically enables PySCF mode (no need to specify <code class="docutils literal notranslate"><span class="pre">--pyscf</span></code>).
+Requires <code class="docutils literal notranslate"><span class="pre">yu-mcal[gpu4pyscf-cuda11]</span></code> or <code class="docutils literal notranslate"><span class="pre">yu-mcal[gpu4pyscf-cuda12]</span></code>.</p>
+<ul class="simple">
+<li><p><strong>Example</strong>: <code class="docutils literal notranslate"><span class="pre">mcal</span> <span class="pre">xxx.cif</span> <span class="pre">p</span> <span class="pre">--gpu4pyscf</span></code></p></li>
+</ul>
+</section>
+<section id="cart">
+<h5><code class="docutils literal notranslate"><span class="pre">--cart</span></code><a class="headerlink" href="#cart" title="Link to this heading">¶</a></h5>
+<p>Use Cartesian basis functions instead of spherical harmonics (PySCF only).</p>
+<ul class="simple">
+<li><p><strong>Example</strong>: <code class="docutils literal notranslate"><span class="pre">mcal</span> <span class="pre">xxx.cif</span> <span class="pre">p</span> <span class="pre">--pyscf</span> <span class="pre">--cart</span></code></p></li>
+</ul>
+</section>
+</section>
 <section id="calculation-control">
 <h4>Calculation Control<a class="headerlink" href="#calculation-control" title="Link to this heading">¶</a></h4>
 <section id="r-read">
 <h5><code class="docutils literal notranslate"><span class="pre">-r,</span> <span class="pre">--read</span></code><a class="headerlink" href="#r-read" title="Link to this heading">¶</a></h5>
-<p>Read results from existing log files without executing Gaussian.</p>
+<p>Read results from existing files without executing calculations.
+With Gaussian, reads from log files; with PySCF, reads from checkpoint (<code class="docutils literal notranslate"><span class="pre">.chk</span></code>) files.</p>
 <ul class="simple">
 <li><p><strong>Example</strong>: <code class="docutils literal notranslate"><span class="pre">mcal</span> <span class="pre">xxx.cif</span> <span class="pre">p</span> <span class="pre">-r</span></code></p></li>
 </ul>
@@ -374,17 +438,36 @@ mcal<span class="w"> </span>xxx.cif<span class="w"> </span>n
 </section>
 <section id="resume">
 <h5><code class="docutils literal notranslate"><span class="pre">--resume</span></code><a class="headerlink" href="#resume" title="Link to this heading">¶</a></h5>
-<p>Resume calculation using existing results if log files terminated normally.</p>
+<p>Resume calculation using existing results.
+With Gaussian, checks log file termination; with PySCF, checks for existing checkpoint (<code class="docutils literal notranslate"><span class="pre">.chk</span></code>) files.</p>
 <ul class="simple">
 <li><p><strong>Example</strong>: <code class="docutils literal notranslate"><span class="pre">mcal</span> <span class="pre">xxx.cif</span> <span class="pre">p</span> <span class="pre">--resume</span></code></p></li>
 </ul>
 </section>
 <section id="fullcal">
 <h5><code class="docutils literal notranslate"><span class="pre">--fullcal</span></code><a class="headerlink" href="#fullcal" title="Link to this heading">¶</a></h5>
-<p>Disable speedup processing using moment of inertia and distance between centers of weight,
-and calculate transfer integrals for all pairs.</p>
+<p>Disable all speedup processing and calculate transfer integrals for all pairs from scratch.
+The following two optimizations are disabled:</p>
+<ol class="arabic simple">
+<li><p><strong>Pair screening</strong>: pairs are normally skipped based on moment of inertia and center-of-mass
+distance; <code class="docutils literal notranslate"><span class="pre">--fullcal</span></code> disables this screening.</p></li>
+<li><p><strong>Monomer caching</strong>: monomer SCF calculations for the same molecule type are normally skipped
+by reusing a previously computed result file; <code class="docutils literal notranslate"><span class="pre">--fullcal</span></code> forces all monomer calculations
+to be performed from scratch.</p></li>
+</ol>
 <ul class="simple">
 <li><p><strong>Example</strong>: <code class="docutils literal notranslate"><span class="pre">mcal</span> <span class="pre">xxx.cif</span> <span class="pre">p</span> <span class="pre">--fullcal</span></code></p></li>
+</ul>
+</section>
+<section id="no-monomer-cache">
+<h5><code class="docutils literal notranslate"><span class="pre">--no-monomer-cache</span></code><a class="headerlink" href="#no-monomer-cache" title="Link to this heading">¶</a></h5>
+<p>Disable only monomer caching. Pair screening remains active.
+All monomer SCF calculations are performed from scratch instead of reusing
+previously computed result files.
+When performing detailed transfer integral analysis using
+<a class="reference external" href="https://github.com/matsui-lab-yamagata/tcal" rel="noreferrer" target="_blank">tcal</a>, it is recommended to use this option.</p>
+<ul class="simple">
+<li><p><strong>Example</strong>: <code class="docutils literal notranslate"><span class="pre">mcal</span> <span class="pre">xxx.cif</span> <span class="pre">p</span> <span class="pre">--no-monomer-cache</span></code></p></li>
 </ul>
 </section>
 <section id="cellsize-number">
@@ -452,6 +535,25 @@ mcal<span class="w"> </span>xxx.cif<span class="w"> </span>p<span class="w"> </s
 </pre></div>
 </div>
 </section>
+<section id="pyscf-calculations">
+<h4>PySCF Calculations<a class="headerlink" href="#pyscf-calculations" title="Link to this heading">¶</a></h4>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Calculate using PySCF (CPU)</span>
+mcal<span class="w"> </span>xxx.cif<span class="w"> </span>p<span class="w"> </span>--pyscf
+
+<span class="c1"># Calculate using PySCF with GPU acceleration (no --pyscf needed)</span>
+mcal<span class="w"> </span>xxx.cif<span class="w"> </span>p<span class="w"> </span>--gpu4pyscf
+
+<span class="c1"># Use 8 CPUs and 16GB memory with PySCF</span>
+mcal<span class="w"> </span>xxx.cif<span class="w"> </span>p<span class="w"> </span>--pyscf<span class="w"> </span>-c<span class="w"> </span><span class="m">8</span><span class="w"> </span>-m<span class="w"> </span><span class="m">16</span>
+
+<span class="c1"># Resume interrupted PySCF calculation</span>
+mcal<span class="w"> </span>xxx.cif<span class="w"> </span>p<span class="w"> </span>--pyscf<span class="w"> </span>--resume
+
+<span class="c1"># Read from existing PySCF checkpoint files</span>
+mcal<span class="w"> </span>xxx.cif<span class="w"> </span>p<span class="w"> </span>--pyscf<span class="w"> </span>-r
+</pre></div>
+</div>
+</section>
 <section id="reusing-results">
 <h4>Reusing Results<a class="headerlink" href="#reusing-results" title="Link to this heading">¶</a></h4>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Read from existing calculation results</span>
@@ -481,13 +583,83 @@ mcal<span class="w"> </span>xxx.cif<span class="w"> </span>p<span class="w"> </s
 <li><p>Eigenvalues and eigenvectors of mobility</p></li>
 </ul>
 </section>
+<section id="generated-files">
+<h4>Generated Files<a class="headerlink" href="#generated-files" title="Link to this heading">¶</a></h4>
+<section id="reorganization-energy-files">
+<h5>Reorganization Energy Files<a class="headerlink" href="#reorganization-energy-files" title="Link to this heading">¶</a></h5>
+<p>The following files are generated during reorganization energy calculation
+(<code class="docutils literal notranslate"><span class="pre">c</span></code> = cation for p-type, <code class="docutils literal notranslate"><span class="pre">a</span></code> = anion for n-type):</p>
+<p><strong>Gaussian:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">xxx_opt_n.gjf</span></code> / <code class="docutils literal notranslate"><span class="pre">xxx_opt_n.log</span></code> — geometry optimization of neutral molecule</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">xxx_c.gjf</span></code> / <code class="docutils literal notranslate"><span class="pre">xxx_c.log</span></code> (or <code class="docutils literal notranslate"><span class="pre">xxx_a</span></code>) — SP energy of ion at neutral geometry</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">xxx_opt_c.gjf</span></code> / <code class="docutils literal notranslate"><span class="pre">xxx_opt_c.log</span></code> (or <code class="docutils literal notranslate"><span class="pre">xxx_opt_a</span></code>) — geometry optimization of ion</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">xxx_n.gjf</span></code> / <code class="docutils literal notranslate"><span class="pre">xxx_n.log</span></code> — SP energy of neutral at ion geometry</p></li>
+</ul>
+<p><strong>PySCF:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">xxx_opt_n.xyz</span></code> / <code class="docutils literal notranslate"><span class="pre">xxx_opt_n.chk</span></code> — geometry optimization of neutral molecule</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">xxx_c.chk</span></code> (or <code class="docutils literal notranslate"><span class="pre">xxx_a.chk</span></code>) — SP energy of ion at neutral geometry</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">xxx_opt_c.xyz</span></code> / <code class="docutils literal notranslate"><span class="pre">xxx_opt_c.chk</span></code> (or <code class="docutils literal notranslate"><span class="pre">xxx_opt_a</span></code>) — geometry optimization of ion</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">xxx_n.chk</span></code> — SP energy of neutral at ion geometry</p></li>
+</ul>
+</section>
+<section id="transfer-integral-files">
+<h5>Transfer Integral Files<a class="headerlink" href="#transfer-integral-files" title="Link to this heading">¶</a></h5>
+<p>mcal generates calculation files named using the <code class="docutils literal notranslate"><span class="pre">(s_t_i_j_k)</span></code> notation:</p>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Symbol</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">s</span></code></p></td>
+<td><p>Molecule index in the reference unit cell (0,0,0)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">t</span></code></p></td>
+<td><p>Molecule index in the neighboring unit cell</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">i</span></code></p></td>
+<td><p>Translation index along the <strong>a</strong>-axis</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">j</span></code></p></td>
+<td><p>Translation index along the <strong>b</strong>-axis</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">k</span></code></p></td>
+<td><p>Translation index along the <strong>c</strong>-axis</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Example:</strong> <code class="docutils literal notranslate"><span class="pre">xxx-(0_0_1_0_0)</span></code> represents the transfer integral between the 0th molecule
+in the (0,0,0) cell and the 0th molecule in the (1,0,0) cell.</p>
+<p><strong>Gaussian:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">xxx-(s_t_i_j_k).gjf</span></code> / <code class="docutils literal notranslate"><span class="pre">xxx-(s_t_i_j_k).log</span></code> — dimer</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">xxx-(s_t_i_j_k)_m1.gjf</span></code> / <code class="docutils literal notranslate"><span class="pre">xxx-(s_t_i_j_k)_m1.log</span></code> — monomer 1</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">xxx-(s_t_i_j_k)_m2.gjf</span></code> / <code class="docutils literal notranslate"><span class="pre">xxx-(s_t_i_j_k)_m2.log</span></code> — monomer 2</p></li>
+</ul>
+<p><strong>PySCF:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">xxx-(s_t_i_j_k).xyz</span></code> / <code class="docutils literal notranslate"><span class="pre">xxx-(s_t_i_j_k).chk</span></code> — dimer</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">xxx-(s_t_i_j_k)_m1.chk</span></code> — monomer 1</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">xxx-(s_t_i_j_k)_m2.chk</span></code> — monomer 2</p></li>
+</ul>
+</section>
+</section>
 </section>
 <section id="notes">
 <h3>Notes<a class="headerlink" href="#notes" title="Link to this heading">¶</a></h3>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <ol class="arabic simple">
-<li><p><strong>Calculation Time</strong>: Calculation time varies significantly depending on the number of molecules and cell size</p></li>
+<li><p><strong>Calculation Time</strong>: Calculation time varies significantly depending on the number of
+molecules and cell size. By default, two speedup mechanisms are enabled: pair pre-screening
+(skipping pairs unlikely to have significant transfer integrals) and monomer caching
+(reusing the isolated-molecule SCF result for molecule types already computed).
+Use <code class="docutils literal notranslate"><span class="pre">--fullcal</span></code> to disable both.</p></li>
 <li><p><strong>Memory Usage</strong>: Ensure sufficient memory for large systems</p></li>
 <li><p><strong>Gaussian Installation</strong>: Gaussian 09 or Gaussian 16 is required</p></li>
 <li><p><strong>Dependencies</strong>: Make sure all required Python libraries are installed</p></li>
@@ -547,7 +719,7 @@ mcal<span class="w"> </span>xxx.cif<span class="w"> </span>p<span class="w"> </s
 </section>
 <section id="authors">
 <h2>Authors<a class="headerlink" href="#authors" title="Link to this heading">¶</a></h2>
-<p><a class="reference external" href="https://matsui-lab.yz.yamagata-u.ac.jp/index-e.html">Matsui Laboratory, Research Center for Organic Electronics (ROEL), Yamagata University</a></p>
+<p><a class="reference external" href="https://matsui-lab.yz.yamagata-u.ac.jp/index-e.html" rel="noreferrer" target="_blank">Matsui Laboratory, Research Center for Organic Electronics (ROEL), Yamagata University</a></p>
 <ul class="simple">
 <li><p>Hiroyuki Matsui</p></li>
 <li><p>Koki Ozawa</p></li>
@@ -557,7 +729,7 @@ mcal<span class="w"> </span>xxx.cif<span class="w"> </span>p<span class="w"> </s
 <section id="license">
 <h2>License<a class="headerlink" href="#license" title="Link to this heading">¶</a></h2>
 <p>This project is released under the MIT License.</p>
-<p>For more details, see the <a class="reference external" href="https://github.com/matsui-lab-yamagata/mcal/blob/main/LICENSE">LICENSE file on GitHub</a>.</p>
+<p>For more details, see the <a class="reference external" href="https://github.com/matsui-lab-yamagata/mcal/blob/main/LICENSE" rel="noreferrer" target="_blank">LICENSE file on GitHub</a>.</p>
 </section>
 <section id="acknowledgements">
 <h2>Acknowledgements<a class="headerlink" href="#acknowledgements" title="Link to this heading">¶</a></h2>
@@ -615,8 +787,14 @@ mcal<span class="w"> </span>xxx.cif<span class="w"> </span>p<span class="w"> </s
 <li><a class="reference internal" href="#features">Features</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#requirements">Requirements</a></li>
+<li><a class="reference internal" href="#requirements">Requirements</a><ul>
+<li><a class="reference internal" href="#quantum-chemistry-calculation-tools">Quantum Chemistry Calculation Tools</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#installation">Installation</a><ul>
+<li><a class="reference internal" href="#using-gaussian-09-or-16-without-pyscf">Using Gaussian 09 or 16 (without PySCF)</a></li>
+<li><a class="reference internal" href="#using-pyscf-cpu-only-macos-linux-wsl2">Using PySCF (CPU only, macOS / Linux / WSL2)</a></li>
+<li><a class="reference internal" href="#using-gpu-acceleration-with-pyscf-macos-linux-wsl2">Using GPU acceleration with PySCF (macOS / Linux / WSL2)</a></li>
 <li><a class="reference internal" href="#verify-installation">Verify Installation</a></li>
 </ul>
 </li>
@@ -634,11 +812,18 @@ mcal<span class="w"> </span>xxx.cif<span class="w"> </span>p<span class="w"> </s
 <li><a class="reference internal" href="#g-g09"><code class="docutils literal notranslate"><span class="pre">-g,</span> <span class="pre">--g09</span></code></a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#pyscf-settings">PySCF Settings</a><ul>
+<li><a class="reference internal" href="#pyscf"><code class="docutils literal notranslate"><span class="pre">--pyscf</span></code></a></li>
+<li><a class="reference internal" href="#gpu4pyscf"><code class="docutils literal notranslate"><span class="pre">--gpu4pyscf</span></code></a></li>
+<li><a class="reference internal" href="#cart"><code class="docutils literal notranslate"><span class="pre">--cart</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#calculation-control">Calculation Control</a><ul>
 <li><a class="reference internal" href="#r-read"><code class="docutils literal notranslate"><span class="pre">-r,</span> <span class="pre">--read</span></code></a></li>
 <li><a class="reference internal" href="#rp-read-pickle"><code class="docutils literal notranslate"><span class="pre">-rp,</span> <span class="pre">--read_pickle</span></code></a></li>
 <li><a class="reference internal" href="#resume"><code class="docutils literal notranslate"><span class="pre">--resume</span></code></a></li>
 <li><a class="reference internal" href="#fullcal"><code class="docutils literal notranslate"><span class="pre">--fullcal</span></code></a></li>
+<li><a class="reference internal" href="#no-monomer-cache"><code class="docutils literal notranslate"><span class="pre">--no-monomer-cache</span></code></a></li>
 <li><a class="reference internal" href="#cellsize-number"><code class="docutils literal notranslate"><span class="pre">--cellsize</span> <span class="pre">&lt;number&gt;</span></code></a></li>
 </ul>
 </li>
@@ -652,11 +837,17 @@ mcal<span class="w"> </span>xxx.cif<span class="w"> </span>p<span class="w"> </s
 <li><a class="reference internal" href="#practical-usage-examples">Practical Usage Examples</a><ul>
 <li><a class="reference internal" href="#basic-calculations">Basic Calculations</a></li>
 <li><a class="reference internal" href="#high-precision-calculations">High-Precision Calculations</a></li>
+<li><a class="reference internal" href="#pyscf-calculations">PySCF Calculations</a></li>
 <li><a class="reference internal" href="#reusing-results">Reusing Results</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#output">Output</a><ul>
 <li><a class="reference internal" href="#standard-output">Standard Output</a></li>
+<li><a class="reference internal" href="#generated-files">Generated Files</a><ul>
+<li><a class="reference internal" href="#reorganization-energy-files">Reorganization Energy Files</a></li>
+<li><a class="reference internal" href="#transfer-integral-files">Transfer Integral Files</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a class="reference internal" href="#notes">Notes</a></li>

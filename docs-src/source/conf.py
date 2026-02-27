@@ -27,7 +27,8 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
     "sphinx.ext.viewcode",
-    "sphinxcontrib.autodoc_pydantic"
+    "sphinxcontrib.autodoc_pydantic",
+    "sphinx_new_tab_link",
 ]
 
 templates_path = ["_templates"]

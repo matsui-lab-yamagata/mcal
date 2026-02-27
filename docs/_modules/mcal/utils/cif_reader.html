@@ -248,7 +248,7 @@
 
 
 <div class="viewcode-block" id="CifReader">
-<a class="viewcode-back" href="../../../mcal.utils.html#mcal.utils.cif_reader.CifReader">[docs]</a>
+<a class="viewcode-back" href="../../../mcal.utils.html#mcal.CifReader">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">CifReader</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;CifReader class.</span>
 
@@ -639,7 +639,7 @@
                         <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">neighbor_idx</span><span class="p">)</span>
 
 <div class="viewcode-block" id="CifReader.calc_cen_of_weight">
-<a class="viewcode-back" href="../../../mcal.utils.html#mcal.utils.cif_reader.CifReader.calc_cen_of_weight">[docs]</a>
+<a class="viewcode-back" href="../../../mcal.utils.html#mcal.CifReader.calc_cen_of_weight">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">calc_cen_of_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate center of weight.</span>
 
@@ -659,7 +659,7 @@
 
 
 <div class="viewcode-block" id="CifReader.convert_cart_to_frac">
-<a class="viewcode-back" href="../../../mcal.utils.html#mcal.utils.cif_reader.CifReader.convert_cart_to_frac">[docs]</a>
+<a class="viewcode-back" href="../../../mcal.utils.html#mcal.CifReader.convert_cart_to_frac">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">convert_cart_to_frac</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cart_coord</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert Cartesian coordinates to fractional coordinates.</span>
 
@@ -692,7 +692,7 @@
 
 
 <div class="viewcode-block" id="CifReader.convert_frac_to_cart">
-<a class="viewcode-back" href="../../../mcal.utils.html#mcal.utils.cif_reader.CifReader.convert_frac_to_cart">[docs]</a>
+<a class="viewcode-back" href="../../../mcal.utils.html#mcal.CifReader.convert_frac_to_cart">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">convert_frac_to_cart</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frac_coord</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert fractional coordinates to Cartesian coordinates.</span>
 
@@ -710,7 +710,7 @@
 
 
 <div class="viewcode-block" id="CifReader.expand_mols">
-<a class="viewcode-back" href="../../../mcal.utils.html#mcal.utils.cif_reader.CifReader.expand_mols">[docs]</a>
+<a class="viewcode-back" href="../../../mcal.utils.html#mcal.CifReader.expand_mols">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">expand_mols</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">expand_range</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
@@ -753,7 +753,7 @@
 
 
 <div class="viewcode-block" id="CifReader.export_unit_cell_file">
-<a class="viewcode-back" href="../../../mcal.utils.html#mcal.utils.cif_reader.CifReader.export_unit_cell_file">[docs]</a>
+<a class="viewcode-back" href="../../../mcal.utils.html#mcal.CifReader.export_unit_cell_file">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">export_unit_cell_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">format</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;mol&#39;</span><span class="p">,</span> <span class="s1">&#39;xyz&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;mol&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;export unit cell file</span>
 
@@ -782,7 +782,7 @@
 
 
 <div class="viewcode-block" id="CifReader.remove_duplicates">
-<a class="viewcode-back" href="../../../mcal.utils.html#mcal.utils.cif_reader.CifReader.remove_duplicates">[docs]</a>
+<a class="viewcode-back" href="../../../mcal.utils.html#mcal.CifReader.remove_duplicates">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">remove_duplicates</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">symbol</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
@@ -816,7 +816,7 @@
 
 
 <div class="viewcode-block" id="ElementPropertiesIsNotDefinedError">
-<a class="viewcode-back" href="../../../mcal.utils.html#mcal.utils.cif_reader.ElementPropertiesIsNotDefinedError">[docs]</a>
+<a class="viewcode-back" href="../../../mcal.utils.html#mcal.ElementPropertiesIsNotDefinedError">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ElementPropertiesIsNotDefinedError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Exception raised when element properties is not defined.&quot;&quot;&quot;</span>
     <span class="k">pass</span></div>
@@ -824,7 +824,7 @@
 
 
 <div class="viewcode-block" id="SymmetryIsNotDefinedError">
-<a class="viewcode-back" href="../../../mcal.utils.html#mcal.utils.cif_reader.SymmetryIsNotDefinedError">[docs]</a>
+<a class="viewcode-back" href="../../../mcal.utils.html#mcal.SymmetryIsNotDefinedError">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SymmetryIsNotDefinedError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Exception raised when symmetry is not defined.&quot;&quot;&quot;</span>
     <span class="k">pass</span></div>
@@ -832,7 +832,7 @@
 
 
 <div class="viewcode-block" id="ZValueIsNotMatchError">
-<a class="viewcode-back" href="../../../mcal.utils.html#mcal.utils.cif_reader.ZValueIsNotMatchError">[docs]</a>
+<a class="viewcode-back" href="../../../mcal.utils.html#mcal.ZValueIsNotMatchError">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ZValueIsNotMatchError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Exception raised when z value is not match.&quot;&quot;&quot;</span>
     <span class="k">pass</span></div>
@@ -840,7 +840,7 @@
 
 
 <div class="viewcode-block" id="FileIO">
-<a class="viewcode-back" href="../../../mcal.utils.html#mcal.utils.cif_reader.FileIO">[docs]</a>
+<a class="viewcode-back" href="../../../mcal.utils.html#mcal.FileIO">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">FileIO</span><span class="p">:</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">atom_num</span> <span class="o">=</span> <span class="mi">0</span>
@@ -849,7 +849,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">adjacency_mat_list</span> <span class="o">=</span> <span class="p">[]</span>
 
 <div class="viewcode-block" id="FileIO.add_adjacency_mat">
-<a class="viewcode-back" href="../../../mcal.utils.html#mcal.utils.cif_reader.FileIO.add_adjacency_mat">[docs]</a>
+<a class="viewcode-back" href="../../../mcal.utils.html#mcal.FileIO.add_adjacency_mat">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">add_adjacency_mat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">adjacency_mat</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="nb">bool</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;add adjacency matrix</span>
 
@@ -862,7 +862,7 @@
 
 
 <div class="viewcode-block" id="FileIO.add_coordinates">
-<a class="viewcode-back" href="../../../mcal.utils.html#mcal.utils.cif_reader.FileIO.add_coordinates">[docs]</a>
+<a class="viewcode-back" href="../../../mcal.utils.html#mcal.FileIO.add_coordinates">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">add_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;add coordinates</span>
 
@@ -875,7 +875,7 @@
 
 
 <div class="viewcode-block" id="FileIO.add_symbols">
-<a class="viewcode-back" href="../../../mcal.utils.html#mcal.utils.cif_reader.FileIO.add_symbols">[docs]</a>
+<a class="viewcode-back" href="../../../mcal.utils.html#mcal.FileIO.add_symbols">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">add_symbols</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">symbols</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;add symbols</span>
 
@@ -889,7 +889,7 @@
 
 
 <div class="viewcode-block" id="FileIO.export_mol_file">
-<a class="viewcode-back" href="../../../mcal.utils.html#mcal.utils.cif_reader.FileIO.export_mol_file">[docs]</a>
+<a class="viewcode-back" href="../../../mcal.utils.html#mcal.FileIO.export_mol_file">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">export_mol_file</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -939,7 +939,7 @@
 
 
 <div class="viewcode-block" id="FileIO.export_xyz_file">
-<a class="viewcode-back" href="../../../mcal.utils.html#mcal.utils.cif_reader.FileIO.export_xyz_file">[docs]</a>
+<a class="viewcode-back" href="../../../mcal.utils.html#mcal.FileIO.export_xyz_file">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">export_xyz_file</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
