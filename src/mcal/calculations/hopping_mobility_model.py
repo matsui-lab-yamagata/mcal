@@ -1,4 +1,4 @@
-"""hopping_mobility_model.py (2026/01/29)"""
+"""hopping_mobility_model.py (2026/03/29)"""
 import math
 import random
 from typing import List, Tuple
@@ -223,8 +223,8 @@ def diffusion_coefficient_tensor(
 def _diffusion_coefficient_tensor_ODE(
     lattice: NDArray[np.float64],
     hop: List[Tuple[int, int, int, int, int, float]],
-    max_steps: int = 10000,
-    size: int = 40,
+    max_steps: int = 1000,
+    size: int = 100,
     max_rate: float = 0.05
 ) -> NDArray[np.float64]:
     """Calculate diffusion coefficient tensor from numerical solution of Ordinary Differential Equation (ODE)
