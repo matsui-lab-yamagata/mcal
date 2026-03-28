@@ -309,6 +309,12 @@ mcal xxx.cif p --cellsize 1
 mcal xxx.cif p -c 16
 ```
 
+### CIFファイルが読み込めない場合
+CIFファイルにはさまざまな形式があり、mcalで読み込めない場合があります。以下の方法をお試しください：
+
+1. **別のソフトウェアでCIFの形式を変換する**: [Mercury](https://www.ccdc.cam.ac.uk/solutions/software/mercury/)などのソフトウェアでCIFファイルを開き、再度エクスポートすることで解決する場合があります。
+2. **お問い合わせ**: 読み込めないCIFファイルをメールでお送りいただければ、読み込めるように対応いたします。下記のメールアドレスまでご連絡ください。
+
 # 著者
 [山形大学 有機エレクトロニクス研究センター (ROEL) 松井研究室](https://matsui-lab.yz.yamagata-u.ac.jp/index.html)  
 松井 弘之、尾沢 昂輝  
