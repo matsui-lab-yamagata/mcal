@@ -308,6 +308,12 @@ mcal xxx.cif p --cellsize 1
 mcal xxx.cif p -c 16
 ``` 
 
+### If a CIF file cannot be read
+CIF files come in various formats, and some may not be readable by mcal. Please try the following:
+
+1. **Convert the CIF format using another software**: Use software such as [Mercury](https://www.ccdc.cam.ac.uk/solutions/software/mercury/) to open the CIF file and re-export it, which may resolve the issue.
+2. **Contact us**: If you send the unreadable CIF file to us by email, we will work on adding support for it. Please contact us at the email address listed below.
+
 # Authors
 [Matsui Laboratory, Research Center for Organic Electronics (ROEL), Yamagata University](https://matsui-lab.yz.yamagata-u.ac.jp/index-e.html)  
 Hiroyuki Matsui, Koki Ozawa  

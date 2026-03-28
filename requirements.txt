@@ -37,7 +37,7 @@ six==1.17.0
     # via python-dateutil
 tzdata==2025.3
     # via pandas
-yu-tcal==3.1.0
+yu-tcal==4.0.3
     # via yu-mcal (pyproject.toml)
 zipp==3.23.0
     # via importlib-resources

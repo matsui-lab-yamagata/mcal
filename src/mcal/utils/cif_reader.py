@@ -1,4 +1,4 @@
-"""CifReader beta (2026/02/05)"""
+"""CifReader beta (2026/03/29)"""
 import os
 import re
 import warnings
@@ -324,6 +324,7 @@ class CifReader:
                     # get symmetry operation information
                     elif is_read_sym:
                         if "'" in line:
+                            line = re.sub(r"""(['"])(.*?)\1""", lambda m: m.group(0).replace(' ', ''), line)
                             line = list(map(lambda x: x.strip().replace(' ', '').replace("'", ""), line.split()))
                         else:
                             line = list(map(lambda x: x.strip().replace(' ', ''), line.split()))
