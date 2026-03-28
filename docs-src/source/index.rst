@@ -459,21 +459,16 @@ To reduce calculation time
    # Increase number of CPUs
    mcal xxx.cif p -c 16
 
-API Reference
-=============
+If a CIF file cannot be read
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. toctree::
-   :maxdepth: 2
-   :caption: API Reference
+CIF files come in various formats, and some may not be readable by mcal. Please try the following:
 
-   modules
-
-Indices and Tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+1. **Convert the CIF format using another software**: Use software such as
+   `Mercury <https://www.ccdc.cam.ac.uk/solutions/software/mercury/>`_ to open the CIF file
+   and re-export it, which may resolve the issue.
+2. **Contact us**: If you send the unreadable CIF file to us by email, we will work on adding
+   support for it. Please contact us at the email address listed in the Authors section below.
 
 Authors
 =======
@@ -496,3 +491,19 @@ Acknowledgements
 ================
 
 This work was supported by JSPS Grant-in-Aid for JSPS Fellows Grant Number JP25KJ0647.
+
+API Reference
+=============
+
+.. toctree::
+   :maxdepth: 2
+   :caption: API Reference
+
+   modules
+
+Indices and Tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
