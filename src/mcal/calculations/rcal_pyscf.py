@@ -5,6 +5,7 @@ from typing import List, Literal, Tuple
 
 from pyscf import dft, gto, lib, scf
 from pyscf.geomopt import geometric_solver
+from pyscf.gto.basis import bse
 
 from mcal.calculations.rcal import Rcal
 
@@ -25,6 +26,7 @@ class RcalPySCF(Rcal):
         ncore: int = 4,
         max_memory_gb: int = 16,
         cart: bool = False,
+        bse: bool = False,
     ) -> None:
         super().__init__(xyz_file, osc_type, fmt='xyz')
         self._method = method
@@ -32,6 +34,7 @@ class RcalPySCF(Rcal):
         self._ncore = ncore
         self._max_memory_gb = max_memory_gb
         self._cart = cart
+        self._bse = bse
 
     def calc_reorganization(
         self,
@@ -67,6 +70,10 @@ class RcalPySCF(Rcal):
 
         atoms = self._read_xyz(self.input_file)
         energy = []
+
+        if self._bse:
+            unique_elements = list(set([atom[0] for atom in atoms]))
+            basis = bse.get_basis(basis, elements=unique_elements)
 
         # Step 1: opt_neutral
         mol_n = self._build_mol(atoms, charge=0, spin=0, basis=basis)

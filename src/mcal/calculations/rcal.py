@@ -44,11 +44,12 @@ def main():
     parser.add_argument('-r', '--read', help='read log files without executing Gaussian', action='store_true')
     parser.add_argument('--pyscf', help='use PySCF instead of Gaussian (input file must be a xyz file)', action='store_true')
     parser.add_argument('--gpu4pyscf', help='use GPU acceleration via gpu4pyscf (PySCF only)', action='store_true')
+    parser.add_argument("--bse", help="use Basis Set Exchange (PySCF only)", action='store_true')
     parser.add_argument("--cart", help="use Cartesian basis functions (PySCF only)", action='store_true')
     args = parser.parse_args()
 
     print('---------------------------------------')
-    print(' rcal beta (2026/02/23) by Matsui Lab. ')
+    print(' rcal beta (2026/04/08) by Matsui Lab. ')
     print('---------------------------------------')
     print(f'\nInput File Name: {args.file}')
     Rcal.print_timestamp()
@@ -120,6 +121,7 @@ def main():
             ncore=args.cpu,
             max_memory_gb=args.mem,
             cart=args.cart,
+            bse=args.bse,
         )
         reorg_energy = rcal.calc_reorganization(only_read=args.read, is_output_detail=True)
     else:
