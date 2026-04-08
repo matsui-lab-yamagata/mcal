@@ -418,6 +418,13 @@ Requires <code class="docutils literal notranslate"><span class="pre">yu-mcal[gp
 <li><p><strong>Example</strong>: <code class="docutils literal notranslate"><span class="pre">mcal</span> <span class="pre">xxx.cif</span> <span class="pre">p</span> <span class="pre">--pyscf</span> <span class="pre">--cart</span></code></p></li>
 </ul>
 </section>
+<section id="bse">
+<h5><code class="docutils literal notranslate"><span class="pre">--bse</span></code><a class="headerlink" href="#bse" title="Link to this heading">¶</a></h5>
+<p>Use Basis Set Exchange for basis-set definitions (PySCF only).</p>
+<ul class="simple">
+<li><p><strong>Example</strong>: <code class="docutils literal notranslate"><span class="pre">mcal</span> <span class="pre">xxx.cif</span> <span class="pre">p</span> <span class="pre">--pyscf</span> <span class="pre">--bse</span> <span class="pre">-M</span> <span class="pre">&quot;B3LYP/def2-SVP&quot;</span></code></p></li>
+</ul>
+</section>
 </section>
 <section id="calculation-control">
 <h4>Calculation Control<a class="headerlink" href="#calculation-control" title="Link to this heading">¶</a></h4>
@@ -545,6 +552,9 @@ mcal<span class="w"> </span>xxx.cif<span class="w"> </span>p<span class="w"> </s
 
 <span class="c1"># Use 8 CPUs and 16GB memory with PySCF</span>
 mcal<span class="w"> </span>xxx.cif<span class="w"> </span>p<span class="w"> </span>--pyscf<span class="w"> </span>-c<span class="w"> </span><span class="m">8</span><span class="w"> </span>-m<span class="w"> </span><span class="m">16</span>
+
+<span class="c1"># Use Basis Set Exchange with --method in PySCF mode</span>
+mcal<span class="w"> </span>xxx.cif<span class="w"> </span>p<span class="w"> </span>--pyscf<span class="w"> </span>--bse<span class="w"> </span>-M<span class="w"> </span><span class="s2">&quot;B3LYP/def2-SVP&quot;</span>
 
 <span class="c1"># Resume interrupted PySCF calculation</span>
 mcal<span class="w"> </span>xxx.cif<span class="w"> </span>p<span class="w"> </span>--pyscf<span class="w"> </span>--resume
@@ -726,6 +736,18 @@ support for it. Please contact us at the email address listed in the Authors sec
 <h2>Acknowledgements<a class="headerlink" href="#acknowledgements" title="Link to this heading">¶</a></h2>
 <p>This work was supported by JSPS Grant-in-Aid for JSPS Fellows Grant Number JP25KJ0647.</p>
 </section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>[1] Qiming Sun et al., Recent developments in the PySCF program package,
+<em>J. Chem. Phys.</em> <strong>2020</strong>, <em>153</em>, 024109.</p></li>
+<li><p>[2] Lee-Ping Wang, Chenchen Song, Geometry optimization made simple with translation
+and rotation coordinates, <em>J. Chem. Phys.</em> <strong>2016</strong>, <em>144</em>, 214108.</p></li>
+<li><p>[3] Benjamin P. Pritchard et al., New Basis Set Exchange: An Open, Up-to-Date
+Resource for the Molecular Sciences Community, <em>J. Chem. Inf. Model.</em> <strong>2019</strong>,
+<em>59</em>, 4814-4820.</p></li>
+</ul>
+</section>
 <section id="api-reference">
 <h2>API Reference<a class="headerlink" href="#api-reference" title="Link to this heading">¶</a></h2>
 <div class="toctree-wrapper compound">
@@ -827,6 +849,7 @@ support for it. Please contact us at the email address listed in the Authors sec
 <li><a class="reference internal" href="#pyscf"><code class="docutils literal notranslate"><span class="pre">--pyscf</span></code></a></li>
 <li><a class="reference internal" href="#gpu4pyscf"><code class="docutils literal notranslate"><span class="pre">--gpu4pyscf</span></code></a></li>
 <li><a class="reference internal" href="#cart"><code class="docutils literal notranslate"><span class="pre">--cart</span></code></a></li>
+<li><a class="reference internal" href="#bse"><code class="docutils literal notranslate"><span class="pre">--bse</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#calculation-control">Calculation Control</a><ul>
@@ -874,6 +897,7 @@ support for it. Please contact us at the email address listed in the Authors sec
 <li><a class="reference internal" href="#authors">Authors</a></li>
 <li><a class="reference internal" href="#license">License</a></li>
 <li><a class="reference internal" href="#acknowledgements">Acknowledgements</a></li>
+<li><a class="reference internal" href="#references">References</a></li>
 <li><a class="reference internal" href="#api-reference">API Reference</a></li>
 <li><a class="reference internal" href="#indices-and-tables">Indices and Tables</a></li>
 </ul>

@@ -139,6 +139,7 @@ def main():
     )
     parser.add_argument('--pyscf', help='use PySCF instead of Gaussian', action='store_true')
     parser.add_argument('--gpu4pyscf', help='use GPU acceleration via gpu4pyscf', action='store_true')
+    parser.add_argument('--bse', help='use Basis Set Exchange (PySCF only)', action='store_true')
     parser.add_argument('--cart', help='use Cartesian basis functions (PySCF only)', action='store_true')
     args = parser.parse_args()
 
@@ -178,7 +179,7 @@ def main():
     cif_path_without_ext = f'{directory}/{filename}'
 
     print('----------------------------------------')
-    print(' mcal 0.4.1 (2026/03/29) by Matsui Lab. ')
+    print(' mcal 0.5.0 (2026/04/08) by Matsui Lab. ')
     print('----------------------------------------')
 
     if args.read_pickle:
@@ -213,6 +214,7 @@ def main():
             ncore=args.cpu,
             max_memory_gb=args.mem,
             cart=args.cart,
+            bse=args.bse,
         )
 
         skip_specified_cal = []
@@ -330,6 +332,7 @@ def main():
                             ncore=args.cpu,
                             max_memory_gb=args.mem,
                             cart=args.cart,
+                            bse=args.bse,
                         )
 
                         is_normal_term = False
