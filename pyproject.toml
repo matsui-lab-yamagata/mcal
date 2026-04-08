@@ -1,13 +1,13 @@
 [project]
 name = "yu-mcal"
-version = "0.4.1"
+version = "0.5.0"
 description = "Program for the calculation of mobility tensor for organic semiconductor crystals"
 requires-python = ">=3.9"
 dependencies = [
     "matplotlib>=3.9.4",
     "numpy>=2.0.2",
     "pandas>=2.3.3",
-    "yu-tcal==4.0.3",
+    "yu-tcal==4.1.0",
 ]
 authors = [
     {name = "Hiroyuki Matsui", email = "h-matsui@yz.yamagata-u.ac.jp"},
@@ -56,16 +56,19 @@ rcal = "mcal.calculations.rcal:main"
 
 [project.optional-dependencies]
 pyscf = [
+    "basis-set-exchange>=0.12",
     "geometric>=1.1",
     "pyscf>=2.12.1",
 ]
 gpu4pyscf-cuda11 = [
+    "basis-set-exchange>=0.12",
     "pyscf>=2.12.1",
     "cutensor-cu11>=2.2.0",
     "gpu4pyscf-cuda11x>=1.5.2",
     "geometric>=1.1",
 ]
 gpu4pyscf-cuda12 = [
+    "basis-set-exchange>=0.12",
     "pyscf>=2.12.1",
     "cutensor-cu12>=2.5.0",
     "gpu4pyscf-cuda12x>=1.5.2",
