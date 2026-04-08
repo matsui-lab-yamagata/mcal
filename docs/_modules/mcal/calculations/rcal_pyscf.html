@@ -240,6 +240,7 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyscf</span><span class="w"> </span><span class="kn">import</span> <span class="n">dft</span><span class="p">,</span> <span class="n">gto</span><span class="p">,</span> <span class="n">lib</span><span class="p">,</span> <span class="n">scf</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyscf.geomopt</span><span class="w"> </span><span class="kn">import</span> <span class="n">geometric_solver</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyscf.gto.basis</span><span class="w"> </span><span class="kn">import</span> <span class="n">bse</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">mcal.calculations.rcal</span><span class="w"> </span><span class="kn">import</span> <span class="n">Rcal</span>
 
@@ -262,6 +263,7 @@
         <span class="n">ncore</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>
         <span class="n">max_memory_gb</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">16</span><span class="p">,</span>
         <span class="n">cart</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">bse</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">xyz_file</span><span class="p">,</span> <span class="n">osc_type</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;xyz&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_method</span> <span class="o">=</span> <span class="n">method</span>
@@ -269,6 +271,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_ncore</span> <span class="o">=</span> <span class="n">ncore</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_max_memory_gb</span> <span class="o">=</span> <span class="n">max_memory_gb</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cart</span> <span class="o">=</span> <span class="n">cart</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_bse</span> <span class="o">=</span> <span class="n">bse</span>
 
 <div class="viewcode-block" id="RcalPySCF.calc_reorganization">
 <a class="viewcode-back" href="../../../mcal.calculations.html#mcal.RcalPySCF.calc_reorganization">[docs]</a>
@@ -306,6 +309,10 @@
 
         <span class="n">atoms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_xyz</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_file</span><span class="p">)</span>
         <span class="n">energy</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bse</span><span class="p">:</span>
+            <span class="n">unique_elements</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">([</span><span class="n">atom</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">atoms</span><span class="p">]))</span>
+            <span class="n">basis</span> <span class="o">=</span> <span class="n">bse</span><span class="o">.</span><span class="n">get_basis</span><span class="p">(</span><span class="n">basis</span><span class="p">,</span> <span class="n">elements</span><span class="o">=</span><span class="n">unique_elements</span><span class="p">)</span>
 
         <span class="c1"># Step 1: opt_neutral</span>
         <span class="n">mol_n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_mol</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="n">charge</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">basis</span><span class="o">=</span><span class="n">basis</span><span class="p">)</span>

@@ -122,6 +122,10 @@ Use GPU acceleration via gpu4pyscf. Automatically enables PySCF mode (no need to
 Use Cartesian basis functions instead of spherical harmonics (PySCF only).
 - **Example**: `mcal xxx.cif p --pyscf --cart`
 
+#### `--bse`
+Use Basis Set Exchange for basis-set definitions (PySCF only).
+- **Example**: `mcal xxx.cif p --pyscf --bse -M "B3LYP/def2-SVP"`
+
 ### Calculation Control
 
 #### `-r, --read`
@@ -201,6 +205,9 @@ mcal xxx.cif p --gpu4pyscf
 
 # Use 8 CPUs and 16GB memory with PySCF
 mcal xxx.cif p --pyscf -c 8 -m 16
+
+# Use Basis Set Exchange with --method in PySCF mode
+mcal xxx.cif p --pyscf --bse -M "B3LYP/def2-SVP"
 
 # Resume interrupted PySCF calculation
 mcal xxx.cif p --pyscf --resume
@@ -326,3 +333,4 @@ This work was supported by JSPS Grant-in-Aid for JSPS Fellows Grant Number JP25K
 # References
 [1] Qiming Sun et al., Recent developments in the PySCF program package, *J. Chem. Phys.* **2020**, *153*, 024109.  
 [2] Lee-Ping Wang, Chenchen Song, Geometry optimization made simple with translation and rotation coordinates, *J. Chem. Phys.* **2016**, *144*, 214108.  
+[3] Benjamin P. Pritchard et al., New Basis Set Exchange: An Open, Up-to-Date Resource for the Molecular Sciences Community, *J. Chem. Inf. Model.* **2019**, *59*, 4814-4820.  
