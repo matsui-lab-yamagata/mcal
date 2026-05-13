@@ -46,10 +46,19 @@ def main():
     parser.add_argument('--gpu4pyscf', help='use GPU acceleration via gpu4pyscf (PySCF only)', action='store_true')
     parser.add_argument("--bse", help="use Basis Set Exchange (PySCF only)", action='store_true')
     parser.add_argument("--cart", help="use Cartesian basis functions (PySCF only)", action='store_true')
+    parser.add_argument('--orca', help='use ORCA via OPI instead of Gaussian (input file must be a xyz file)', action='store_true')
+    parser.add_argument(
+        '--mpi',
+        help='path to OpenMPI installation directory for ORCA parallel execution '
+             '(sets OPI_MPI environment variable, ORCA only)',
+        type=str,
+        default=None,
+        metavar='PATH',
+    )
     args = parser.parse_args()
 
     print('---------------------------------------')
-    print(' rcal beta (2026/04/08) by Matsui Lab. ')
+    print(' rcal 1.0.0 (2026/05/14) by Matsui Lab. ')
     print('---------------------------------------')
     print(f'\nInput File Name: {args.file}')
     Rcal.print_timestamp()
@@ -105,7 +114,7 @@ def main():
     elif args.file.endswith('.xyz'):
         xyz_file = Path(args.file)
     else:
-        raise ValueError('Input file must be a cif file or a gjf file.')
+        raise ValueError('Input file must be a cif file, a gjf file, or a xyz file.')
 
     if args.pyscf or args.gpu4pyscf:
         try:
@@ -122,6 +131,21 @@ def main():
             max_memory_gb=args.mem,
             cart=args.cart,
             bse=args.bse,
+        )
+        reorg_energy = rcal.calc_reorganization(only_read=args.read, is_output_detail=True)
+    elif args.orca:
+        try:
+            from mcal.calculations.rcal_orca import RcalORCA
+        except ImportError:
+            print("Error: opi (ORCA Python Interface) is not installed.")
+            exit(1)
+        rcal = RcalORCA(
+            xyz_file=xyz_file,
+            osc_type=osc_type,
+            method=args.method,
+            ncore=args.cpu,
+            max_memory_gb=args.mem,
+            open_mpi_path=args.mpi,
         )
         reorg_energy = rcal.calc_reorganization(only_read=args.read, is_output_detail=True)
     else:
@@ -174,7 +198,7 @@ class Rcal:
         elif osc_type.lower() == 'n':
             self.ion = 'a'
 
-    @ staticmethod
+    @staticmethod
     def check_error_term(line: str) -> None:
         """
         Check the error term of Gaussian.
@@ -252,7 +276,7 @@ class Rcal:
         previous_name, _ = os.path.splitext(self.input_file)
         gjf = f'{basename}_{self.ion}.gjf'
         if not only_read and 'ion' not in skip_specified_cal:
-            self._create_gjf(file_name=gjf, prevous_name=previous_name, ion=self.ion)
+            self._create_gjf(file_name=gjf, previous_name=previous_name, ion=self.ion)
             print('>', gau_com, gjf)
             subprocess.run([gau_com, gjf])
 
@@ -264,7 +288,7 @@ class Rcal:
         only_read_opt_ion = only_read
         gjf = f'{basename}_opt_{self.ion}.gjf'
         if not only_read and 'opt_ion' not in skip_specified_cal:
-            self._create_gjf(file_name=gjf, prevous_name=previous_name, ion=self.ion, is_opt=True)
+            self._create_gjf(file_name=gjf, previous_name=previous_name, ion=self.ion, is_opt=True)
             print('>', gau_com, gjf)
             subprocess.run([gau_com, gjf])
 
@@ -279,7 +303,7 @@ class Rcal:
         ion = 'n'
         gjf = f'{basename}_{ion}.gjf'
         if not only_read and 'neutral' not in skip_specified_cal:
-            self._create_gjf(file_name=gjf, prevous_name=previous_name, ion=ion)
+            self._create_gjf(file_name=gjf, previous_name=previous_name, ion=ion)
             print('>', gau_com, gjf)
             subprocess.run([gau_com, gjf])
 
@@ -364,7 +388,7 @@ class Rcal:
     def _create_gjf(
         self,
         file_name: str,
-        prevous_name: str,
+        previous_name: str,
         ion: Literal['c', 'a', 'n'],
         is_opt: bool = False,
     ) -> None:
@@ -375,7 +399,7 @@ class Rcal:
         ----------
         file_name : str
             file name.
-        prevous_name : str
+        previous_name : str
             previous file name.
         ion : Literal['c', 'a', 'n']
             ion type. 'c' is cation, 'a' is anion, 'n' is neutral molecule.
@@ -393,7 +417,7 @@ class Rcal:
                 else:
                     f.write(line)
 
-            f.write(f'%oldchk={prevous_name}.chk\n')
+            f.write(f'%oldchk={previous_name}.chk\n')
             if is_opt:
                 f.write(f'%chk={file_name}.chk\n')
 
@@ -409,13 +433,13 @@ class Rcal:
             if is_opt:
                 f.write('#  Opt=Tight\n')
             f.write('\n')
-            f.write('Defalut Title\n')
+            f.write('Default Title\n')
             f.write('\n')
 
             if ion == 'c':
                 f.write('1 2\n\n')
             elif ion == 'a':
-                f.write('-1, 2\n\n')
+                f.write('-1 2\n\n')
             else:
                 f.write('0 1\n\n')
 
