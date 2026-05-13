@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html"><link rel="search" title="Search" href="../../../search.html">
 
-    <!-- Generated with Sphinx 7.4.7 and Furo 2025.12.19 -->
+    <!-- Generated with Sphinx 9.0.4 and Furo 2025.12.19 -->
         <title>mcal.calculations.rcal_pyscf - mcal documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=7bdb33bb" />
@@ -322,7 +322,7 @@
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;running geometric optimization for </span><span class="si">{</span><span class="n">basename</span><span class="si">}</span><span class="s1">_opt_n.chk&#39;</span><span class="p">)</span>
         <span class="n">mol_opt_n</span><span class="p">,</span> <span class="n">e0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_opt</span><span class="p">(</span>
             <span class="n">mol_n</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">basename</span><span class="si">}</span><span class="s1">_opt_n&#39;</span><span class="p">,</span>
-            <span class="n">functional</span><span class="o">=</span><span class="n">functional</span><span class="p">,</span> <span class="n">basis</span><span class="o">=</span><span class="n">basis</span><span class="p">,</span>
+            <span class="n">functional</span><span class="o">=</span><span class="n">functional</span><span class="p">,</span>
             <span class="n">only_read</span><span class="o">=</span><span class="n">only_read</span><span class="p">,</span> <span class="n">is_output_detail</span><span class="o">=</span><span class="n">is_output_detail</span><span class="p">,</span>
             <span class="n">skip_cal</span><span class="o">=</span><span class="s1">&#39;opt_neutral&#39;</span> <span class="ow">in</span> <span class="n">skip_specified_cal</span><span class="p">,</span>
         <span class="p">)</span>
@@ -355,7 +355,7 @@
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;running geometric optimization for </span><span class="si">{</span><span class="n">basename</span><span class="si">}</span><span class="s1">_opt_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ion</span><span class="si">}</span><span class="s1">.chk&#39;</span><span class="p">)</span>
         <span class="n">mol_opt_ion</span><span class="p">,</span> <span class="n">e2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_opt</span><span class="p">(</span>
             <span class="n">mol_ion_n</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">basename</span><span class="si">}</span><span class="s1">_opt_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ion</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
-            <span class="n">functional</span><span class="o">=</span><span class="n">functional</span><span class="p">,</span> <span class="n">basis</span><span class="o">=</span><span class="n">basis</span><span class="p">,</span>
+            <span class="n">functional</span><span class="o">=</span><span class="n">functional</span><span class="p">,</span>
             <span class="n">only_read</span><span class="o">=</span><span class="n">only_read</span><span class="p">,</span> <span class="n">is_output_detail</span><span class="o">=</span><span class="n">is_output_detail</span><span class="p">,</span>
             <span class="n">skip_cal</span><span class="o">=</span><span class="s1">&#39;opt_ion&#39;</span> <span class="ow">in</span> <span class="n">skip_specified_cal</span><span class="p">,</span>
         <span class="p">)</span>
@@ -515,7 +515,6 @@
         <span class="n">mol</span><span class="p">:</span> <span class="n">gto</span><span class="o">.</span><span class="n">Mole</span><span class="p">,</span>
         <span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">functional</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">basis</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">only_read</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">is_output_detail</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">skip_cal</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -530,8 +529,6 @@
 <span class="sd">            Label of the calculation.</span>
 <span class="sd">        functional : str</span>
 <span class="sd">            Functional.</span>
-<span class="sd">        basis : str</span>
-<span class="sd">            Basis set.</span>
 <span class="sd">        only_read : bool</span>
 <span class="sd">            If True, load results from existing checkpoint files without running calculations.</span>
 <span class="sd">        is_output_detail : bool</span>
@@ -544,11 +541,9 @@
 <span class="sd">        Tuple[gto.Mole, float]</span>
 <span class="sd">            Optimized molecule and energy [eV].</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">xyz_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s1">.xyz&#39;</span>
         <span class="n">chkfile</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s1">.chk&#39;</span>
         <span class="k">if</span> <span class="n">only_read</span> <span class="ow">or</span> <span class="n">skip_cal</span><span class="p">:</span>
-            <span class="n">atoms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_xyz</span><span class="p">(</span><span class="n">xyz_file</span><span class="p">)</span>
-            <span class="n">mol_opt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_mol</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="n">mol</span><span class="o">.</span><span class="n">charge</span><span class="p">,</span> <span class="n">mol</span><span class="o">.</span><span class="n">spin</span><span class="p">,</span> <span class="n">basis</span><span class="p">)</span>
+            <span class="n">mol_opt</span> <span class="o">=</span> <span class="n">lib</span><span class="o">.</span><span class="n">chkfile</span><span class="o">.</span><span class="n">load_mol</span><span class="p">(</span><span class="n">chkfile</span><span class="p">)</span>
             <span class="n">energy_ev</span> <span class="o">=</span> <span class="n">lib</span><span class="o">.</span><span class="n">chkfile</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">chkfile</span><span class="p">,</span> <span class="s1">&#39;scf/e_tot&#39;</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">HARTREE_TO_EV</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">lib</span><span class="o">.</span><span class="n">num_threads</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ncore</span><span class="p">)</span>
@@ -561,16 +556,15 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="n">mf_opt</span><span class="o">.</span><span class="n">converged</span><span class="p">:</span>
                 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;WARNING: SCF did not converge for </span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
             <span class="n">energy_ev</span> <span class="o">=</span> <span class="n">mf_opt</span><span class="o">.</span><span class="n">e_tot</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">HARTREE_TO_EV</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_save_xyz</span><span class="p">(</span><span class="n">mol_opt</span><span class="p">,</span> <span class="n">xyz_file</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">only_read</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">skip_cal</span><span class="p">:</span>
             <span class="n">lib</span><span class="o">.</span><span class="n">chkfile</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">chkfile</span><span class="p">,</span> <span class="s1">&#39;job_status/completed&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">is_output_detail</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">only_read</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">skip_cal</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">xyz_file</span><span class="si">}</span><span class="s1"> calculation completed.&#39;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">chkfile</span><span class="si">}</span><span class="s1"> calculation completed.&#39;</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">skip_cal</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">xyz_file</span><span class="si">}</span><span class="s1"> calculation skipped.&#39;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">chkfile</span><span class="si">}</span><span class="s1"> calculation skipped.&#39;</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;reading </span><span class="si">{</span><span class="n">chkfile</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">()</span>
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;--------------&#39;</span><span class="p">)</span>
@@ -608,27 +602,7 @@
                     <span class="n">symbol</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
                     <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">4</span><span class="p">])</span>
                     <span class="n">atoms</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">symbol</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">)))</span>
-        <span class="k">return</span> <span class="n">atoms</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_save_xyz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mol</span><span class="p">:</span> <span class="n">gto</span><span class="o">.</span><span class="n">Mole</span><span class="p">,</span> <span class="n">xyz_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save xyz file.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        mol : gto.Mole</span>
-<span class="sd">            Molecule.</span>
-<span class="sd">        xyz_file : str</span>
-<span class="sd">            Path to the xyz file.</span>
-<span class="sd">        title : str</span>
-<span class="sd">            Title of the molecule.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">coords_ang</span> <span class="o">=</span> <span class="n">mol</span><span class="o">.</span><span class="n">atom_coords</span><span class="p">(</span><span class="n">unit</span><span class="o">=</span><span class="s1">&#39;Angstrom&#39;</span><span class="p">)</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">xyz_file</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">mol</span><span class="o">.</span><span class="n">natm</span><span class="si">}</span><span class="se">\n</span><span class="si">{</span><span class="n">title</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">mol</span><span class="o">.</span><span class="n">natm</span><span class="p">):</span>
-                <span class="n">sym</span> <span class="o">=</span> <span class="n">mol</span><span class="o">.</span><span class="n">atom_symbol</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-                <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">coords_ang</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">sym</span><span class="si">}</span><span class="s1">  </span><span class="si">{</span><span class="n">x</span><span class="si">:</span><span class="s1">.8f</span><span class="si">}</span><span class="s1">  </span><span class="si">{</span><span class="n">y</span><span class="si">:</span><span class="s1">.8f</span><span class="si">}</span><span class="s1">  </span><span class="si">{</span><span class="n">z</span><span class="si">:</span><span class="s1">.8f</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">atoms</span></div>
 
 </pre></div>
         </article>
@@ -663,8 +637,8 @@
     </aside>
   </div>
 </div><script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
-    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>
     </body>
 </html>

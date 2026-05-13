@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="mcal package" href="mcal.html"><link rel="prev" title="mcal Documentation" href="index.html">
 
-    <!-- Generated with Sphinx 7.4.7 and Furo 2025.12.19 -->
+    <!-- Generated with Sphinx 9.0.4 and Furo 2025.12.19 -->
         <title>mcal - mcal documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
@@ -249,6 +249,7 @@
 <li class="toctree-l4"><a class="reference internal" href="mcal.calculations.html#submodules">Submodules</a></li>
 <li class="toctree-l4"><a class="reference internal" href="mcal.calculations.html#module-mcal.calculations.hopping_mobility_model">mcal.calculations.hopping_mobility_model module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="mcal.calculations.html#module-mcal.calculations.rcal">mcal.calculations.rcal module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mcal.calculations.html#module-mcal.calculations.rcal_orca">mcal.calculations.rcal_orca module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="mcal.calculations.html#module-mcal.calculations.rcal_pyscf">mcal.calculations.rcal_pyscf module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="mcal.calculations.html#module-mcal.calculations">Module contents</a></li>
 </ul>
@@ -273,8 +274,10 @@
 <li class="toctree-l3"><a class="reference internal" href="mcal.html#mcal.mcal.cal_min_distance"><code class="docutils literal notranslate"><span class="pre">cal_min_distance()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="mcal.html#mcal.mcal.cal_moment_of_inertia"><code class="docutils literal notranslate"><span class="pre">cal_moment_of_inertia()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="mcal.html#mcal.mcal.check_reorganization_energy_completion"><code class="docutils literal notranslate"><span class="pre">check_reorganization_energy_completion()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mcal.html#mcal.mcal.check_reorganization_energy_completion_orca"><code class="docutils literal notranslate"><span class="pre">check_reorganization_energy_completion_orca()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="mcal.html#mcal.mcal.check_reorganization_energy_completion_pyscf"><code class="docutils literal notranslate"><span class="pre">check_reorganization_energy_completion_pyscf()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="mcal.html#mcal.mcal.check_transfer_integral_completion"><code class="docutils literal notranslate"><span class="pre">check_transfer_integral_completion()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mcal.html#mcal.mcal.check_transfer_integral_completion_orca"><code class="docutils literal notranslate"><span class="pre">check_transfer_integral_completion_orca()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="mcal.html#mcal.mcal.check_transfer_integral_completion_pyscf"><code class="docutils literal notranslate"><span class="pre">check_transfer_integral_completion_pyscf()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="mcal.html#mcal.mcal.create_reorg_gjf"><code class="docutils literal notranslate"><span class="pre">create_reorg_gjf()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="mcal.html#mcal.mcal.create_reorg_xyz"><code class="docutils literal notranslate"><span class="pre">create_reorg_xyz()</span></code></a></li>
@@ -334,6 +337,11 @@
 <li class="toctree-l4"><a class="reference internal" href="mcal.html#mcal.Rcal.check_extension_log"><code class="docutils literal notranslate"><span class="pre">Rcal.check_extension_log()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="mcal.html#mcal.Rcal.extract_energy"><code class="docutils literal notranslate"><span class="pre">Rcal.extract_energy()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="mcal.html#mcal.Rcal.print_timestamp"><code class="docutils literal notranslate"><span class="pre">Rcal.print_timestamp()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="mcal.html#mcal.RcalORCA"><code class="docutils literal notranslate"><span class="pre">RcalORCA</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="mcal.html#mcal.RcalORCA.HARTREE_TO_EV"><code class="docutils literal notranslate"><span class="pre">RcalORCA.HARTREE_TO_EV</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mcal.html#mcal.RcalORCA.calc_reorganization"><code class="docutils literal notranslate"><span class="pre">RcalORCA.calc_reorganization()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="mcal.html#mcal.RcalPySCF"><code class="docutils literal notranslate"><span class="pre">RcalPySCF</span></code></a><ul>
@@ -409,8 +417,8 @@
     </aside>
   </div>
 </div><script src="_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="_static/doctools.js?v=9a2dae69"></script>
-    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>
     </body>
 </html>

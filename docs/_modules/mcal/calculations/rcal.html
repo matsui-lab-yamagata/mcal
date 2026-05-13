@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html"><link rel="search" title="Search" href="../../../search.html">
 
-    <!-- Generated with Sphinx 7.4.7 and Furo 2025.12.19 -->
+    <!-- Generated with Sphinx 9.0.4 and Furo 2025.12.19 -->
         <title>mcal.calculations.rcal - mcal documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=7bdb33bb" />
@@ -283,10 +283,19 @@
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--gpu4pyscf&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;use GPU acceleration via gpu4pyscf (PySCF only)&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--bse&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;use Basis Set Exchange (PySCF only)&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--cart&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;use Cartesian basis functions (PySCF only)&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--orca&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;use ORCA via OPI instead of Gaussian (input file must be a xyz file)&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--mpi&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;path to OpenMPI installation directory for ORCA parallel execution &#39;</span>
+             <span class="s1">&#39;(sets OPI_MPI environment variable, ORCA only)&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;PATH&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
 
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;---------------------------------------&#39;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39; rcal beta (2026/04/08) by Matsui Lab. &#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39; rcal 1.0.0 (2026/05/14) by Matsui Lab. &#39;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;---------------------------------------&#39;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Input File Name: </span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">file</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
     <span class="n">Rcal</span><span class="o">.</span><span class="n">print_timestamp</span><span class="p">()</span>
@@ -342,7 +351,7 @@
     <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.xyz&#39;</span><span class="p">):</span>
         <span class="n">xyz_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">file</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Input file must be a cif file or a gjf file.&#39;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Input file must be a cif file, a gjf file, or a xyz file.&#39;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">pyscf</span> <span class="ow">or</span> <span class="n">args</span><span class="o">.</span><span class="n">gpu4pyscf</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
@@ -359,6 +368,21 @@
             <span class="n">max_memory_gb</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">mem</span><span class="p">,</span>
             <span class="n">cart</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">cart</span><span class="p">,</span>
             <span class="n">bse</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">bse</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">reorg_energy</span> <span class="o">=</span> <span class="n">rcal</span><span class="o">.</span><span class="n">calc_reorganization</span><span class="p">(</span><span class="n">only_read</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">read</span><span class="p">,</span> <span class="n">is_output_detail</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">orca</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">mcal.calculations.rcal_orca</span><span class="w"> </span><span class="kn">import</span> <span class="n">RcalORCA</span>
+        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Error: opi (ORCA Python Interface) is not installed.&quot;</span><span class="p">)</span>
+            <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">rcal</span> <span class="o">=</span> <span class="n">RcalORCA</span><span class="p">(</span>
+            <span class="n">xyz_file</span><span class="o">=</span><span class="n">xyz_file</span><span class="p">,</span>
+            <span class="n">osc_type</span><span class="o">=</span><span class="n">osc_type</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">method</span><span class="p">,</span>
+            <span class="n">ncore</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">cpu</span><span class="p">,</span>
+            <span class="n">max_memory_gb</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">mem</span><span class="p">,</span>
+            <span class="n">open_mpi_path</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">mpi</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">reorg_energy</span> <span class="o">=</span> <span class="n">rcal</span><span class="o">.</span><span class="n">calc_reorganization</span><span class="p">(</span><span class="n">only_read</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">read</span><span class="p">,</span> <span class="n">is_output_detail</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
@@ -416,7 +440,7 @@
 
 <div class="viewcode-block" id="Rcal.check_error_term">
 <a class="viewcode-back" href="../../../mcal.calculations.html#mcal.Rcal.check_error_term">[docs]</a>
-    <span class="o">@</span> <span class="nb">staticmethod</span>
+    <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">check_error_term</span><span class="p">(</span><span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check the error term of Gaussian.</span>
@@ -500,7 +524,7 @@
         <span class="n">previous_name</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_file</span><span class="p">)</span>
         <span class="n">gjf</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">basename</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ion</span><span class="si">}</span><span class="s1">.gjf&#39;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">only_read</span> <span class="ow">and</span> <span class="s1">&#39;ion&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">skip_specified_cal</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_create_gjf</span><span class="p">(</span><span class="n">file_name</span><span class="o">=</span><span class="n">gjf</span><span class="p">,</span> <span class="n">prevous_name</span><span class="o">=</span><span class="n">previous_name</span><span class="p">,</span> <span class="n">ion</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ion</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_create_gjf</span><span class="p">(</span><span class="n">file_name</span><span class="o">=</span><span class="n">gjf</span><span class="p">,</span> <span class="n">previous_name</span><span class="o">=</span><span class="n">previous_name</span><span class="p">,</span> <span class="n">ion</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ion</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&gt;&#39;</span><span class="p">,</span> <span class="n">gau_com</span><span class="p">,</span> <span class="n">gjf</span><span class="p">)</span>
             <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="n">gau_com</span><span class="p">,</span> <span class="n">gjf</span><span class="p">])</span>
 
@@ -512,7 +536,7 @@
         <span class="n">only_read_opt_ion</span> <span class="o">=</span> <span class="n">only_read</span>
         <span class="n">gjf</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">basename</span><span class="si">}</span><span class="s1">_opt_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ion</span><span class="si">}</span><span class="s1">.gjf&#39;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">only_read</span> <span class="ow">and</span> <span class="s1">&#39;opt_ion&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">skip_specified_cal</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_create_gjf</span><span class="p">(</span><span class="n">file_name</span><span class="o">=</span><span class="n">gjf</span><span class="p">,</span> <span class="n">prevous_name</span><span class="o">=</span><span class="n">previous_name</span><span class="p">,</span> <span class="n">ion</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ion</span><span class="p">,</span> <span class="n">is_opt</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_create_gjf</span><span class="p">(</span><span class="n">file_name</span><span class="o">=</span><span class="n">gjf</span><span class="p">,</span> <span class="n">previous_name</span><span class="o">=</span><span class="n">previous_name</span><span class="p">,</span> <span class="n">ion</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ion</span><span class="p">,</span> <span class="n">is_opt</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&gt;&#39;</span><span class="p">,</span> <span class="n">gau_com</span><span class="p">,</span> <span class="n">gjf</span><span class="p">)</span>
             <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="n">gau_com</span><span class="p">,</span> <span class="n">gjf</span><span class="p">])</span>
 
@@ -527,7 +551,7 @@
         <span class="n">ion</span> <span class="o">=</span> <span class="s1">&#39;n&#39;</span>
         <span class="n">gjf</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">basename</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">ion</span><span class="si">}</span><span class="s1">.gjf&#39;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">only_read</span> <span class="ow">and</span> <span class="s1">&#39;neutral&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">skip_specified_cal</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_create_gjf</span><span class="p">(</span><span class="n">file_name</span><span class="o">=</span><span class="n">gjf</span><span class="p">,</span> <span class="n">prevous_name</span><span class="o">=</span><span class="n">previous_name</span><span class="p">,</span> <span class="n">ion</span><span class="o">=</span><span class="n">ion</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_create_gjf</span><span class="p">(</span><span class="n">file_name</span><span class="o">=</span><span class="n">gjf</span><span class="p">,</span> <span class="n">previous_name</span><span class="o">=</span><span class="n">previous_name</span><span class="p">,</span> <span class="n">ion</span><span class="o">=</span><span class="n">ion</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&gt;&#39;</span><span class="p">,</span> <span class="n">gau_com</span><span class="p">,</span> <span class="n">gjf</span><span class="p">)</span>
             <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="n">gau_com</span><span class="p">,</span> <span class="n">gjf</span><span class="p">])</span>
 
@@ -619,7 +643,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">_create_gjf</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">prevous_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">previous_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">ion</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;n&#39;</span><span class="p">],</span>
         <span class="n">is_opt</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -630,7 +654,7 @@
 <span class="sd">        ----------</span>
 <span class="sd">        file_name : str</span>
 <span class="sd">            file name.</span>
-<span class="sd">        prevous_name : str</span>
+<span class="sd">        previous_name : str</span>
 <span class="sd">            previous file name.</span>
 <span class="sd">        ion : Literal[&#39;c&#39;, &#39;a&#39;, &#39;n&#39;]</span>
 <span class="sd">            ion type. &#39;c&#39; is cation, &#39;a&#39; is anion, &#39;n&#39; is neutral molecule.</span>
@@ -648,7 +672,7 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
 
-            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;%oldchk=</span><span class="si">{</span><span class="n">prevous_name</span><span class="si">}</span><span class="s1">.chk</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;%oldchk=</span><span class="si">{</span><span class="n">previous_name</span><span class="si">}</span><span class="s1">.chk</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">is_opt</span><span class="p">:</span>
                 <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;%chk=</span><span class="si">{</span><span class="n">file_name</span><span class="si">}</span><span class="s1">.chk</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
 
@@ -664,13 +688,13 @@
             <span class="k">if</span> <span class="n">is_opt</span><span class="p">:</span>
                 <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;#  Opt=Tight</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
             <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;Defalut Title</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;Default Title</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
             <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">ion</span> <span class="o">==</span> <span class="s1">&#39;c&#39;</span><span class="p">:</span>
                 <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;1 2</span><span class="se">\n\n</span><span class="s1">&#39;</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">ion</span> <span class="o">==</span> <span class="s1">&#39;a&#39;</span><span class="p">:</span>
-                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;-1, 2</span><span class="se">\n\n</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;-1 2</span><span class="se">\n\n</span><span class="s1">&#39;</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;0 1</span><span class="se">\n\n</span><span class="s1">&#39;</span><span class="p">)</span>
 
@@ -738,8 +762,8 @@
     </aside>
   </div>
 </div><script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
-    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>
     </body>
 </html>

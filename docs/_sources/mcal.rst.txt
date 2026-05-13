@@ -18,13 +18,13 @@ mcal.mcal module
 
 .. automodule:: mcal.mcal
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 Module contents
 ---------------
 
 .. automodule:: mcal
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
