@@ -1,13 +1,13 @@
 [project]
 name = "yu-mcal"
-version = "0.5.1"
+version = "0.6.0"
 description = "Program for the calculation of mobility tensor for organic semiconductor crystals"
-requires-python = ">=3.9"
+requires-python = ">=3.11"
 dependencies = [
     "matplotlib>=3.9.4",
     "numpy>=2.0.2",
     "pandas>=2.3.3",
-    "yu-tcal==4.1.0",
+    "yu-tcal==5.0.1",
 ]
 authors = [
     {name = "Hiroyuki Matsui", email = "h-matsui@yz.yamagata-u.ac.jp"},
@@ -18,8 +18,6 @@ license = {file = "LICENSE"}
 keywords = ["organic semiconductor", "mobility", "mobility tensor", "transfer integral", "reorganization energy"]
 classifiers = [
     "Development Status :: 4 - Beta",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
@@ -48,7 +46,7 @@ dev = [
 ]
 
 [tool.taskipy.tasks]
-docs-generate = "sphinx-apidoc -f -o docs-src/source src/mcal && sphinx-build -M clean docs-src/source docs && sphinx-build -b html docs-src/source docs && touch docs/.nojekyll"
+generate-docs = "sphinx-apidoc -f -o docs-src/source src/mcal && sphinx-build -M clean docs-src/source docs && sphinx-build -b html docs-src/source docs && touch docs/.nojekyll"
 
 [project.scripts]
 mcal = "mcal.mcal:main"
@@ -73,6 +71,16 @@ gpu4pyscf-cuda12 = [
     "cutensor-cu12>=2.5.0",
     "gpu4pyscf-cuda12x>=1.5.2",
     "geometric>=1.1",
+]
+gpu4pyscf-cuda13 = [
+    "basis-set-exchange>=0.12",
+    "cutensor-cu13>=2.6.0",
+    "geometric>=1.1",
+    "gpu4pyscf-cuda13x>=1.7.0",
+    "pyscf>=2.12.1",
+]
+orca = [
+    "orca-pi>=2.0.0",
 ]
 
 [tool.setuptools.packages.find]
