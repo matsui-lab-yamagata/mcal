@@ -141,6 +141,15 @@ def main():
     parser.add_argument('--gpu4pyscf', help='use GPU acceleration via gpu4pyscf', action='store_true')
     parser.add_argument('--bse', help='use Basis Set Exchange (PySCF only)', action='store_true')
     parser.add_argument('--cart', help='use Cartesian basis functions (PySCF only)', action='store_true')
+    parser.add_argument('--orca', help='use ORCA via OPI instead of Gaussian', action='store_true')
+    parser.add_argument(
+        '--mpi',
+        help='path to OpenMPI installation directory for ORCA parallel execution '
+             '(sets OPI_MPI environment variable, ORCA only)',
+        type=str,
+        default=None,
+        metavar='PATH',
+    )
     args = parser.parse_args()
 
     args.osc_type = args.osc_type.lower()
@@ -156,8 +165,18 @@ def main():
             print('')
             print('Install options:')
             print('  CPU only:       pip install "yu-mcal[pyscf]"')
+            print('  GPU (CUDA 13):  pip install "yu-mcal[gpu4pyscf-cuda13]"')
             print('  GPU (CUDA 12):  pip install "yu-mcal[gpu4pyscf-cuda12]"')
             print('  GPU (CUDA 11):  pip install "yu-mcal[gpu4pyscf-cuda11]"')
+            exit(1)
+
+    orca_mode = args.orca
+    if orca_mode:
+        try:
+            from tcal import TcalORCA
+            from mcal.calculations.rcal_orca import RcalORCA
+        except ImportError:
+            print('Error: opi (ORCA Python Interface) is not installed.')
             exit(1)
 
     if args.osc_type == 'p':
@@ -179,7 +198,7 @@ def main():
     cif_path_without_ext = f'{directory}/{filename}'
 
     print('----------------------------------------')
-    print(' mcal 0.5.1 (2026/04/09) by Matsui Lab. ')
+    print(' mcal 0.6.0 (2026/05/14) by Matsui Lab. ')
     print('----------------------------------------')
 
     if args.read_pickle:
@@ -202,10 +221,6 @@ def main():
     coordinates = cif_reader.convert_frac_to_cart(coordinates)
 
     if pyscf_mode:
-        if not args.read:
-            print('Create xyz for reorganization energy.')
-            create_reorg_xyz(symbols, coordinates, filename, directory)
-
         rcal = RcalPySCF(
             xyz_file=f'{cif_path_without_ext}_opt_n.xyz',
             osc_type=osc_type,
@@ -222,12 +237,52 @@ def main():
             print('Skip calculation of reorganization energy.')
         elif args.resume:
             skip_specified_cal = check_reorganization_energy_completion_pyscf(cif_path_without_ext, args.osc_type)
-        else:
+
+        if not args.read and 'opt_neutral' not in skip_specified_cal:
+            print('Create xyz for reorganization energy.')
+            create_reorg_xyz(symbols, coordinates, filename, directory)
+
+        if not args.read and len(skip_specified_cal) < 4:
+            print('Calculate reorganization energy.')
+
+        reorg_energy = rcal.calc_reorganization(only_read=args.read, is_output_detail=True, skip_specified_cal=skip_specified_cal)
+    elif orca_mode:
+        rcal = RcalORCA(
+            xyz_file=f'{cif_path_without_ext}_opt_n.xyz',
+            osc_type=osc_type,
+            method=args.method,
+            ncore=args.cpu,
+            max_memory_gb=args.mem,
+            open_mpi_path=args.mpi,
+        )
+
+        skip_specified_cal = []
+        if args.read:
+            print('Skip calculation of reorganization energy.')
+        elif args.resume:
+            skip_specified_cal = check_reorganization_energy_completion_orca(cif_path_without_ext, args.osc_type)
+
+        if not args.read and 'opt_neutral' not in skip_specified_cal:
+            print('Create xyz for reorganization energy.')
+            create_reorg_xyz(symbols, coordinates, filename, directory)
+
+        if not args.read and len(skip_specified_cal) < 4:
             print('Calculate reorganization energy.')
 
         reorg_energy = rcal.calc_reorganization(only_read=args.read, is_output_detail=True, skip_specified_cal=skip_specified_cal)
     else:
-        if not args.read:
+        gjf_path = f'{cif_path_without_ext}_opt_n.gjf'
+
+        skip_specified_cal = []
+        if args.read:
+            print('Skip calculation of reorganization energy.')
+        elif args.resume:
+            ext = '.out' if Path(f'{cif_path_without_ext}_opt_n.out').exists() else '.log'
+            skip_specified_cal = check_reorganization_energy_completion(cif_path_without_ext, args.osc_type, extension_log=ext)
+        else:
+            print('Calculate reorganization energy.')
+
+        if not args.read and ('opt_neutral' not in skip_specified_cal or not Path(gjf_path).exists()):
             print('Create gjf for reorganization energy.')
             create_reorg_gjf(
                 symbols,
@@ -239,16 +294,7 @@ def main():
                 args.method,
             )
 
-        rcal = Rcal(input_file=f'{cif_path_without_ext}_opt_n.gjf', osc_type=osc_type)
-
-        skip_specified_cal = []
-        if args.read:
-            print('Skip calculation of reorganization energy.')
-        elif args.resume:
-            rcal.check_extension_log(f'{cif_path_without_ext}_opt_n.gjf')
-            skip_specified_cal = check_reorganization_energy_completion(cif_path_without_ext, args.osc_type, extension_log=rcal._extension_log)
-        else:
-            print('Calculate reorganization energy.')
+        rcal = Rcal(input_file=gjf_path, osc_type=osc_type)
 
         reorg_energy = rcal.calc_reorganization(gau_com=gau_com, only_read=args.read, is_output_detail=True, skip_specified_cal=skip_specified_cal)
 
@@ -308,7 +354,10 @@ def main():
                             break
 
                 if is_run_ti:
-                    input_name = f'{filename}-({s}_{t}_{i}_{j}_{k})'
+                    if orca_mode:
+                        input_name = f'{filename}_{s}_{t}_{i}_{j}_{k}'
+                    else:
+                        input_name = f'{filename}-({s}_{t}_{i}_{j}_{k})'
                     input_file = f'{directory}/{input_name}'
 
                     # The log file extension is not yet determined here, so the path will be appended later.
@@ -353,6 +402,34 @@ def main():
                         else:
                             print()
                             print(f'Skip calculation of transfer integral from {s}-th in (0,0,0) cell to {t}-th in ({i},{j},{k}) cell.')
+                    elif orca_mode:
+                        tcal = TcalORCA(
+                            input_file,
+                            monomer1_atom_num=len(unique_symbols),
+                            method=args.method,
+                            ncore=args.cpu,
+                            max_memory_mb=args.mem * 1024,
+                            open_mpi_path=args.mpi,
+                        )
+
+                        is_normal_term = False
+                        if args.resume:
+                            is_normal_term = check_transfer_integral_completion_orca(input_file)
+
+                        if not args.read and not is_normal_term:
+                            print()
+                            print('Create xyz for transfer integral.')
+                            create_ti_xyz(
+                                {'symbols': unique_symbols, 'coordinates': unique_coords},
+                                {'symbols': symbols, 'coordinates': coordinates},
+                                input_basename=input_name,
+                                save_dir=directory,
+                            )
+                            print(f'Calculate transfer integral from {s}-th in (0,0,0) cell to {t}-th in ({i},{j},{k}) cell.')
+                            tcal.run_orca(skip_monomer_num=skip_monomer_num)
+                        else:
+                            print()
+                            print(f'Skip calculation of transfer integral from {s}-th in (0,0,0) cell to {t}-th in ({i},{j},{k}) cell.')
                     else:
                         tcal = Tcal(input_file)
 
@@ -392,13 +469,13 @@ def main():
                         center_mol_log_paths[s] = f'{input_file}_m1{tcal.extension_log}'
                     else:
                         print(f'Copy {center_mol_log_paths[s]} to {input_file}_m1{tcal.extension_log}')
-                        shutil.copy2(center_mol_log_paths[s], f'{input_file}_m1{tcal.extension_log}')
+                        _copy_monomer_files(center_mol_log_paths[s], f'{input_file}_m1{tcal.extension_log}', orca_mode)
 
                     if 2 not in skip_monomer_num:
                         center_mol_log_paths[t] = f'{input_file}_m2{tcal.extension_log}'
                     else:
                         print(f'Copy {center_mol_log_paths[t]} to {input_file}_m2{tcal.extension_log}')
-                        shutil.copy2(center_mol_log_paths[t], f'{input_file}_m2{tcal.extension_log}')
+                        _copy_monomer_files(center_mol_log_paths[t], f'{input_file}_m2{tcal.extension_log}', orca_mode)
 
                     tcal.read_monomer1()
                     tcal.read_monomer2()
@@ -493,6 +570,42 @@ def main():
         print(f'Elapsed Time: {elapsed_time_min} min {elapsed_time_sec} sec')
     else:
         print(f'Elapsed Time: {elapsed_time_h} h {elapsed_time_min} min {elapsed_time_sec} sec')
+
+
+def _copy_monomer_files(src_log: str, dst_log: str, orca_mode: bool) -> None:
+    """Copy a cached monomer's output file(s) to a new location.
+
+    For ORCA, an SP calculation produces a bundle (.out, .gbw, .property.json,
+    .densities, etc.) that is all needed to read MO coefficients via OPI, so
+    every file sharing the source stem is copied. For Gaussian/PySCF, only the
+    single log/out file is needed.
+
+    Parameters
+    ----------
+    src_log : str
+        Path of the cached monomer's primary log/out file.
+    dst_log : str
+        Path of the new monomer's primary log/out file.
+    orca_mode : bool
+        If True, copy every file matching ``{src_stem}.*``. Otherwise copy only
+        the single primary log/out file.
+    """
+    if not orca_mode:
+        shutil.copy2(src_log, dst_log)
+        return
+
+    src_path = Path(src_log)
+    dst_path = Path(dst_log)
+    src_dir = src_path.parent
+    dst_dir = dst_path.parent
+    src_stem = src_path.name[: -len(src_path.suffix)]
+    dst_stem = dst_path.name[: -len(dst_path.suffix)]
+    for entry in src_dir.iterdir():
+        # Match "{src_stem}.out", "{src_stem}.gbw", "{src_stem}.property.json"
+        # but exclude "{src_stem}_input.xyz" etc.
+        if entry.is_file() and entry.name.startswith(f'{src_stem}.'):
+            suffix = entry.name[len(src_stem):]
+            shutil.copy2(entry, dst_dir / f'{dst_stem}{suffix}')
 
 
 def atom_weight(symbol: str) -> float:
@@ -915,6 +1028,83 @@ def check_transfer_integral_completion_pyscf(input_file: str) -> bool:
         if not Path(chkfile).exists():
             return False
         if pyscf_lib.chkfile.load(chkfile, 'job_status/completed') is None:
+            return False
+    return True
+
+
+def check_reorganization_energy_completion_orca(
+    cif_path_without_ext: str,
+    osc_type: Literal['p', 'n'],
+) -> List[Literal['opt_neutral', 'opt_ion', 'neutral', 'ion']]:
+    """Check if ORCA reorganization energy calculations are completed.
+
+    Parameters
+    ----------
+    cif_path_without_ext : str
+        Base path of cif file (without extension)
+    osc_type : Literal['p', 'n']
+        Semiconductor type (p-type or n-type)
+
+    Returns
+    -------
+    List[Literal['opt_neutral', 'opt_ion', 'neutral', 'ion']]
+        List of calculations to skip
+    """
+    from opi.output.core import Output
+
+    def _is_complete(stem: str, directory: str) -> bool:
+        if not Path(f'{directory}/{stem}.out').exists():
+            return False
+        try:
+            output = Output(basename=stem, working_dir=Path(directory), version_check=False)
+            return output.terminated_normally()
+        except Exception:
+            return False
+
+    skip_specified_cal: List[Literal['opt_neutral', 'opt_ion', 'neutral', 'ion']] = []
+    base = Path(cif_path_without_ext)
+    directory = str(base.parent)
+
+    if _is_complete(f'{base.name}_opt_n', directory):
+        skip_specified_cal.append('opt_neutral')
+    if _is_complete(f'{base.name}_n', directory):
+        skip_specified_cal.append('neutral')
+
+    ion = 'c' if osc_type == 'p' else 'a'
+    if _is_complete(f'{base.name}_opt_{ion}', directory):
+        skip_specified_cal.append('opt_ion')
+    if _is_complete(f'{base.name}_{ion}', directory):
+        skip_specified_cal.append('ion')
+
+    return skip_specified_cal
+
+
+def check_transfer_integral_completion_orca(input_file: str) -> bool:
+    """Check if TcalORCA calculations are completed using OPI Output parsing.
+
+    Parameters
+    ----------
+    input_file : str
+        Base path of input file (without extension)
+
+    Returns
+    -------
+    bool
+        True if all output files (dimer, monomer1, monomer2) terminated normally
+    """
+    from opi.output.core import Output
+
+    base = Path(input_file)
+    directory = base.parent
+    for suffix in ['', '_m1', '_m2']:
+        stem = f'{base.name}{suffix}'
+        if not (directory / f'{stem}.out').exists():
+            return False
+        try:
+            output = Output(basename=stem, working_dir=directory, version_check=False)
+            if not output.terminated_normally():
+                return False
+        except Exception:
             return False
     return True
 
