@@ -32,7 +32,7 @@ class GjfMaker:
         self.is_detail = False
         self._function = '# B3LYP/6-31G(d,p)\n'
         self._root = []
-        self._title = '\nDefalut Title\n'
+        self._title = '\nDefault Title\n'
         self._symbols = []
         self._charge_spin = ''
         self._coordinates = []

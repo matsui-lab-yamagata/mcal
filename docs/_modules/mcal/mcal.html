@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html">
 
-    <!-- Generated with Sphinx 7.4.7 and Furo 2025.12.19 -->
+    <!-- Generated with Sphinx 9.0.4 and Furo 2025.12.19 -->
         <title>mcal.mcal - mcal documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
@@ -378,6 +378,15 @@
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--gpu4pyscf&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;use GPU acceleration via gpu4pyscf&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--bse&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;use Basis Set Exchange (PySCF only)&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--cart&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;use Cartesian basis functions (PySCF only)&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--orca&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;use ORCA via OPI instead of Gaussian&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--mpi&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;path to OpenMPI installation directory for ORCA parallel execution &#39;</span>
+             <span class="s1">&#39;(sets OPI_MPI environment variable, ORCA only)&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;PATH&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
 
     <span class="n">args</span><span class="o">.</span><span class="n">osc_type</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">osc_type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
@@ -393,8 +402,18 @@
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Install options:&#39;</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;  CPU only:       pip install &quot;yu-mcal[pyscf]&quot;&#39;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;  GPU (CUDA 13):  pip install &quot;yu-mcal[gpu4pyscf-cuda13]&quot;&#39;</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;  GPU (CUDA 12):  pip install &quot;yu-mcal[gpu4pyscf-cuda12]&quot;&#39;</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;  GPU (CUDA 11):  pip install &quot;yu-mcal[gpu4pyscf-cuda11]&quot;&#39;</span><span class="p">)</span>
+            <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">orca_mode</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">orca</span>
+    <span class="k">if</span> <span class="n">orca_mode</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">tcal</span><span class="w"> </span><span class="kn">import</span> <span class="n">TcalORCA</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">mcal.calculations.rcal_orca</span><span class="w"> </span><span class="kn">import</span> <span class="n">RcalORCA</span>
+        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error: opi (ORCA Python Interface) is not installed.&#39;</span><span class="p">)</span>
             <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">osc_type</span> <span class="o">==</span> <span class="s1">&#39;p&#39;</span><span class="p">:</span>
@@ -416,7 +435,7 @@
     <span class="n">cif_path_without_ext</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">directory</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s1">&#39;</span>
 
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;----------------------------------------&#39;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39; mcal 0.5.1 (2026/04/09) by Matsui Lab. &#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39; mcal 0.6.0 (2026/05/14) by Matsui Lab. &#39;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;----------------------------------------&#39;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">read_pickle</span><span class="p">:</span>
@@ -439,10 +458,6 @@
     <span class="n">coordinates</span> <span class="o">=</span> <span class="n">cif_reader</span><span class="o">.</span><span class="n">convert_frac_to_cart</span><span class="p">(</span><span class="n">coordinates</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">pyscf_mode</span><span class="p">:</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">read</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Create xyz for reorganization energy.&#39;</span><span class="p">)</span>
-            <span class="n">create_reorg_xyz</span><span class="p">(</span><span class="n">symbols</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">directory</span><span class="p">)</span>
-
         <span class="n">rcal</span> <span class="o">=</span> <span class="n">RcalPySCF</span><span class="p">(</span>
             <span class="n">xyz_file</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">cif_path_without_ext</span><span class="si">}</span><span class="s1">_opt_n.xyz&#39;</span><span class="p">,</span>
             <span class="n">osc_type</span><span class="o">=</span><span class="n">osc_type</span><span class="p">,</span>
@@ -459,12 +474,52 @@
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Skip calculation of reorganization energy.&#39;</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">resume</span><span class="p">:</span>
             <span class="n">skip_specified_cal</span> <span class="o">=</span> <span class="n">check_reorganization_energy_completion_pyscf</span><span class="p">(</span><span class="n">cif_path_without_ext</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">osc_type</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">read</span> <span class="ow">and</span> <span class="s1">&#39;opt_neutral&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">skip_specified_cal</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Create xyz for reorganization energy.&#39;</span><span class="p">)</span>
+            <span class="n">create_reorg_xyz</span><span class="p">(</span><span class="n">symbols</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">directory</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">read</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">skip_specified_cal</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Calculate reorganization energy.&#39;</span><span class="p">)</span>
+
+        <span class="n">reorg_energy</span> <span class="o">=</span> <span class="n">rcal</span><span class="o">.</span><span class="n">calc_reorganization</span><span class="p">(</span><span class="n">only_read</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">read</span><span class="p">,</span> <span class="n">is_output_detail</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">skip_specified_cal</span><span class="o">=</span><span class="n">skip_specified_cal</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">orca_mode</span><span class="p">:</span>
+        <span class="n">rcal</span> <span class="o">=</span> <span class="n">RcalORCA</span><span class="p">(</span>
+            <span class="n">xyz_file</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">cif_path_without_ext</span><span class="si">}</span><span class="s1">_opt_n.xyz&#39;</span><span class="p">,</span>
+            <span class="n">osc_type</span><span class="o">=</span><span class="n">osc_type</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">method</span><span class="p">,</span>
+            <span class="n">ncore</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">cpu</span><span class="p">,</span>
+            <span class="n">max_memory_gb</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">mem</span><span class="p">,</span>
+            <span class="n">open_mpi_path</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">mpi</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">skip_specified_cal</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">read</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Skip calculation of reorganization energy.&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">resume</span><span class="p">:</span>
+            <span class="n">skip_specified_cal</span> <span class="o">=</span> <span class="n">check_reorganization_energy_completion_orca</span><span class="p">(</span><span class="n">cif_path_without_ext</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">osc_type</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">read</span> <span class="ow">and</span> <span class="s1">&#39;opt_neutral&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">skip_specified_cal</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Create xyz for reorganization energy.&#39;</span><span class="p">)</span>
+            <span class="n">create_reorg_xyz</span><span class="p">(</span><span class="n">symbols</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">directory</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">read</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">skip_specified_cal</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Calculate reorganization energy.&#39;</span><span class="p">)</span>
 
         <span class="n">reorg_energy</span> <span class="o">=</span> <span class="n">rcal</span><span class="o">.</span><span class="n">calc_reorganization</span><span class="p">(</span><span class="n">only_read</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">read</span><span class="p">,</span> <span class="n">is_output_detail</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">skip_specified_cal</span><span class="o">=</span><span class="n">skip_specified_cal</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">read</span><span class="p">:</span>
+        <span class="n">gjf_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">cif_path_without_ext</span><span class="si">}</span><span class="s1">_opt_n.gjf&#39;</span>
+
+        <span class="n">skip_specified_cal</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">read</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Skip calculation of reorganization energy.&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">resume</span><span class="p">:</span>
+            <span class="n">ext</span> <span class="o">=</span> <span class="s1">&#39;.out&#39;</span> <span class="k">if</span> <span class="n">Path</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">cif_path_without_ext</span><span class="si">}</span><span class="s1">_opt_n.out&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="k">else</span> <span class="s1">&#39;.log&#39;</span>
+            <span class="n">skip_specified_cal</span> <span class="o">=</span> <span class="n">check_reorganization_energy_completion</span><span class="p">(</span><span class="n">cif_path_without_ext</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">osc_type</span><span class="p">,</span> <span class="n">extension_log</span><span class="o">=</span><span class="n">ext</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Calculate reorganization energy.&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">read</span> <span class="ow">and</span> <span class="p">(</span><span class="s1">&#39;opt_neutral&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">skip_specified_cal</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">Path</span><span class="p">(</span><span class="n">gjf_path</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">()):</span>
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Create gjf for reorganization energy.&#39;</span><span class="p">)</span>
             <span class="n">create_reorg_gjf</span><span class="p">(</span>
                 <span class="n">symbols</span><span class="p">,</span>
@@ -476,16 +531,7 @@
                 <span class="n">args</span><span class="o">.</span><span class="n">method</span><span class="p">,</span>
             <span class="p">)</span>
 
-        <span class="n">rcal</span> <span class="o">=</span> <span class="n">Rcal</span><span class="p">(</span><span class="n">input_file</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">cif_path_without_ext</span><span class="si">}</span><span class="s1">_opt_n.gjf&#39;</span><span class="p">,</span> <span class="n">osc_type</span><span class="o">=</span><span class="n">osc_type</span><span class="p">)</span>
-
-        <span class="n">skip_specified_cal</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">read</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Skip calculation of reorganization energy.&#39;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">resume</span><span class="p">:</span>
-            <span class="n">rcal</span><span class="o">.</span><span class="n">check_extension_log</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">cif_path_without_ext</span><span class="si">}</span><span class="s1">_opt_n.gjf&#39;</span><span class="p">)</span>
-            <span class="n">skip_specified_cal</span> <span class="o">=</span> <span class="n">check_reorganization_energy_completion</span><span class="p">(</span><span class="n">cif_path_without_ext</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">osc_type</span><span class="p">,</span> <span class="n">extension_log</span><span class="o">=</span><span class="n">rcal</span><span class="o">.</span><span class="n">_extension_log</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Calculate reorganization energy.&#39;</span><span class="p">)</span>
+        <span class="n">rcal</span> <span class="o">=</span> <span class="n">Rcal</span><span class="p">(</span><span class="n">input_file</span><span class="o">=</span><span class="n">gjf_path</span><span class="p">,</span> <span class="n">osc_type</span><span class="o">=</span><span class="n">osc_type</span><span class="p">)</span>
 
         <span class="n">reorg_energy</span> <span class="o">=</span> <span class="n">rcal</span><span class="o">.</span><span class="n">calc_reorganization</span><span class="p">(</span><span class="n">gau_com</span><span class="o">=</span><span class="n">gau_com</span><span class="p">,</span> <span class="n">only_read</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">read</span><span class="p">,</span> <span class="n">is_output_detail</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">skip_specified_cal</span><span class="o">=</span><span class="n">skip_specified_cal</span><span class="p">)</span>
 
@@ -545,7 +591,10 @@
                             <span class="k">break</span>
 
                 <span class="k">if</span> <span class="n">is_run_ti</span><span class="p">:</span>
-                    <span class="n">input_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s1">-(</span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">)&#39;</span>
+                    <span class="k">if</span> <span class="n">orca_mode</span><span class="p">:</span>
+                        <span class="n">input_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">&#39;</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">input_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s1">-(</span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">)&#39;</span>
                     <span class="n">input_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">directory</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">input_name</span><span class="si">}</span><span class="s1">&#39;</span>
 
                     <span class="c1"># The log file extension is not yet determined here, so the path will be appended later.</span>
@@ -590,6 +639,34 @@
                         <span class="k">else</span><span class="p">:</span>
                             <span class="nb">print</span><span class="p">()</span>
                             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Skip calculation of transfer integral from </span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s1">-th in (0,0,0) cell to </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s1">-th in (</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">,</span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s1">,</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">) cell.&#39;</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">orca_mode</span><span class="p">:</span>
+                        <span class="n">tcal</span> <span class="o">=</span> <span class="n">TcalORCA</span><span class="p">(</span>
+                            <span class="n">input_file</span><span class="p">,</span>
+                            <span class="n">monomer1_atom_num</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">unique_symbols</span><span class="p">),</span>
+                            <span class="n">method</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">method</span><span class="p">,</span>
+                            <span class="n">ncore</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">cpu</span><span class="p">,</span>
+                            <span class="n">max_memory_mb</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">mem</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">,</span>
+                            <span class="n">open_mpi_path</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">mpi</span><span class="p">,</span>
+                        <span class="p">)</span>
+
+                        <span class="n">is_normal_term</span> <span class="o">=</span> <span class="kc">False</span>
+                        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">resume</span><span class="p">:</span>
+                            <span class="n">is_normal_term</span> <span class="o">=</span> <span class="n">check_transfer_integral_completion_orca</span><span class="p">(</span><span class="n">input_file</span><span class="p">)</span>
+
+                        <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">read</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">is_normal_term</span><span class="p">:</span>
+                            <span class="nb">print</span><span class="p">()</span>
+                            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Create xyz for transfer integral.&#39;</span><span class="p">)</span>
+                            <span class="n">create_ti_xyz</span><span class="p">(</span>
+                                <span class="p">{</span><span class="s1">&#39;symbols&#39;</span><span class="p">:</span> <span class="n">unique_symbols</span><span class="p">,</span> <span class="s1">&#39;coordinates&#39;</span><span class="p">:</span> <span class="n">unique_coords</span><span class="p">},</span>
+                                <span class="p">{</span><span class="s1">&#39;symbols&#39;</span><span class="p">:</span> <span class="n">symbols</span><span class="p">,</span> <span class="s1">&#39;coordinates&#39;</span><span class="p">:</span> <span class="n">coordinates</span><span class="p">},</span>
+                                <span class="n">input_basename</span><span class="o">=</span><span class="n">input_name</span><span class="p">,</span>
+                                <span class="n">save_dir</span><span class="o">=</span><span class="n">directory</span><span class="p">,</span>
+                            <span class="p">)</span>
+                            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Calculate transfer integral from </span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s1">-th in (0,0,0) cell to </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s1">-th in (</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">,</span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s1">,</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">) cell.&#39;</span><span class="p">)</span>
+                            <span class="n">tcal</span><span class="o">.</span><span class="n">run_orca</span><span class="p">(</span><span class="n">skip_monomer_num</span><span class="o">=</span><span class="n">skip_monomer_num</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="nb">print</span><span class="p">()</span>
+                            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Skip calculation of transfer integral from </span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s1">-th in (0,0,0) cell to </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s1">-th in (</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">,</span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s1">,</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">) cell.&#39;</span><span class="p">)</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="n">tcal</span> <span class="o">=</span> <span class="n">Tcal</span><span class="p">(</span><span class="n">input_file</span><span class="p">)</span>
 
@@ -629,13 +706,13 @@
                         <span class="n">center_mol_log_paths</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">input_file</span><span class="si">}</span><span class="s1">_m1</span><span class="si">{</span><span class="n">tcal</span><span class="o">.</span><span class="n">extension_log</span><span class="si">}</span><span class="s1">&#39;</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Copy </span><span class="si">{</span><span class="n">center_mol_log_paths</span><span class="p">[</span><span class="n">s</span><span class="p">]</span><span class="si">}</span><span class="s1"> to </span><span class="si">{</span><span class="n">input_file</span><span class="si">}</span><span class="s1">_m1</span><span class="si">{</span><span class="n">tcal</span><span class="o">.</span><span class="n">extension_log</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-                        <span class="n">shutil</span><span class="o">.</span><span class="n">copy2</span><span class="p">(</span><span class="n">center_mol_log_paths</span><span class="p">[</span><span class="n">s</span><span class="p">],</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">input_file</span><span class="si">}</span><span class="s1">_m1</span><span class="si">{</span><span class="n">tcal</span><span class="o">.</span><span class="n">extension_log</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                        <span class="n">_copy_monomer_files</span><span class="p">(</span><span class="n">center_mol_log_paths</span><span class="p">[</span><span class="n">s</span><span class="p">],</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">input_file</span><span class="si">}</span><span class="s1">_m1</span><span class="si">{</span><span class="n">tcal</span><span class="o">.</span><span class="n">extension_log</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">orca_mode</span><span class="p">)</span>
 
                     <span class="k">if</span> <span class="mi">2</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">skip_monomer_num</span><span class="p">:</span>
                         <span class="n">center_mol_log_paths</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">input_file</span><span class="si">}</span><span class="s1">_m2</span><span class="si">{</span><span class="n">tcal</span><span class="o">.</span><span class="n">extension_log</span><span class="si">}</span><span class="s1">&#39;</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Copy </span><span class="si">{</span><span class="n">center_mol_log_paths</span><span class="p">[</span><span class="n">t</span><span class="p">]</span><span class="si">}</span><span class="s1"> to </span><span class="si">{</span><span class="n">input_file</span><span class="si">}</span><span class="s1">_m2</span><span class="si">{</span><span class="n">tcal</span><span class="o">.</span><span class="n">extension_log</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-                        <span class="n">shutil</span><span class="o">.</span><span class="n">copy2</span><span class="p">(</span><span class="n">center_mol_log_paths</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">input_file</span><span class="si">}</span><span class="s1">_m2</span><span class="si">{</span><span class="n">tcal</span><span class="o">.</span><span class="n">extension_log</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                        <span class="n">_copy_monomer_files</span><span class="p">(</span><span class="n">center_mol_log_paths</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">input_file</span><span class="si">}</span><span class="s1">_m2</span><span class="si">{</span><span class="n">tcal</span><span class="o">.</span><span class="n">extension_log</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">orca_mode</span><span class="p">)</span>
 
                     <span class="n">tcal</span><span class="o">.</span><span class="n">read_monomer1</span><span class="p">()</span>
                     <span class="n">tcal</span><span class="o">.</span><span class="n">read_monomer2</span><span class="p">()</span>
@@ -731,6 +808,42 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Elapsed Time: </span><span class="si">{</span><span class="n">elapsed_time_h</span><span class="si">}</span><span class="s1"> h </span><span class="si">{</span><span class="n">elapsed_time_min</span><span class="si">}</span><span class="s1"> min </span><span class="si">{</span><span class="n">elapsed_time_sec</span><span class="si">}</span><span class="s1"> sec&#39;</span><span class="p">)</span></div>
 
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_copy_monomer_files</span><span class="p">(</span><span class="n">src_log</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dst_log</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">orca_mode</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Copy a cached monomer&#39;s output file(s) to a new location.</span>
+
+<span class="sd">    For ORCA, an SP calculation produces a bundle (.out, .gbw, .property.json,</span>
+<span class="sd">    .densities, etc.) that is all needed to read MO coefficients via OPI, so</span>
+<span class="sd">    every file sharing the source stem is copied. For Gaussian/PySCF, only the</span>
+<span class="sd">    single log/out file is needed.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    src_log : str</span>
+<span class="sd">        Path of the cached monomer&#39;s primary log/out file.</span>
+<span class="sd">    dst_log : str</span>
+<span class="sd">        Path of the new monomer&#39;s primary log/out file.</span>
+<span class="sd">    orca_mode : bool</span>
+<span class="sd">        If True, copy every file matching ``{src_stem}.*``. Otherwise copy only</span>
+<span class="sd">        the single primary log/out file.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">orca_mode</span><span class="p">:</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">copy2</span><span class="p">(</span><span class="n">src_log</span><span class="p">,</span> <span class="n">dst_log</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="n">src_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">src_log</span><span class="p">)</span>
+    <span class="n">dst_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">dst_log</span><span class="p">)</span>
+    <span class="n">src_dir</span> <span class="o">=</span> <span class="n">src_path</span><span class="o">.</span><span class="n">parent</span>
+    <span class="n">dst_dir</span> <span class="o">=</span> <span class="n">dst_path</span><span class="o">.</span><span class="n">parent</span>
+    <span class="n">src_stem</span> <span class="o">=</span> <span class="n">src_path</span><span class="o">.</span><span class="n">name</span><span class="p">[:</span> <span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">src_path</span><span class="o">.</span><span class="n">suffix</span><span class="p">)]</span>
+    <span class="n">dst_stem</span> <span class="o">=</span> <span class="n">dst_path</span><span class="o">.</span><span class="n">name</span><span class="p">[:</span> <span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">dst_path</span><span class="o">.</span><span class="n">suffix</span><span class="p">)]</span>
+    <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">src_dir</span><span class="o">.</span><span class="n">iterdir</span><span class="p">():</span>
+        <span class="c1"># Match &quot;{src_stem}.out&quot;, &quot;{src_stem}.gbw&quot;, &quot;{src_stem}.property.json&quot;</span>
+        <span class="c1"># but exclude &quot;{src_stem}_input.xyz&quot; etc.</span>
+        <span class="k">if</span> <span class="n">entry</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span> <span class="ow">and</span> <span class="n">entry</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">src_stem</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">):</span>
+            <span class="n">suffix</span> <span class="o">=</span> <span class="n">entry</span><span class="o">.</span><span class="n">name</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">src_stem</span><span class="p">):]</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">copy2</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="n">dst_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">dst_stem</span><span class="si">}{</span><span class="n">suffix</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="atom_weight">
@@ -1196,6 +1309,89 @@
 
 
 
+<div class="viewcode-block" id="check_reorganization_energy_completion_orca">
+<a class="viewcode-back" href="../../mcal.html#mcal.mcal.check_reorganization_energy_completion_orca">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">check_reorganization_energy_completion_orca</span><span class="p">(</span>
+    <span class="n">cif_path_without_ext</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">osc_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;p&#39;</span><span class="p">,</span> <span class="s1">&#39;n&#39;</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;opt_neutral&#39;</span><span class="p">,</span> <span class="s1">&#39;opt_ion&#39;</span><span class="p">,</span> <span class="s1">&#39;neutral&#39;</span><span class="p">,</span> <span class="s1">&#39;ion&#39;</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check if ORCA reorganization energy calculations are completed.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cif_path_without_ext : str</span>
+<span class="sd">        Base path of cif file (without extension)</span>
+<span class="sd">    osc_type : Literal[&#39;p&#39;, &#39;n&#39;]</span>
+<span class="sd">        Semiconductor type (p-type or n-type)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    List[Literal[&#39;opt_neutral&#39;, &#39;opt_ion&#39;, &#39;neutral&#39;, &#39;ion&#39;]]</span>
+<span class="sd">        List of calculations to skip</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">opi.output.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Output</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_is_complete</span><span class="p">(</span><span class="n">stem</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">directory</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">Path</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">directory</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">stem</span><span class="si">}</span><span class="s1">.out&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="n">Output</span><span class="p">(</span><span class="n">basename</span><span class="o">=</span><span class="n">stem</span><span class="p">,</span> <span class="n">working_dir</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">directory</span><span class="p">),</span> <span class="n">version_check</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">output</span><span class="o">.</span><span class="n">terminated_normally</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="n">skip_specified_cal</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;opt_neutral&#39;</span><span class="p">,</span> <span class="s1">&#39;opt_ion&#39;</span><span class="p">,</span> <span class="s1">&#39;neutral&#39;</span><span class="p">,</span> <span class="s1">&#39;ion&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">base</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">cif_path_without_ext</span><span class="p">)</span>
+    <span class="n">directory</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">parent</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">_is_complete</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">base</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">_opt_n&#39;</span><span class="p">,</span> <span class="n">directory</span><span class="p">):</span>
+        <span class="n">skip_specified_cal</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;opt_neutral&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">_is_complete</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">base</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">_n&#39;</span><span class="p">,</span> <span class="n">directory</span><span class="p">):</span>
+        <span class="n">skip_specified_cal</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;neutral&#39;</span><span class="p">)</span>
+
+    <span class="n">ion</span> <span class="o">=</span> <span class="s1">&#39;c&#39;</span> <span class="k">if</span> <span class="n">osc_type</span> <span class="o">==</span> <span class="s1">&#39;p&#39;</span> <span class="k">else</span> <span class="s1">&#39;a&#39;</span>
+    <span class="k">if</span> <span class="n">_is_complete</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">base</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">_opt_</span><span class="si">{</span><span class="n">ion</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">directory</span><span class="p">):</span>
+        <span class="n">skip_specified_cal</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;opt_ion&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">_is_complete</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">base</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">ion</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">directory</span><span class="p">):</span>
+        <span class="n">skip_specified_cal</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;ion&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">skip_specified_cal</span></div>
+
+
+
+<div class="viewcode-block" id="check_transfer_integral_completion_orca">
+<a class="viewcode-back" href="../../mcal.html#mcal.mcal.check_transfer_integral_completion_orca">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">check_transfer_integral_completion_orca</span><span class="p">(</span><span class="n">input_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check if TcalORCA calculations are completed using OPI Output parsing.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    input_file : str</span>
+<span class="sd">        Base path of input file (without extension)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    bool</span>
+<span class="sd">        True if all output files (dimer, monomer1, monomer2) terminated normally</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">opi.output.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Output</span>
+
+    <span class="n">base</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">input_file</span><span class="p">)</span>
+    <span class="n">directory</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">parent</span>
+    <span class="k">for</span> <span class="n">suffix</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;_m1&#39;</span><span class="p">,</span> <span class="s1">&#39;_m2&#39;</span><span class="p">]:</span>
+        <span class="n">stem</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">base</span><span class="o">.</span><span class="n">name</span><span class="si">}{</span><span class="n">suffix</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">directory</span> <span class="o">/</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">stem</span><span class="si">}</span><span class="s1">.out&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="n">Output</span><span class="p">(</span><span class="n">basename</span><span class="o">=</span><span class="n">stem</span><span class="p">,</span> <span class="n">working_dir</span><span class="o">=</span><span class="n">directory</span><span class="p">,</span> <span class="n">version_check</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">output</span><span class="o">.</span><span class="n">terminated_normally</span><span class="p">():</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+
+
 <div class="viewcode-block" id="create_ti_gjf">
 <a class="viewcode-back" href="../../mcal.html#mcal.mcal.create_ti_gjf">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">create_ti_gjf</span><span class="p">(</span>
@@ -1516,8 +1712,8 @@
     </aside>
   </div>
 </div><script src="../../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../../_static/doctools.js?v=9a2dae69"></script>
-    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
     </body>
 </html>

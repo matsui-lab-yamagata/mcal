@@ -17,39 +17,31 @@ from .mcal import (
 )
 
 
+__all__ = [
+    'cal_pinv',
+    'marcus_rate',
+    'mobility_tensor',
+    'diffusion_coefficient_tensor',
+    'Rcal',
+    'CifReader',
+    'GjfMaker',
+    'FileReader',
+    'check_normal_termination',
+    'atom_weight',
+    'cal_cen_of_weight',
+    'cal_distance_between_cen_of_weight',
+    'cal_min_distance',
+    'cal_moment_of_inertia',
+]
+
 try:
     from .calculations.rcal_pyscf import RcalPySCF
-    __all__ = [
-        'cal_pinv',
-        'marcus_rate',
-        'mobility_tensor',
-        'diffusion_coefficient_tensor',
-        'Rcal',
-        'RcalPySCF',
-        'CifReader',
-        'GjfMaker',
-        'FileReader',
-        'check_normal_termination',
-        'atom_weight',
-        'cal_cen_of_weight',
-        'cal_distance_between_cen_of_weight',
-        'cal_min_distance',
-        'cal_moment_of_inertia',
-    ]
+    __all__.append('RcalPySCF')
 except ImportError:
-    __all__ = [
-        'cal_pinv',
-        'marcus_rate',
-        'mobility_tensor',
-        'diffusion_coefficient_tensor',
-        'Rcal',
-        'CifReader',
-        'GjfMaker',
-        'FileReader',
-        'check_normal_termination',
-        'atom_weight',
-        'cal_cen_of_weight',
-        'cal_distance_between_cen_of_weight',
-        'cal_min_distance',
-        'cal_moment_of_inertia',
-    ]
+    pass
+
+try:
+    from .calculations.rcal_orca import RcalORCA
+    __all__.append('RcalORCA')
+except ImportError:
+    pass

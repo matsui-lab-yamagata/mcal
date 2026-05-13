@@ -83,7 +83,7 @@ class RcalPySCF(Rcal):
             print(f'running geometric optimization for {basename}_opt_n.chk')
         mol_opt_n, e0 = self._run_opt(
             mol_n, label=f'{basename}_opt_n',
-            functional=functional, basis=basis,
+            functional=functional,
             only_read=only_read, is_output_detail=is_output_detail,
             skip_cal='opt_neutral' in skip_specified_cal,
         )
@@ -116,7 +116,7 @@ class RcalPySCF(Rcal):
             print(f'running geometric optimization for {basename}_opt_{self.ion}.chk')
         mol_opt_ion, e2 = self._run_opt(
             mol_ion_n, label=f'{basename}_opt_{self.ion}',
-            functional=functional, basis=basis,
+            functional=functional,
             only_read=only_read, is_output_detail=is_output_detail,
             skip_cal='opt_ion' in skip_specified_cal,
         )
@@ -275,7 +275,6 @@ class RcalPySCF(Rcal):
         mol: gto.Mole,
         label: str,
         functional: str,
-        basis: str,
         only_read: bool = False,
         is_output_detail: bool = False,
         skip_cal: bool = False,
@@ -290,8 +289,6 @@ class RcalPySCF(Rcal):
             Label of the calculation.
         functional : str
             Functional.
-        basis : str
-            Basis set.
         only_read : bool
             If True, load results from existing checkpoint files without running calculations.
         is_output_detail : bool
@@ -304,11 +301,9 @@ class RcalPySCF(Rcal):
         Tuple[gto.Mole, float]
             Optimized molecule and energy [eV].
         """
-        xyz_file = f'{label}.xyz'
         chkfile = f'{label}.chk'
         if only_read or skip_cal:
-            atoms = self._read_xyz(xyz_file)
-            mol_opt = self._build_mol(atoms, mol.charge, mol.spin, basis)
+            mol_opt = lib.chkfile.load_mol(chkfile)
             energy_ev = lib.chkfile.load(chkfile, 'scf/e_tot') * self.HARTREE_TO_EV
         else:
             lib.num_threads(self._ncore)
@@ -321,16 +316,15 @@ class RcalPySCF(Rcal):
             if not mf_opt.converged:
                 print(f'WARNING: SCF did not converge for {label}')
             energy_ev = mf_opt.e_tot * self.HARTREE_TO_EV
-            self._save_xyz(mol_opt, xyz_file, label)
 
         if not only_read and not skip_cal:
             lib.chkfile.save(chkfile, 'job_status/completed', True)
 
         if is_output_detail:
             if not only_read and not skip_cal:
-                print(f'{xyz_file} calculation completed.')
+                print(f'{chkfile} calculation completed.')
             elif skip_cal:
-                print(f'{xyz_file} calculation skipped.')
+                print(f'{chkfile} calculation skipped.')
             print(f'reading {chkfile}')
             print()
             print('--------------')
@@ -369,23 +363,3 @@ class RcalPySCF(Rcal):
                     x, y, z = map(float, parts[1:4])
                     atoms.append((symbol, (x, y, z)))
         return atoms
-
-    def _save_xyz(self, mol: gto.Mole, xyz_file: str, title: str) -> None:
-        """Save xyz file.
-
-        Parameters
-        ----------
-        mol : gto.Mole
-            Molecule.
-        xyz_file : str
-            Path to the xyz file.
-        title : str
-            Title of the molecule.
-        """
-        coords_ang = mol.atom_coords(unit='Angstrom')
-        with open(xyz_file, 'w', encoding='utf-8') as f:
-            f.write(f'{mol.natm}\n{title}\n')
-            for i in range(mol.natm):
-                sym = mol.atom_symbol(i)
-                x, y, z = coords_ang[i]
-                f.write(f'{sym}  {x:.8f}  {y:.8f}  {z:.8f}\n')

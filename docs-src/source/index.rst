@@ -21,7 +21,7 @@ Features
 --------
 
 * Read crystal structures from CIF files
-* Quantum chemical calculations using Gaussian 09/16 or PySCF
+* Quantum chemical calculations using Gaussian 09/16, PySCF, or ORCA
 * Calculation of transfer integrals
 * Calculation of reorganization energy
 * Computation of mobility tensors and eigenvalues
@@ -29,11 +29,11 @@ Features
 Requirements
 ============
 
-* Python 3.9 or newer
+* Python 3.11 or newer
 * NumPy
 * Pandas
 * Matplotlib
-* yu-tcal==4.1.0
+* yu-tcal==5.0.1
 
 Quantum Chemistry Calculation Tools
 ------------------------------------
@@ -43,6 +43,7 @@ At least one of the following is required:
 * Gaussian 09 or 16
 * PySCF (macOS / Linux / WSL2(Windows Subsystem for Linux))
 * GPU4PySCF (macOS / Linux / WSL2(Windows Subsystem for Linux))
+* ORCA 6.1.0 or newer
 
 .. important::
    When using Gaussian, the path to Gaussian must be set in your environment.
@@ -76,6 +77,12 @@ Using GPU acceleration with PySCF (macOS / Linux / WSL2)
 
 2. Install mcal with GPU acceleration:
 
+If your CUDA Toolkit version is 13.x:
+
+.. code-block:: bash
+
+   pip install "yu-mcal[gpu4pyscf-cuda13]"
+
 If your CUDA Toolkit version is 12.x:
 
 .. code-block:: bash
@@ -88,6 +95,12 @@ If your CUDA Toolkit version is 11.x:
 
    pip install "yu-mcal[gpu4pyscf-cuda11]"
 
+Using ORCA 6.1.0 or newer
+--------------------------
+
+.. code-block:: bash
+
+   pip install "yu-mcal[orca]"
 
 Verify Installation
 -------------------
@@ -198,6 +211,85 @@ Use Basis Set Exchange for basis-set definitions (PySCF only).
 
 * **Example**: ``mcal xxx.cif p --pyscf --bse -M "B3LYP/def2-SVP"``
 
+ORCA Settings
+~~~~~~~~~~~~~
+
+``--orca``
+^^^^^^^^^^
+
+Use ORCA instead of Gaussian for all calculations. Requires ``yu-mcal[orca]``.
+
+* **Example**: ``mcal xxx.cif p --orca``
+
+``--mpi <path>``
+^^^^^^^^^^^^^^^^
+
+Specify the path to the OpenMPI installation directory for ORCA parallel execution.
+This sets the ``OPI_MPI`` environment variable used by the ORCA Python Interface (OPI).
+Only valid with ``--orca``.
+
+* **Example**: ``mcal xxx.cif p --orca --mpi /usr/lib/x86_64-linux-gnu/openmpi``
+
+Parallel Execution
+^^^^^^^^^^^^^^^^^^
+
+To use multiple CPU cores (``--cpu N``), OpenMPI must be installed.
+First, confirm that ``mpirun`` is available:
+
+.. code-block:: bash
+
+   which mpirun
+
+If OpenMPI is already in ``$PATH`` and ``$LD_LIBRARY_PATH`` (common on Linux/WSL after ``apt install``),
+no further configuration is needed.
+
+If parallel execution does not work, find the OpenMPI base directory
+(the directory that contains ``bin/`` and ``lib/``) and pass it via ``OPI_MPI`` or ``--mpi``.
+
+Linux / WSL
+"""""""""""
+
+.. note::
+
+   ORCA requires a specific version of OpenMPI. The version available via ``apt`` may not match.
+   If parallel execution fails, it is recommended to build OpenMPI from source using the version
+   specified in the `ORCA documentation <https://www.faccts.de/docs/orca/6.0/manual/>`_.
+
+When ``mpirun`` is installed under a dedicated directory (e.g., built from source or via a module system):
+
+.. code-block:: bash
+
+   which mpirun
+   # e.g., /opt/openmpi/bin/mpirun  →  base: /opt/openmpi
+   export OPI_MPI=$(dirname $(dirname $(which mpirun)))
+
+When installed system-wide via ``apt`` (Ubuntu/Debian), ``mpirun`` is typically at
+``/usr/bin/mpirun`` but the OpenMPI libraries live under ``/usr/lib/``. Check with:
+
+.. code-block:: bash
+
+   which mpirun
+   # /usr/bin/mpirun  →  base is usually /usr/lib/x86_64-linux-gnu/openmpi
+   export OPI_MPI=/usr/lib/x86_64-linux-gnu/openmpi
+
+macOS (Homebrew)
+""""""""""""""""
+
+.. code-block:: bash
+
+   which mpirun
+   # e.g., /opt/homebrew/bin/mpirun
+   export OPI_MPI=$(brew --prefix open-mpi)
+
+Passing the path with ``--mpi``
+""""""""""""""""""""""""""""""""
+
+Instead of setting the environment variable, you can pass the path directly:
+
+.. code-block:: bash
+
+   mcal xxx.cif p --orca -c 8 --mpi /path/to/openmpi
+
 Calculation Control
 ~~~~~~~~~~~~~~~~~~~
 
@@ -205,7 +297,8 @@ Calculation Control
 ^^^^^^^^^^^^^^
 
 Read results from existing files without executing calculations.
-With Gaussian, reads from log files; with PySCF, reads from checkpoint (``.chk``) files.
+With Gaussian, reads from log files; with PySCF, reads from checkpoint (``.chk``) files;
+with ORCA, reads from output (``.out``) files.
 
 * **Example**: ``mcal xxx.cif p -r``
 
@@ -220,7 +313,8 @@ Read results from existing pickle file without executing calculations.
 ^^^^^^^^^^^^
 
 Resume calculation using existing results.
-With Gaussian, checks log file termination; with PySCF, checks for existing checkpoint (``.chk``) files.
+With Gaussian, checks log file termination; with PySCF, checks for existing checkpoint (``.chk``) files;
+with ORCA, checks ``.out`` file termination.
 
 * **Example**: ``mcal xxx.cif p --resume``
 
@@ -239,7 +333,7 @@ The following two optimizations are disabled:
 * **Example**: ``mcal xxx.cif p --fullcal``
 
 ``--no-monomer-cache``
-^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^
 
 Disable only monomer caching. Pair screening remains active.
 All monomer SCF calculations are performed from scratch instead of reusing
@@ -334,6 +428,26 @@ PySCF Calculations
    # Read from existing PySCF checkpoint files
    mcal xxx.cif p --pyscf -r
 
+ORCA Calculations
+~~~~~~~~~~~~~~~~~
+
+.. code-block:: bash
+
+   # Calculate using ORCA
+   mcal xxx.cif p --orca
+
+   # Use 8 CPUs and 16GB memory with ORCA
+   mcal xxx.cif p --orca -c 8 -m 16
+
+   # Specify OpenMPI path for ORCA parallel execution
+   mcal xxx.cif p --orca --mpi /usr/lib/x86_64-linux-gnu/openmpi
+
+   # Resume interrupted ORCA calculation
+   mcal xxx.cif p --orca --resume
+
+   # Read from existing ORCA output files
+   mcal xxx.cif p --orca -r
+
 Reusing Results
 ~~~~~~~~~~~~~~~
 
@@ -386,10 +500,19 @@ The following files are generated during reorganization energy calculation
 * ``xxx_opt_c.xyz`` / ``xxx_opt_c.chk`` (or ``xxx_opt_a``) — geometry optimization of ion
 * ``xxx_n.chk`` — SP energy of neutral at ion geometry
 
+**ORCA:**
+
+* ``xxx_opt_n_input.xyz`` / ``xxx_opt_n.out`` / ``xxx_opt_n.xyz`` — geometry optimization of neutral molecule
+* ``xxx_c_input.xyz`` / ``xxx_c.out`` (or ``xxx_a``) — SP energy of ion at neutral geometry
+* ``xxx_opt_c_input.xyz`` / ``xxx_opt_c.out`` / ``xxx_opt_c.xyz`` (or ``xxx_opt_a``) — geometry optimization of ion
+* ``xxx_n_input.xyz`` / ``xxx_n.out`` — SP energy of neutral at ion geometry
+
 Transfer Integral Files
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-mcal generates calculation files named using the ``(s_t_i_j_k)`` notation:
+mcal generates calculation files named using the ``(s_t_i_j_k)`` notation (Gaussian and PySCF).
+For ORCA, the ``@s_t_i_j_k`` notation is used instead because ORCA cannot handle parentheses
+in filenames.
 
 .. list-table::
    :header-rows: 1
@@ -407,8 +530,10 @@ mcal generates calculation files named using the ``(s_t_i_j_k)`` notation:
    * - ``k``
      - Translation index along the **c**-axis
 
-**Example:** ``xxx-(0_0_1_0_0)`` represents the transfer integral between the 0th molecule
-in the (0,0,0) cell and the 0th molecule in the (1,0,0) cell.
+**Example (Gaussian / PySCF):** ``xxx-(0_0_1_0_0)`` represents the transfer integral between
+the 0th molecule in the (0,0,0) cell and the 0th molecule in the (1,0,0) cell.
+
+**Example (ORCA):** ``xxx@0_0_1_0_0`` represents the same pair as above.
 
 **Gaussian:**
 
@@ -421,6 +546,12 @@ in the (0,0,0) cell and the 0th molecule in the (1,0,0) cell.
 * ``xxx-(s_t_i_j_k).xyz`` / ``xxx-(s_t_i_j_k).chk`` — dimer
 * ``xxx-(s_t_i_j_k)_m1.chk`` — monomer 1
 * ``xxx-(s_t_i_j_k)_m2.chk`` — monomer 2
+
+**ORCA:**
+
+* ``xxx@s_t_i_j_k.xyz`` / ``xxx@s_t_i_j_k.out`` — dimer
+* ``xxx@s_t_i_j_k_m1.out`` — monomer 1
+* ``xxx@s_t_i_j_k_m2.out`` — monomer 2
 
 Notes
 -----
@@ -512,6 +643,8 @@ References
 * [3] Benjamin P. Pritchard et al., New Basis Set Exchange: An Open, Up-to-Date
   Resource for the Molecular Sciences Community, *J. Chem. Inf. Model.* **2019**,
   *59*, 4814-4820.
+* [4] Frank Neese, The ORCA program system, *Wiley Interdiscip. Rev. Comput. Mol. Sci.*,
+  **2012**, *2*, 73-78.
 
 API Reference
 =============

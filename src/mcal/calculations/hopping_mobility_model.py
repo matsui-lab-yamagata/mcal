@@ -87,7 +87,7 @@ def cal_pinv(array: NDArray[np.float64], rcond: float = 1e-3) -> NDArray[np.floa
     array : NDArray[np.float64]
         Input matrix
     rcond : float, optional
-        Cutoff for small singular values, by default 1e-9
+        Cutoff for small singular values, by default 1e-3
 
     Returns
     -------

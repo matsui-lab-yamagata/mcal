@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="mcal" href="modules.html">
 
-    <!-- Generated with Sphinx 7.4.7 and Furo 2025.12.19 -->
+    <!-- Generated with Sphinx 9.0.4 and Furo 2025.12.19 -->
         <title>mcal documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
@@ -254,7 +254,7 @@ and determines mobility tensors considering anisotropy and path continuity.</p>
 <h3>Features<a class="headerlink" href="#features" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Read crystal structures from CIF files</p></li>
-<li><p>Quantum chemical calculations using Gaussian 09/16 or PySCF</p></li>
+<li><p>Quantum chemical calculations using Gaussian 09/16, PySCF, or ORCA</p></li>
 <li><p>Calculation of transfer integrals</p></li>
 <li><p>Calculation of reorganization energy</p></li>
 <li><p>Computation of mobility tensors and eigenvalues</p></li>
@@ -264,11 +264,11 @@ and determines mobility tensors considering anisotropy and path continuity.</p>
 <section id="requirements">
 <h2>Requirements<a class="headerlink" href="#requirements" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li><p>Python 3.9 or newer</p></li>
+<li><p>Python 3.11 or newer</p></li>
 <li><p>NumPy</p></li>
 <li><p>Pandas</p></li>
 <li><p>Matplotlib</p></li>
-<li><p>yu-tcal==4.1.0</p></li>
+<li><p>yu-tcal==5.0.1</p></li>
 </ul>
 <section id="quantum-chemistry-calculation-tools">
 <h3>Quantum Chemistry Calculation Tools<a class="headerlink" href="#quantum-chemistry-calculation-tools" title="Link to this heading">¶</a></h3>
@@ -277,6 +277,7 @@ and determines mobility tensors considering anisotropy and path continuity.</p>
 <li><p>Gaussian 09 or 16</p></li>
 <li><p>PySCF (macOS / Linux / WSL2(Windows Subsystem for Linux))</p></li>
 <li><p>GPU4PySCF (macOS / Linux / WSL2(Windows Subsystem for Linux))</p></li>
+<li><p>ORCA 6.1.0 or newer</p></li>
 </ul>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
@@ -310,12 +311,22 @@ PySCF is supported on macOS / Linux. Windows users must use WSL2.</p>
 <ol class="arabic simple" start="2">
 <li><p>Install mcal with GPU acceleration:</p></li>
 </ol>
+<p>If your CUDA Toolkit version is 13.x:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;yu-mcal[gpu4pyscf-cuda13]&quot;</span>
+</pre></div>
+</div>
 <p>If your CUDA Toolkit version is 12.x:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;yu-mcal[gpu4pyscf-cuda12]&quot;</span>
 </pre></div>
 </div>
 <p>If your CUDA Toolkit version is 11.x:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;yu-mcal[gpu4pyscf-cuda11]&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="using-orca-6-1-0-or-newer">
+<h3>Using ORCA 6.1.0 or newer<a class="headerlink" href="#using-orca-6-1-0-or-newer" title="Link to this heading">¶</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;yu-mcal[orca]&quot;</span>
 </pre></div>
 </div>
 </section>
@@ -426,12 +437,81 @@ Requires <code class="docutils literal notranslate"><span class="pre">yu-mcal[gp
 </ul>
 </section>
 </section>
+<section id="orca-settings">
+<h4>ORCA Settings<a class="headerlink" href="#orca-settings" title="Link to this heading">¶</a></h4>
+<section id="orca">
+<h5><code class="docutils literal notranslate"><span class="pre">--orca</span></code><a class="headerlink" href="#orca" title="Link to this heading">¶</a></h5>
+<p>Use ORCA instead of Gaussian for all calculations. Requires <code class="docutils literal notranslate"><span class="pre">yu-mcal[orca]</span></code>.</p>
+<ul class="simple">
+<li><p><strong>Example</strong>: <code class="docutils literal notranslate"><span class="pre">mcal</span> <span class="pre">xxx.cif</span> <span class="pre">p</span> <span class="pre">--orca</span></code></p></li>
+</ul>
+</section>
+<section id="mpi-path">
+<h5><code class="docutils literal notranslate"><span class="pre">--mpi</span> <span class="pre">&lt;path&gt;</span></code><a class="headerlink" href="#mpi-path" title="Link to this heading">¶</a></h5>
+<p>Specify the path to the OpenMPI installation directory for ORCA parallel execution.
+This sets the <code class="docutils literal notranslate"><span class="pre">OPI_MPI</span></code> environment variable used by the ORCA Python Interface (OPI).
+Only valid with <code class="docutils literal notranslate"><span class="pre">--orca</span></code>.</p>
+<ul class="simple">
+<li><p><strong>Example</strong>: <code class="docutils literal notranslate"><span class="pre">mcal</span> <span class="pre">xxx.cif</span> <span class="pre">p</span> <span class="pre">--orca</span> <span class="pre">--mpi</span> <span class="pre">/usr/lib/x86_64-linux-gnu/openmpi</span></code></p></li>
+</ul>
+</section>
+<section id="parallel-execution">
+<h5>Parallel Execution<a class="headerlink" href="#parallel-execution" title="Link to this heading">¶</a></h5>
+<p>To use multiple CPU cores (<code class="docutils literal notranslate"><span class="pre">--cpu</span> <span class="pre">N</span></code>), OpenMPI must be installed.
+First, confirm that <code class="docutils literal notranslate"><span class="pre">mpirun</span></code> is available:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>which<span class="w"> </span>mpirun
+</pre></div>
+</div>
+<p>If OpenMPI is already in <code class="docutils literal notranslate"><span class="pre">$PATH</span></code> and <code class="docutils literal notranslate"><span class="pre">$LD_LIBRARY_PATH</span></code> (common on Linux/WSL after <code class="docutils literal notranslate"><span class="pre">apt</span> <span class="pre">install</span></code>),
+no further configuration is needed.</p>
+<p>If parallel execution does not work, find the OpenMPI base directory
+(the directory that contains <code class="docutils literal notranslate"><span class="pre">bin/</span></code> and <code class="docutils literal notranslate"><span class="pre">lib/</span></code>) and pass it via <code class="docutils literal notranslate"><span class="pre">OPI_MPI</span></code> or <code class="docutils literal notranslate"><span class="pre">--mpi</span></code>.</p>
+<section id="linux-wsl">
+<h6>Linux / WSL<a class="headerlink" href="#linux-wsl" title="Link to this heading">¶</a></h6>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>ORCA requires a specific version of OpenMPI. The version available via <code class="docutils literal notranslate"><span class="pre">apt</span></code> may not match.
+If parallel execution fails, it is recommended to build OpenMPI from source using the version
+specified in the <a class="reference external" href="https://www.faccts.de/docs/orca/6.0/manual/" rel="noreferrer" target="_blank">ORCA documentation</a>.</p>
+</div>
+<p>When <code class="docutils literal notranslate"><span class="pre">mpirun</span></code> is installed under a dedicated directory (e.g., built from source or via a module system):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>which<span class="w"> </span>mpirun
+<span class="c1"># e.g., /opt/openmpi/bin/mpirun  →  base: /opt/openmpi</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">OPI_MPI</span><span class="o">=</span><span class="k">$(</span>dirname<span class="w"> </span><span class="k">$(</span>dirname<span class="w"> </span><span class="k">$(</span>which<span class="w"> </span>mpirun<span class="k">)))</span>
+</pre></div>
+</div>
+<p>When installed system-wide via <code class="docutils literal notranslate"><span class="pre">apt</span></code> (Ubuntu/Debian), <code class="docutils literal notranslate"><span class="pre">mpirun</span></code> is typically at
+<code class="docutils literal notranslate"><span class="pre">/usr/bin/mpirun</span></code> but the OpenMPI libraries live under <code class="docutils literal notranslate"><span class="pre">/usr/lib/</span></code>. Check with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>which<span class="w"> </span>mpirun
+<span class="c1"># /usr/bin/mpirun  →  base is usually /usr/lib/x86_64-linux-gnu/openmpi</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">OPI_MPI</span><span class="o">=</span>/usr/lib/x86_64-linux-gnu/openmpi
+</pre></div>
+</div>
+</section>
+<section id="macos-homebrew">
+<h6>macOS (Homebrew)<a class="headerlink" href="#macos-homebrew" title="Link to this heading">¶</a></h6>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>which<span class="w"> </span>mpirun
+<span class="c1"># e.g., /opt/homebrew/bin/mpirun</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">OPI_MPI</span><span class="o">=</span><span class="k">$(</span>brew<span class="w"> </span>--prefix<span class="w"> </span>open-mpi<span class="k">)</span>
+</pre></div>
+</div>
+</section>
+<section id="passing-the-path-with-mpi">
+<h6>Passing the path with <code class="docutils literal notranslate"><span class="pre">--mpi</span></code><a class="headerlink" href="#passing-the-path-with-mpi" title="Link to this heading">¶</a></h6>
+<p>Instead of setting the environment variable, you can pass the path directly:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mcal<span class="w"> </span>xxx.cif<span class="w"> </span>p<span class="w"> </span>--orca<span class="w"> </span>-c<span class="w"> </span><span class="m">8</span><span class="w"> </span>--mpi<span class="w"> </span>/path/to/openmpi
+</pre></div>
+</div>
+</section>
+</section>
+</section>
 <section id="calculation-control">
 <h4>Calculation Control<a class="headerlink" href="#calculation-control" title="Link to this heading">¶</a></h4>
 <section id="r-read">
 <h5><code class="docutils literal notranslate"><span class="pre">-r,</span> <span class="pre">--read</span></code><a class="headerlink" href="#r-read" title="Link to this heading">¶</a></h5>
 <p>Read results from existing files without executing calculations.
-With Gaussian, reads from log files; with PySCF, reads from checkpoint (<code class="docutils literal notranslate"><span class="pre">.chk</span></code>) files.</p>
+With Gaussian, reads from log files; with PySCF, reads from checkpoint (<code class="docutils literal notranslate"><span class="pre">.chk</span></code>) files;
+with ORCA, reads from output (<code class="docutils literal notranslate"><span class="pre">.out</span></code>) files.</p>
 <ul class="simple">
 <li><p><strong>Example</strong>: <code class="docutils literal notranslate"><span class="pre">mcal</span> <span class="pre">xxx.cif</span> <span class="pre">p</span> <span class="pre">-r</span></code></p></li>
 </ul>
@@ -446,7 +526,8 @@ With Gaussian, reads from log files; with PySCF, reads from checkpoint (<code cl
 <section id="resume">
 <h5><code class="docutils literal notranslate"><span class="pre">--resume</span></code><a class="headerlink" href="#resume" title="Link to this heading">¶</a></h5>
 <p>Resume calculation using existing results.
-With Gaussian, checks log file termination; with PySCF, checks for existing checkpoint (<code class="docutils literal notranslate"><span class="pre">.chk</span></code>) files.</p>
+With Gaussian, checks log file termination; with PySCF, checks for existing checkpoint (<code class="docutils literal notranslate"><span class="pre">.chk</span></code>) files;
+with ORCA, checks <code class="docutils literal notranslate"><span class="pre">.out</span></code> file termination.</p>
 <ul class="simple">
 <li><p><strong>Example</strong>: <code class="docutils literal notranslate"><span class="pre">mcal</span> <span class="pre">xxx.cif</span> <span class="pre">p</span> <span class="pre">--resume</span></code></p></li>
 </ul>
@@ -564,6 +645,25 @@ mcal<span class="w"> </span>xxx.cif<span class="w"> </span>p<span class="w"> </s
 </pre></div>
 </div>
 </section>
+<section id="orca-calculations">
+<h4>ORCA Calculations<a class="headerlink" href="#orca-calculations" title="Link to this heading">¶</a></h4>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Calculate using ORCA</span>
+mcal<span class="w"> </span>xxx.cif<span class="w"> </span>p<span class="w"> </span>--orca
+
+<span class="c1"># Use 8 CPUs and 16GB memory with ORCA</span>
+mcal<span class="w"> </span>xxx.cif<span class="w"> </span>p<span class="w"> </span>--orca<span class="w"> </span>-c<span class="w"> </span><span class="m">8</span><span class="w"> </span>-m<span class="w"> </span><span class="m">16</span>
+
+<span class="c1"># Specify OpenMPI path for ORCA parallel execution</span>
+mcal<span class="w"> </span>xxx.cif<span class="w"> </span>p<span class="w"> </span>--orca<span class="w"> </span>--mpi<span class="w"> </span>/usr/lib/x86_64-linux-gnu/openmpi
+
+<span class="c1"># Resume interrupted ORCA calculation</span>
+mcal<span class="w"> </span>xxx.cif<span class="w"> </span>p<span class="w"> </span>--orca<span class="w"> </span>--resume
+
+<span class="c1"># Read from existing ORCA output files</span>
+mcal<span class="w"> </span>xxx.cif<span class="w"> </span>p<span class="w"> </span>--orca<span class="w"> </span>-r
+</pre></div>
+</div>
+</section>
 <section id="reusing-results">
 <h4>Reusing Results<a class="headerlink" href="#reusing-results" title="Link to this heading">¶</a></h4>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Read from existing calculation results</span>
@@ -613,10 +713,19 @@ mcal<span class="w"> </span>xxx.cif<span class="w"> </span>p<span class="w"> </s
 <li><p><code class="docutils literal notranslate"><span class="pre">xxx_opt_c.xyz</span></code> / <code class="docutils literal notranslate"><span class="pre">xxx_opt_c.chk</span></code> (or <code class="docutils literal notranslate"><span class="pre">xxx_opt_a</span></code>) — geometry optimization of ion</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">xxx_n.chk</span></code> — SP energy of neutral at ion geometry</p></li>
 </ul>
+<p><strong>ORCA:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">xxx_opt_n_input.xyz</span></code> / <code class="docutils literal notranslate"><span class="pre">xxx_opt_n.out</span></code> / <code class="docutils literal notranslate"><span class="pre">xxx_opt_n.xyz</span></code> — geometry optimization of neutral molecule</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">xxx_c_input.xyz</span></code> / <code class="docutils literal notranslate"><span class="pre">xxx_c.out</span></code> (or <code class="docutils literal notranslate"><span class="pre">xxx_a</span></code>) — SP energy of ion at neutral geometry</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">xxx_opt_c_input.xyz</span></code> / <code class="docutils literal notranslate"><span class="pre">xxx_opt_c.out</span></code> / <code class="docutils literal notranslate"><span class="pre">xxx_opt_c.xyz</span></code> (or <code class="docutils literal notranslate"><span class="pre">xxx_opt_a</span></code>) — geometry optimization of ion</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">xxx_n_input.xyz</span></code> / <code class="docutils literal notranslate"><span class="pre">xxx_n.out</span></code> — SP energy of neutral at ion geometry</p></li>
+</ul>
 </section>
 <section id="transfer-integral-files">
 <h5>Transfer Integral Files<a class="headerlink" href="#transfer-integral-files" title="Link to this heading">¶</a></h5>
-<p>mcal generates calculation files named using the <code class="docutils literal notranslate"><span class="pre">(s_t_i_j_k)</span></code> notation:</p>
+<p>mcal generates calculation files named using the <code class="docutils literal notranslate"><span class="pre">(s_t_i_j_k)</span></code> notation (Gaussian and PySCF).
+For ORCA, the <code class="docutils literal notranslate"><span class="pre">&#64;s_t_i_j_k</span></code> notation is used instead because ORCA cannot handle parentheses
+in filenames.</p>
 <div class="table-wrapper docutils container">
 <table class="docutils align-default">
 <thead>
@@ -643,8 +752,9 @@ mcal<span class="w"> </span>xxx.cif<span class="w"> </span>p<span class="w"> </s
 </tbody>
 </table>
 </div>
-<p><strong>Example:</strong> <code class="docutils literal notranslate"><span class="pre">xxx-(0_0_1_0_0)</span></code> represents the transfer integral between the 0th molecule
-in the (0,0,0) cell and the 0th molecule in the (1,0,0) cell.</p>
+<p><strong>Example (Gaussian / PySCF):</strong> <code class="docutils literal notranslate"><span class="pre">xxx-(0_0_1_0_0)</span></code> represents the transfer integral between
+the 0th molecule in the (0,0,0) cell and the 0th molecule in the (1,0,0) cell.</p>
+<p><strong>Example (ORCA):</strong> <code class="docutils literal notranslate"><span class="pre">xxx&#64;0_0_1_0_0</span></code> represents the same pair as above.</p>
 <p><strong>Gaussian:</strong></p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">xxx-(s_t_i_j_k).gjf</span></code> / <code class="docutils literal notranslate"><span class="pre">xxx-(s_t_i_j_k).log</span></code> — dimer</p></li>
@@ -656,6 +766,12 @@ in the (0,0,0) cell and the 0th molecule in the (1,0,0) cell.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">xxx-(s_t_i_j_k).xyz</span></code> / <code class="docutils literal notranslate"><span class="pre">xxx-(s_t_i_j_k).chk</span></code> — dimer</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">xxx-(s_t_i_j_k)_m1.chk</span></code> — monomer 1</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">xxx-(s_t_i_j_k)_m2.chk</span></code> — monomer 2</p></li>
+</ul>
+<p><strong>ORCA:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">xxx&#64;s_t_i_j_k.xyz</span></code> / <code class="docutils literal notranslate"><span class="pre">xxx&#64;s_t_i_j_k.out</span></code> — dimer</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">xxx&#64;s_t_i_j_k_m1.out</span></code> — monomer 1</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">xxx&#64;s_t_i_j_k_m2.out</span></code> — monomer 2</p></li>
 </ul>
 </section>
 </section>
@@ -746,6 +862,8 @@ and rotation coordinates, <em>J. Chem. Phys.</em> <strong>2016</strong>, <em>144
 <li><p>[3] Benjamin P. Pritchard et al., New Basis Set Exchange: An Open, Up-to-Date
 Resource for the Molecular Sciences Community, <em>J. Chem. Inf. Model.</em> <strong>2019</strong>,
 <em>59</em>, 4814-4820.</p></li>
+<li><p>[4] Frank Neese, The ORCA program system, <em>Wiley Interdiscip. Rev. Comput. Mol. Sci.</em>,
+<strong>2012</strong>, <em>2</em>, 73-78.</p></li>
 </ul>
 </section>
 <section id="api-reference">
@@ -828,6 +946,7 @@ Resource for the Molecular Sciences Community, <em>J. Chem. Inf. Model.</em> <st
 <li><a class="reference internal" href="#using-gaussian-09-or-16-without-pyscf">Using Gaussian 09 or 16 (without PySCF)</a></li>
 <li><a class="reference internal" href="#using-pyscf-cpu-only-macos-linux-wsl2">Using PySCF (CPU only, macOS / Linux / WSL2)</a></li>
 <li><a class="reference internal" href="#using-gpu-acceleration-with-pyscf-macos-linux-wsl2">Using GPU acceleration with PySCF (macOS / Linux / WSL2)</a></li>
+<li><a class="reference internal" href="#using-orca-6-1-0-or-newer">Using ORCA 6.1.0 or newer</a></li>
 <li><a class="reference internal" href="#verify-installation">Verify Installation</a></li>
 </ul>
 </li>
@@ -852,6 +971,17 @@ Resource for the Molecular Sciences Community, <em>J. Chem. Inf. Model.</em> <st
 <li><a class="reference internal" href="#bse"><code class="docutils literal notranslate"><span class="pre">--bse</span></code></a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#orca-settings">ORCA Settings</a><ul>
+<li><a class="reference internal" href="#orca"><code class="docutils literal notranslate"><span class="pre">--orca</span></code></a></li>
+<li><a class="reference internal" href="#mpi-path"><code class="docutils literal notranslate"><span class="pre">--mpi</span> <span class="pre">&lt;path&gt;</span></code></a></li>
+<li><a class="reference internal" href="#parallel-execution">Parallel Execution</a><ul>
+<li><a class="reference internal" href="#linux-wsl">Linux / WSL</a></li>
+<li><a class="reference internal" href="#macos-homebrew">macOS (Homebrew)</a></li>
+<li><a class="reference internal" href="#passing-the-path-with-mpi">Passing the path with <code class="docutils literal notranslate"><span class="pre">--mpi</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li><a class="reference internal" href="#calculation-control">Calculation Control</a><ul>
 <li><a class="reference internal" href="#r-read"><code class="docutils literal notranslate"><span class="pre">-r,</span> <span class="pre">--read</span></code></a></li>
 <li><a class="reference internal" href="#rp-read-pickle"><code class="docutils literal notranslate"><span class="pre">-rp,</span> <span class="pre">--read_pickle</span></code></a></li>
@@ -872,6 +1002,7 @@ Resource for the Molecular Sciences Community, <em>J. Chem. Inf. Model.</em> <st
 <li><a class="reference internal" href="#basic-calculations">Basic Calculations</a></li>
 <li><a class="reference internal" href="#high-precision-calculations">High-Precision Calculations</a></li>
 <li><a class="reference internal" href="#pyscf-calculations">PySCF Calculations</a></li>
+<li><a class="reference internal" href="#orca-calculations">ORCA Calculations</a></li>
 <li><a class="reference internal" href="#reusing-results">Reusing Results</a></li>
 </ul>
 </li>
@@ -912,8 +1043,8 @@ Resource for the Molecular Sciences Community, <em>J. Chem. Inf. Model.</em> <st
     </aside>
   </div>
 </div><script src="_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="_static/doctools.js?v=9a2dae69"></script>
-    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>
     </body>
 </html>
