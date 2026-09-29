@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html"><link rel="search" title="Search" href="../../../search.html">
 
     <!-- Generated with Sphinx 9.0.4 and Furo 2025.12.19 -->
-        <title>mcal.calculations.rcal_pyscf - mcal 0.7.1 documentation</title>
+        <title>mcal.calculations.rcal_pyscf - mcal 0.8.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
@@ -161,7 +161,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">mcal 0.7.1 documentation</div></a>
+      <a href="../../../index.html"><div class="brand">mcal 0.8.0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -182,7 +182,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
   
-  <span class="sidebar-brand-text">mcal 0.7.1 documentation</span>
+  <span class="sidebar-brand-text">mcal 0.8.0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -243,9 +243,12 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyscf.gto.basis</span><span class="w"> </span><span class="kn">import</span> <span class="n">bse</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">mcal.calculations.rcal</span><span class="w"> </span><span class="kn">import</span> <span class="n">Rcal</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mcal.utils.log</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_logger</span>
 
 
 <span class="nb">print</span> <span class="o">=</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="nb">print</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="RcalPySCF">
@@ -490,7 +493,7 @@
             <span class="n">mf</span><span class="o">.</span><span class="n">chkfile</span> <span class="o">=</span> <span class="n">chkfile</span>
             <span class="n">mf</span><span class="o">.</span><span class="n">kernel</span><span class="p">()</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">mf</span><span class="o">.</span><span class="n">converged</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;WARNING: SCF did not converge for </span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;SCF did not converge for </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span>
             <span class="n">energy_ev</span> <span class="o">=</span> <span class="n">mf</span><span class="o">.</span><span class="n">e_tot</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">HARTREE_TO_EV</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">only_read</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">skip_cal</span><span class="p">:</span>
@@ -555,7 +558,7 @@
             <span class="n">mf_opt</span><span class="o">.</span><span class="n">chkfile</span> <span class="o">=</span> <span class="n">chkfile</span>
             <span class="n">mf_opt</span><span class="o">.</span><span class="n">kernel</span><span class="p">()</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">mf_opt</span><span class="o">.</span><span class="n">converged</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;WARNING: SCF did not converge for </span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;SCF did not converge for </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span>
             <span class="n">energy_ev</span> <span class="o">=</span> <span class="n">mf_opt</span><span class="o">.</span><span class="n">e_tot</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">HARTREE_TO_EV</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">only_read</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">skip_cal</span><span class="p">:</span>
@@ -637,7 +640,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=5a057da9"></script>
+</div><script src="../../../_static/documentation_options.js?v=486e5634"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

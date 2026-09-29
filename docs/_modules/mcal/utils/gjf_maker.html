@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html"><link rel="search" title="Search" href="../../../search.html">
 
     <!-- Generated with Sphinx 9.0.4 and Furo 2025.12.19 -->
-        <title>mcal.utils.gjf_maker - mcal 0.7.1 documentation</title>
+        <title>mcal.utils.gjf_maker - mcal 0.8.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
@@ -161,7 +161,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">mcal 0.7.1 documentation</div></a>
+      <a href="../../../index.html"><div class="brand">mcal 0.8.0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -182,7 +182,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
   
-  <span class="sidebar-brand-text">mcal 0.7.1 documentation</span>
+  <span class="sidebar-brand-text">mcal 0.8.0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -235,11 +235,14 @@
           <h1>Source code for mcal.utils.gjf_maker</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot; GjfMaker beta (2025/08/18)&quot;&quot;&quot;</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">mcal.utils.log</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_logger</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="GjfMaker">
@@ -535,7 +538,7 @@
 <span class="sd">        This radical check is incomplete. If the number of unpaired electrons is even, it is not considered a radical.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># FIXME: This radical check is incomplete. If the number of unpaired electrons is even, it is not considered a radical.</span>
-        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;This radical check is incomplete. If the number of unpaired electrons is even, it is not considered a radical.&#39;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;This radical check is incomplete. If the number of unpaired electrons is even, it is not considered a radical.&#39;</span><span class="p">)</span>
         <span class="n">elements</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">symbol</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_symbols</span><span class="p">:</span>
             <span class="n">elements</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ELEMENTS_NUM</span><span class="p">[</span><span class="n">symbol</span><span class="p">]</span>
@@ -577,7 +580,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=5a057da9"></script>
+</div><script src="../../../_static/documentation_options.js?v=486e5634"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

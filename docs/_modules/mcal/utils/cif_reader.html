@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html"><link rel="search" title="Search" href="../../../search.html">
 
     <!-- Generated with Sphinx 9.0.4 and Furo 2025.12.19 -->
-        <title>mcal.utils.cif_reader - mcal 0.7.1 documentation</title>
+        <title>mcal.utils.cif_reader - mcal 0.8.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
@@ -161,7 +161,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">mcal 0.7.1 documentation</div></a>
+      <a href="../../../index.html"><div class="brand">mcal 0.8.0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -182,7 +182,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
   
-  <span class="sidebar-brand-text">mcal 0.7.1 documentation</span>
+  <span class="sidebar-brand-text">mcal 0.8.0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -236,15 +236,18 @@
 <span></span><span class="sd">&quot;&quot;&quot;CifReader beta (2026/03/29)&quot;&quot;&quot;</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">deque</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">itertools</span><span class="w"> </span><span class="kn">import</span> <span class="n">product</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">NDArray</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">mcal.utils.log</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_logger</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="CifReader">
@@ -714,14 +717,17 @@
 <a class="viewcode-back" href="../../../mcal.utils.html#mcal.CifReader.expand_mols">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">expand_mols</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">expand_range</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">expand_range</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]]]]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate molecules around unique molecules.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        expand_range : int</span>
-<span class="sd">            The number of molecular cycles produced., by default 1</span>
+<span class="sd">        expand_range : int or Tuple[int, int, int]</span>
+<span class="sd">            The number of unit cells to expand along each lattice axis, by default 1.</span>
+<span class="sd">            An int applies the same range to all three axes.</span>
+<span class="sd">            A 3-tuple ``(na, nb, nc)`` sets a per-axis range: each axis runs from</span>
+<span class="sd">            ``-n`` to ``+n``. For example, ``(2, 2, 0)`` produces a 5x5x1 slab.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -739,9 +745,32 @@
 <span class="sd">                A list containing molecular information:</span>
 <span class="sd">                - List[str]: Element symbols of the molecule</span>
 <span class="sd">                - NDArray[np.float64]: Cartesian coordinates of the molecule (shape: (3, n))</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If any element of ``expand_range`` is negative, or if a sequence of</span>
+<span class="sd">            length other than 3 is passed.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">expand_mols</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="n">combs</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">product</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="n">expand_range</span><span class="p">,</span> <span class="n">expand_range</span><span class="o">+</span><span class="mi">1</span><span class="p">)),</span> <span class="n">repeat</span><span class="o">=</span><span class="mi">3</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">expand_range</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">ranges</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">expand_range</span><span class="p">,</span> <span class="n">expand_range</span><span class="p">,</span> <span class="n">expand_range</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">expand_range</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">&#39;expand_range must be an int or a sequence of 3 ints, got length </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">expand_range</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
+                <span class="p">)</span>
+            <span class="n">ranges</span> <span class="o">=</span> <span class="p">(</span><span class="n">expand_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">expand_range</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">expand_range</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">r</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">ranges</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;expand_range must not contain negative values, got </span><span class="si">{</span><span class="n">ranges</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="p">)</span>
+
+        <span class="n">expand_mols</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]]]]]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">combs</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">product</span><span class="p">(</span>
+            <span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="n">ranges</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ranges</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span>
+            <span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="n">ranges</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">ranges</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span>
+            <span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="n">ranges</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">ranges</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span>
+        <span class="p">))</span>
 
         <span class="k">for</span> <span class="n">comb</span> <span class="ow">in</span> <span class="n">combs</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">unique_coord</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">unique_coords</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -774,7 +803,7 @@
         <span class="k">if</span> <span class="nb">format</span> <span class="o">==</span> <span class="s1">&#39;mol&#39;</span> <span class="ow">and</span> <span class="n">unit_cell_file</span><span class="o">.</span><span class="n">atom_num</span> <span class="o">&gt;</span> <span class="mi">999</span><span class="p">:</span>
             <span class="nb">format</span> <span class="o">=</span> <span class="s1">&#39;xyz&#39;</span>
             <span class="n">file_path</span> <span class="o">=</span> <span class="n">file_path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.mol&#39;</span><span class="p">,</span> <span class="s1">&#39;.xyz&#39;</span><span class="p">)</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;The number of atoms is greater than 999. The file is saved as xyz format.&#39;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;The number of atoms is greater than 999. The file is saved as xyz format.&#39;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">format</span> <span class="o">==</span> <span class="s1">&#39;mol&#39;</span><span class="p">:</span>
             <span class="n">unit_cell_file</span><span class="o">.</span><span class="n">export_mol_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">header1</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">basename</span><span class="p">,</span> <span class="n">header2</span><span class="o">=</span><span class="s2">&quot;Generated by cif_reader.py&quot;</span><span class="p">)</span>
@@ -1001,7 +1030,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=5a057da9"></script>
+</div><script src="../../../_static/documentation_options.js?v=486e5634"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="mcal.calculations package" href="mcal.calculations.html"><link rel="prev" title="mcal" href="modules.html">
 
     <!-- Generated with Sphinx 9.0.4 and Furo 2025.12.19 -->
-        <title>mcal package - mcal 0.7.1 documentation</title>
+        <title>mcal package - mcal 0.8.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="_static/autodoc_pydantic.css" />
@@ -162,7 +162,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">mcal 0.7.1 documentation</div></a>
+      <a href="index.html"><div class="brand">mcal 0.8.0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -183,7 +183,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
   
-  <span class="sidebar-brand-text">mcal 0.7.1 documentation</span>
+  <span class="sidebar-brand-text">mcal 0.8.0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -348,6 +348,11 @@
 <li class="toctree-l4"><a class="reference internal" href="mcal.utils.html#mcal.utils.gjf_maker.GjfMaker.set_title"><code class="docutils literal notranslate"><span class="pre">GjfMaker.set_title()</span></code></a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="mcal.utils.html#module-mcal.utils.log">mcal.utils.log module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="mcal.utils.html#mcal.utils.log.configure_logging"><code class="docutils literal notranslate"><span class="pre">configure_logging()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mcal.utils.html#mcal.utils.log.get_logger"><code class="docutils literal notranslate"><span class="pre">get_logger()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="mcal.utils.html#module-mcal.utils">Module contents</a></li>
@@ -706,6 +711,11 @@
 </ul>
 <p>$ mcal xxx.cif p –cellsize 2</p>
 </dd>
+<dt>Restrict calculation to a 2D plane (faster for layered crystals):</dt><dd><ul class="simple">
+<li><p>Use a 5x5x1 supercell and skip transfer integrals across the ab plane</p></li>
+</ul>
+<p>$ mcal xxx.cif p –2d ab</p>
+</dd>
 <dt>Resume and save results:</dt><dd><ul class="simple">
 <li><p>Resume from existing calculations</p></li>
 </ul>
@@ -749,7 +759,7 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="mcal.mcal.print_mobility">
-<span class="sig-prename descclassname"><span class="pre">mcal.mcal.</span></span><span class="sig-name descname"><span class="pre">print_mobility</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">float64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">float64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sim_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'MC'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'ODE'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcal/mcal.html#print_mobility"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcal.mcal.print_mobility" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">mcal.mcal.</span></span><span class="sig-name descname"><span class="pre">print_mobility</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">float64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">float64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sim_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'MC'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'ODE'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plane</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mcal/mcal.html#print_mobility"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcal.mcal.print_mobility" title="Link to this definition">¶</a></dt>
 <dd><p>Print mobility and mobility vector</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -757,6 +767,7 @@
 <li><p><strong>value</strong> (<em>NDArray</em><em>[</em><em>np.float64</em><em>]</em>) – Mobility value</p></li>
 <li><p><strong>vector</strong> (<em>NDArray</em><em>[</em><em>np.float64</em><em>]</em>) – Mobility vector</p></li>
 <li><p><strong>sim_type</strong> (<em>str</em>) – Simulation type (MC or ODE)</p></li>
+<li><p><strong>plane</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em>) – Plane the calculation was restricted to by –2d, by default None</p></li>
 </ul>
 </dd>
 </dl>
@@ -905,11 +916,14 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcal.CifReader.expand_mols">
-<span class="sig-name descname"><span class="pre">expand_mols</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">expand_range</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">float64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/mcal/utils/cif_reader.html#CifReader.expand_mols"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcal.CifReader.expand_mols" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">expand_mols</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">expand_range</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">float64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/mcal/utils/cif_reader.html#CifReader.expand_mols"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcal.CifReader.expand_mols" title="Link to this definition">¶</a></dt>
 <dd><p>Generate molecules around unique molecules.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>expand_range</strong> (<em>int</em>) – The number of molecular cycles produced., by default 1</p>
+<dd class="field-odd"><p><strong>expand_range</strong> (<em>int</em><em> or </em><em>Tuple</em><em>[</em><em>int</em><em>, </em><em>int</em><em>, </em><em>int</em><em>]</em>) – The number of unit cells to expand along each lattice axis, by default 1.
+An int applies the same range to all three axes.
+A 3-tuple <code class="docutils literal notranslate"><span class="pre">(na,</span> <span class="pre">nb,</span> <span class="pre">nc)</span></code> sets a per-axis range: each axis runs from
+<code class="docutils literal notranslate"><span class="pre">-n</span></code> to <code class="docutils literal notranslate"><span class="pre">+n</span></code>. For example, <code class="docutils literal notranslate"><span class="pre">(2,</span> <span class="pre">2,</span> <span class="pre">0)</span></code> produces a 5x5x1 slab.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><p>A nested dictionary containing the expanded molecular structure:</p>
@@ -938,6 +952,10 @@ For example, (0, 0, 0) is the origin unit cell, (1, 0, 0) is one unit cell away 
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Dict[Tuple[int, int, int], Dict[int, List[Tuple[str, NDArray[np.float64]]]]]</p>
 </dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If any element of <code class="docutils literal notranslate"><span class="pre">expand_range</span></code> is negative, or if a sequence of
+    length other than 3 is passed.</p>
+</dd>
 </dl>
 </dd></dl>
 
@@ -957,7 +975,7 @@ For example, (0, 0, 0) is the origin unit cell, (1, 0, 0) is one unit cell away 
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="mcal.CifReader.parent_dir">
-<span class="sig-name descname"><span class="pre">parent_dir</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">PosixPath('/home/subaru/Documents/manage-with-git/mcal/src/mcal')</span></span><a class="headerlink" href="#mcal.CifReader.parent_dir" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">parent_dir</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">PosixPath('/mnt/c/Users/matsui-lab/Documents/mcal/src/mcal')</span></span><a class="headerlink" href="#mcal.CifReader.parent_dir" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -1081,7 +1099,7 @@ For example, (0, 0, 0) is the origin unit cell, (1, 0, 0) is one unit cell away 
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="mcal.GjfMaker.parent_dir">
-<span class="sig-name descname"><span class="pre">parent_dir</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">PosixPath('/home/subaru/Documents/manage-with-git/mcal/src/mcal')</span></span><a class="headerlink" href="#mcal.GjfMaker.parent_dir" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">parent_dir</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">PosixPath('/mnt/c/Users/matsui-lab/Documents/mcal/src/mcal')</span></span><a class="headerlink" href="#mcal.GjfMaker.parent_dir" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -1691,7 +1709,7 @@ For example, (0, 0, 0) is the origin unit cell, (1, 0, 0) is one unit cell away 
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=5a057da9"></script>
+</div><script src="_static/documentation_options.js?v=486e5634"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>

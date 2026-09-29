@@ -97,6 +97,32 @@ mcal xxx.cif n
 
 ## Options
 
+The table below lists all available options. See the sections that follow for details.
+
+| Short | Long | Explanation |
+|----|----|----|
+|-c|--cpu N|Set the number of CPUs. (default: 4)|
+|-g|--g09|Use Gaussian 09. (default is Gaussian 16)|
+|-h|--help|Show options description.|
+|-j|--json|Save calculation results to a JSON file.|
+|-m|--mem N|Set the memory size in GB. (default: 10)|
+|-p|--pickle|Save calculation results to a pickle file.|
+|-r|--read|Read results from existing files (Gaussian log / PySCF `.chk` / ORCA `.out`) without executing calculations.|
+|-rp|--read_pickle|Read results from an existing pickle file without executing calculations.|
+|-M|--method METHOD/BASIS|Calculation method and basis set in "METHOD/BASIS" format. (default: B3LYP/6-31G(d,p))|
+||--pyscf|Use PySCF instead of Gaussian.|
+||--gpu4pyscf|Use GPU acceleration via gpu4pyscf. Automatically enables PySCF mode.|
+||--cart|Use Cartesian basis functions instead of spherical harmonics. (PySCF only)|
+||--bse|Use Basis Set Exchange to obtain basis sets. (PySCF only)|
+||--orca|Use ORCA instead of Gaussian.|
+||--mpi PATH|Path to OpenMPI installation directory for ORCA parallel execution (sets the `OPI_MPI` environment variable). (ORCA only)|
+||--resume|Resume calculation using existing results.|
+||--fullcal|Disable pair screening and monomer caching, and calculate all pairs and monomers from scratch.|
+||--no-monomer-cache|Disable monomer caching only. Pair screening remains active.|
+||--cellsize N|Number of unit cells to expand in each direction around the central unit cell. (default: 2, i.e. a 5×5×5 supercell)|
+||--2d PLANE|Restrict the supercell expansion to the specified crystallographic plane (`ab`, `ac`, `ba`, `bc`, `ca`, `cb`) and skip out-of-plane transfer integrals.|
+||--plot-plane PLANE|Plot the mobility tensor as a 2D polar plot on the specified crystallographic plane (`ab`, `ac`, `ba`, `bc`, `ca`, `cb`).|
+
 ### Calculation Settings
 
 #### `-M, --method <method>`
@@ -218,6 +244,14 @@ Specify the number of unit cells to expand in each direction around the central 
   - `mcal xxx.cif p --cellsize 1` (creates 3×3×3 supercell)
   - `mcal xxx.cif p --cellsize 3` (creates 7×7×7 supercell)
 
+#### `--2d <plane>`
+Restrict the supercell expansion to a crystallographic plane so that out-of-plane transfer integrals are skipped. This speeds up calculations for layered crystals.
+The supercell shape follows from combining `--cellsize` with `--2d`: with the default `--cellsize 2`, `--2d ab` produces a 5×5×1 supercell instead of 5×5×5. Mobility perpendicular to the selected plane is zero by construction.
+This option is distinct from `--plot-plane`, which only controls the polar plot and does not change which transfer integrals are calculated.
+- **Available planes**: `ab`, `ac`, `ba`, `bc`, `ca`, `cb`
+- **Default**: None (isotropic 3D expansion)
+- **Example**: `mcal xxx.cif p --2d ab`
+
 ### Output Settings
 
 #### `-p, --pickle`
@@ -245,6 +279,12 @@ mcal xxx.cif p
 
 # Use 8 CPUs and 16GB memory
 mcal xxx.cif p -c 8 -m 16
+```
+
+### Layered Crystals
+```bash
+# Restrict calculation to the ab plane (5×5×1 supercell with default --cellsize 2)
+mcal xxx.cif p --2d ab
 ```
 
 ### High-Precision Calculations
