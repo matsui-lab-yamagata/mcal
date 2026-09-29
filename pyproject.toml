@@ -10,8 +10,8 @@ dependencies = [
     "yu-tcal>=5.0.2",
 ]
 authors = [
-    {name = "Hiroyuki Matsui", email = "h-matsui@yz.yamagata-u.ac.jp"},
     {name = "Koki Ozawa"},
+    {name = "Hiroyuki Matsui", email = "h-matsui@yz.yamagata-u.ac.jp"},
 ]
 readme = "README.md"
 license = {file = "LICENSE"}

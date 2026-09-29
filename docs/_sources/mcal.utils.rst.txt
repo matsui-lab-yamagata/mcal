@@ -28,6 +28,14 @@ mcal.utils.gjf\_maker module
    :show-inheritance:
    :undoc-members:
 
+mcal.utils.log module
+---------------------
+
+.. automodule:: mcal.utils.log
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
 Module contents
 ---------------
 

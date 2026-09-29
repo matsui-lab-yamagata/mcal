@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="prev" title="mcal.calculations package" href="mcal.calculations.html">
 
     <!-- Generated with Sphinx 9.0.4 and Furo 2025.12.19 -->
-        <title>mcal.utils package - mcal 0.7.1 documentation</title>
+        <title>mcal.utils package - mcal 0.8.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="_static/autodoc_pydantic.css" />
@@ -162,7 +162,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">mcal 0.7.1 documentation</div></a>
+      <a href="index.html"><div class="brand">mcal 0.8.0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -183,7 +183,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
   
-  <span class="sidebar-brand-text">mcal 0.7.1 documentation</span>
+  <span class="sidebar-brand-text">mcal 0.8.0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -331,11 +331,14 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mcal.utils.cif_reader.CifReader.expand_mols">
-<span class="sig-name descname"><span class="pre">expand_mols</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">expand_range</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">float64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/mcal/utils/cif_reader.html#CifReader.expand_mols"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcal.utils.cif_reader.CifReader.expand_mols" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">expand_mols</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">expand_range</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">float64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/mcal/utils/cif_reader.html#CifReader.expand_mols"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcal.utils.cif_reader.CifReader.expand_mols" title="Link to this definition">¶</a></dt>
 <dd><p>Generate molecules around unique molecules.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>expand_range</strong> (<em>int</em>) – The number of molecular cycles produced., by default 1</p>
+<dd class="field-odd"><p><strong>expand_range</strong> (<em>int</em><em> or </em><em>Tuple</em><em>[</em><em>int</em><em>, </em><em>int</em><em>, </em><em>int</em><em>]</em>) – The number of unit cells to expand along each lattice axis, by default 1.
+An int applies the same range to all three axes.
+A 3-tuple <code class="docutils literal notranslate"><span class="pre">(na,</span> <span class="pre">nb,</span> <span class="pre">nc)</span></code> sets a per-axis range: each axis runs from
+<code class="docutils literal notranslate"><span class="pre">-n</span></code> to <code class="docutils literal notranslate"><span class="pre">+n</span></code>. For example, <code class="docutils literal notranslate"><span class="pre">(2,</span> <span class="pre">2,</span> <span class="pre">0)</span></code> produces a 5x5x1 slab.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><p>A nested dictionary containing the expanded molecular structure:</p>
@@ -364,6 +367,10 @@ For example, (0, 0, 0) is the origin unit cell, (1, 0, 0) is one unit cell away 
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Dict[Tuple[int, int, int], Dict[int, List[Tuple[str, NDArray[np.float64]]]]]</p>
 </dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If any element of <code class="docutils literal notranslate"><span class="pre">expand_range</span></code> is negative, or if a sequence of
+    length other than 3 is passed.</p>
+</dd>
 </dl>
 </dd></dl>
 
@@ -383,7 +390,7 @@ For example, (0, 0, 0) is the origin unit cell, (1, 0, 0) is one unit cell away 
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="mcal.utils.cif_reader.CifReader.parent_dir">
-<span class="sig-name descname"><span class="pre">parent_dir</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">PosixPath('/home/subaru/Documents/manage-with-git/mcal/src/mcal')</span></span><a class="headerlink" href="#mcal.utils.cif_reader.CifReader.parent_dir" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">parent_dir</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">PosixPath('/mnt/c/Users/matsui-lab/Documents/mcal/src/mcal')</span></span><a class="headerlink" href="#mcal.utils.cif_reader.CifReader.parent_dir" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -621,7 +628,7 @@ For example, (0, 0, 0) is the origin unit cell, (1, 0, 0) is one unit cell away 
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="mcal.utils.gjf_maker.GjfMaker.parent_dir">
-<span class="sig-name descname"><span class="pre">parent_dir</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">PosixPath('/home/subaru/Documents/manage-with-git/mcal/src/mcal')</span></span><a class="headerlink" href="#mcal.utils.gjf_maker.GjfMaker.parent_dir" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">parent_dir</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">PosixPath('/mnt/c/Users/matsui-lab/Documents/mcal/src/mcal')</span></span><a class="headerlink" href="#mcal.utils.gjf_maker.GjfMaker.parent_dir" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -703,6 +710,52 @@ For example, (0, 0, 0) is the origin unit cell, (1, 0, 0) is one unit cell away 
 </dl>
 </dd></dl>
 
+</dd></dl>
+
+</section>
+<section id="module-mcal.utils.log">
+<span id="mcal-utils-log-module"></span><h2>mcal.utils.log module<a class="headerlink" href="#module-mcal.utils.log" title="Link to this heading">¶</a></h2>
+<p>Logging helpers for the <a class="reference internal" href="mcal.html#module-mcal" title="mcal"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mcal</span></code></a> package.</p>
+<p>Warnings and other diagnostics are emitted through the standard
+<code class="xref py py-mod docutils literal notranslate"><span class="pre">logging</span></code> module to <code class="docutils literal notranslate"><span class="pre">stderr</span></code> so that they stay separate from the
+program results printed to <code class="docutils literal notranslate"><span class="pre">stdout</span></code>. Colour is applied only when
+<code class="docutils literal notranslate"><span class="pre">stderr</span></code> is an interactive terminal.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="mcal.utils.log.configure_logging">
+<span class="sig-prename descclassname"><span class="pre">mcal.utils.log.</span></span><span class="sig-name descname"><span class="pre">configure_logging</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">30</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/mcal/utils/log.html#configure_logging"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcal.utils.log.configure_logging" title="Link to this definition">¶</a></dt>
+<dd><p>Attach a <code class="docutils literal notranslate"><span class="pre">stderr</span></code> handler to the <code class="docutils literal notranslate"><span class="pre">mcal</span></code> package logger.</p>
+<p>Idempotent: calling it more than once leaves the existing handler in
+place and only updates the level. Intended to be called once from the
+CLI entry point. When never called (e.g. library use), logging falls
+back to its last-resort handler, which still emits <code class="docutils literal notranslate"><span class="pre">WARNING</span></code> and above
+to <code class="docutils literal notranslate"><span class="pre">stderr</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>level</strong> (<em>int</em><em>, </em><em>optional</em>) – Minimum level the package logger emits, by default
+<code class="xref py py-data docutils literal notranslate"><span class="pre">logging.WARNING</span></code>.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mcal.utils.log.get_logger">
+<span class="sig-prename descclassname"><span class="pre">mcal.utils.log.</span></span><span class="sig-name descname"><span class="pre">get_logger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Logger</span></span></span><a class="reference internal" href="_modules/mcal/utils/log.html#get_logger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mcal.utils.log.get_logger" title="Link to this definition">¶</a></dt>
+<dd><p>Return a logger for the given name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – Logger name, conventionally the module <code class="docutils literal notranslate"><span class="pre">__name__</span></code> so the logger
+becomes a child of the <code class="docutils literal notranslate"><span class="pre">mcal</span></code> package logger.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The requested logger.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>logging.Logger</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
@@ -819,6 +872,11 @@ For example, (0, 0, 0) is the origin unit cell, (1, 0, 0) is one unit cell away 
 </li>
 </ul>
 </li>
+<li><a class="reference internal" href="#module-mcal.utils.log">mcal.utils.log module</a><ul>
+<li><a class="reference internal" href="#mcal.utils.log.configure_logging"><code class="docutils literal notranslate"><span class="pre">configure_logging()</span></code></a></li>
+<li><a class="reference internal" href="#mcal.utils.log.get_logger"><code class="docutils literal notranslate"><span class="pre">get_logger()</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#module-mcal.utils">Module contents</a></li>
 </ul>
 </li>
@@ -831,7 +889,7 @@ For example, (0, 0, 0) is the origin unit cell, (1, 0, 0) is one unit cell away 
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=5a057da9"></script>
+</div><script src="_static/documentation_options.js?v=486e5634"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>

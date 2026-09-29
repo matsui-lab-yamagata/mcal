@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html"><link rel="search" title="Search" href="../../../search.html">
 
     <!-- Generated with Sphinx 9.0.4 and Furo 2025.12.19 -->
-        <title>mcal.utils.gaus_log_reader - mcal 0.8.0 documentation</title>
+        <title>mcal.utils.log - mcal 0.8.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
@@ -232,109 +232,113 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <h1>Source code for mcal.utils.gaus_log_reader</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Gaussian log file reader (2025/06/21)&quot;&quot;&quot;</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+          <h1>Source code for mcal.utils.log</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Logging helpers for the :mod:`mcal` package.</span>
+
+<span class="sd">Warnings and other diagnostics are emitted through the standard</span>
+<span class="sd">:mod:`logging` module to ``stderr`` so that they stay separate from the</span>
+<span class="sd">program results printed to ``stdout``. Colour is applied only when</span>
+<span class="sd">``stderr`` is an interactive terminal.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+
+<span class="n">_RESET</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[0m&quot;</span>
+<span class="n">_LEVEL_COLORS</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[33m&quot;</span><span class="p">,</span>  <span class="c1"># yellow</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[31m&quot;</span><span class="p">,</span>  <span class="c1"># red</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">CRITICAL</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[31m&quot;</span><span class="p">,</span>  <span class="c1"># red</span>
+<span class="p">}</span>
 
 
-<div class="viewcode-block" id="check_normal_termination">
-<a class="viewcode-back" href="../../../mcal.utils.html#mcal.check_normal_termination">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">check_normal_termination</span><span class="p">(</span><span class="n">log_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check if the calculation terminated normally.</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">_ColorFormatter</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Formatter that prefixes the level name, colourised on a TTY.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    log_file : str</span>
-<span class="sd">        Path to the log file</span>
+<span class="sd">    color : bool</span>
+<span class="sd">        If ``True``, wrap the formatted record in an ANSI colour code that</span>
+<span class="sd">        depends on the record&#39;s level. If ``False``, emit plain text with no</span>
+<span class="sd">        escape sequences (suitable for redirected or piped output).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">color</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%(levelname)s</span><span class="s2">: </span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_color</span> <span class="o">=</span> <span class="n">color</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">LogRecord</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Format a log record, optionally wrapping it in an ANSI colour code.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        record : logging.LogRecord</span>
+<span class="sd">            The record to format.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        str</span>
+<span class="sd">            The formatted message, colourised when ``color`` is enabled and a</span>
+<span class="sd">            colour is defined for the record&#39;s level.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
+        <span class="n">color</span> <span class="o">=</span> <span class="n">_LEVEL_COLORS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">levelno</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_color</span> <span class="ow">and</span> <span class="n">color</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">color</span><span class="si">}{</span><span class="n">text</span><span class="si">}{</span><span class="n">_RESET</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="n">text</span>
+
+
+<div class="viewcode-block" id="configure_logging">
+<a class="viewcode-back" href="../../../mcal.utils.html#mcal.utils.log.configure_logging">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">configure_logging</span><span class="p">(</span><span class="n">level</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Attach a ``stderr`` handler to the ``mcal`` package logger.</span>
+
+<span class="sd">    Idempotent: calling it more than once leaves the existing handler in</span>
+<span class="sd">    place and only updates the level. Intended to be called once from the</span>
+<span class="sd">    CLI entry point. When never called (e.g. library use), logging falls</span>
+<span class="sd">    back to its last-resort handler, which still emits ``WARNING`` and above</span>
+<span class="sd">    to ``stderr``.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    level : int, optional</span>
+<span class="sd">        Minimum level the package logger emits, by default</span>
+<span class="sd">        :data:`logging.WARNING`.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    bool</span>
-<span class="sd">        True if the calculation terminated normally, False otherwise</span>
+<span class="sd">    None</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">Path</span><span class="p">(</span><span class="n">log_file</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-        <span class="k">return</span> <span class="kc">False</span>
-
-    <span class="k">with</span> <span class="n">FileReader</span><span class="p">(</span><span class="n">log_file</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-        <span class="n">line</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">reversed_readline</span><span class="p">()</span>
-        <span class="k">if</span> <span class="s1">&#39;Normal termination&#39;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">True</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">False</span></div>
-
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;mcal&quot;</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">level</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">logger</span><span class="o">.</span><span class="n">handlers</span><span class="p">:</span>
+        <span class="k">return</span>
+    <span class="n">handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+    <span class="n">handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">_ColorFormatter</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">isatty</span><span class="p">()))</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">propagate</span> <span class="o">=</span> <span class="kc">False</span></div>
 
 
-<div class="viewcode-block" id="FileReader">
-<a class="viewcode-back" href="../../../mcal.utils.html#mcal.FileReader">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">FileReader</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;File reader that reads line by line from the end.</span>
 
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; with FileReader(&#39;sample.txt&#39;) as f:</span>
-<span class="sd">    ...     while True:</span>
-<span class="sd">    ...         line = f.reversed_readline()</span>
-<span class="sd">    ...         if not line:</span>
-<span class="sd">    ...             break</span>
-<span class="sd">    ...         print(line)</span>
+<div class="viewcode-block" id="get_logger">
+<a class="viewcode-back" href="../../../mcal.utils.html#mcal.utils.log.get_logger">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_logger</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a logger for the given name.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Logger name, conventionally the module ``__name__`` so the logger</span>
+<span class="sd">        becomes a child of the ``mcal`` package logger.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    logging.Logger</span>
+<span class="sd">        The requested logger.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">,</span> <span class="n">buffer_size</span><span class="o">=</span><span class="mi">8192</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">buffer_size</span> <span class="o">=</span> <span class="n">buffer_size</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span>
-        <span class="c1"># ファイルポインタをファイルの末尾に移動</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">SEEK_END</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">file_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span>
-        <span class="c1"># 最後のブロックの終了位置をファイルサイズに設定</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">reversed_block_end</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_size</span>
-        <span class="c1"># 最後のブロックの開始位置を計算（ファイル末尾からバッファサイズ分前、またはファイル先頭）</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">reversed_block_start</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reversed_block_end</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer_size</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">lines</span> <span class="o">=</span> <span class="p">[]</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_value</span><span class="p">,</span> <span class="n">traceback</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-
-<div class="viewcode-block" id="FileReader.close">
-<a class="viewcode-back" href="../../../mcal.utils.html#mcal.FileReader.close">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
-
-
-<div class="viewcode-block" id="FileReader.reversed_readline">
-<a class="viewcode-back" href="../../../mcal.utils.html#mcal.FileReader.reversed_readline">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">reversed_readline</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">lines</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">reversed_block_end</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">reversed_block_start</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="c1"># ファイルポインタを現在のブロックの開始位置に設定</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reversed_block_start</span><span class="p">)</span>
-
-            <span class="n">block</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reversed_block_end</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">reversed_block_start</span><span class="p">)</span>
-            <span class="n">lines</span> <span class="o">=</span> <span class="n">block</span><span class="o">.</span><span class="n">splitlines</span><span class="p">(</span><span class="n">keepends</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-            <span class="c1"># 現在のブロックがファイルの最初のブロックの場合</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reversed_block_start</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="c1"># ブロックの終了位置を開始位置に設定して次の読み取りを防ぐ</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">reversed_block_end</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reversed_block_start</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># 次のブロックの終了位置を更新(現在のブロックの最初の行の長さを加算)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">reversed_block_end</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reversed_block_start</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
-
-            <span class="bp">self</span><span class="o">.</span><span class="n">reversed_block_start</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reversed_block_end</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer_size</span><span class="p">)</span>
-
-            <span class="c1"># 末尾のブロックの場合、全行を読み取る</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reversed_block_end</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">lines</span> <span class="o">=</span> <span class="n">lines</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">lines</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
-
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">lines</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">lines</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">lines</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">None</span></div>
-</div>
+    <span class="k">return</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">name</span><span class="p">)</span></div>
 
 </pre></div>
         </article>

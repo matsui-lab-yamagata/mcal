@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html">
 
     <!-- Generated with Sphinx 9.0.4 and Furo 2025.12.19 -->
-        <title>mcal.mcal - mcal 0.7.1 documentation</title>
+        <title>mcal.mcal - mcal 0.8.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../_static/autodoc_pydantic.css" />
@@ -161,7 +161,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">mcal 0.7.1 documentation</div></a>
+      <a href="../../index.html"><div class="brand">mcal 0.8.0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -182,7 +182,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
-  <span class="sidebar-brand-text">mcal 0.7.1 documentation</span>
+  <span class="sidebar-brand-text">mcal 0.8.0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -253,6 +253,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">mcal.utils.cif_reader</span><span class="w"> </span><span class="kn">import</span> <span class="n">CifReader</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mcal.utils.gaus_log_reader</span><span class="w"> </span><span class="kn">import</span> <span class="n">check_normal_termination</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mcal.utils.gjf_maker</span><span class="w"> </span><span class="kn">import</span> <span class="n">GjfMaker</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mcal.utils.log</span><span class="w"> </span><span class="kn">import</span> <span class="n">configure_logging</span><span class="p">,</span> <span class="n">get_logger</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mcal.calculations.hopping_mobility_model</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">diffusion_coefficient_tensor</span><span class="p">,</span>
     <span class="n">_diffusion_coefficient_tensor_MC</span><span class="p">,</span>
@@ -264,6 +265,14 @@
 
 
 <span class="nb">print</span> <span class="o">=</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="nb">print</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">PLANE_AXES</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;ab&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="s1">&#39;ba&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="s1">&#39;bc&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="s1">&#39;cb&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+    <span class="s1">&#39;ac&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="s1">&#39;ca&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+<span class="p">}</span>
 
 
 <div class="viewcode-block" id="main">
@@ -294,6 +303,10 @@
 <span class="sd">        - Expand calculation range to 5x5x5 supercell to widen transfer integral calculation range\n</span>
 <span class="sd">        $ mcal xxx.cif p --cellsize 2</span>
 
+<span class="sd">    Restrict calculation to a 2D plane (faster for layered crystals):</span>
+<span class="sd">        - Use a 5x5x1 supercell and skip transfer integrals across the ab plane\n</span>
+<span class="sd">        $ mcal xxx.cif p --2d ab</span>
+
 <span class="sd">    Resume and save results:</span>
 <span class="sd">        - Resume from existing calculations\n</span>
 <span class="sd">        $ mcal xxx.cif p --resume</span>
@@ -311,6 +324,7 @@
 <span class="sd">        - Plot mobility tensor in 2D plane (Examples: ab, ac, ba, bc, ca, cb (default is ab))\n</span>
 <span class="sd">        $ python hop_mcal.py xxx.cif p --plot-plane ab</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">configure_logging</span><span class="p">()</span>
     <span class="c1"># Error range for skipping calculation of transfer integrals using moment of inertia and distance between centers of weight.</span>
     <span class="n">CENTER_OF_WEIGHT_ERROR</span> <span class="o">=</span> <span class="mf">1.0e-7</span>
     <span class="n">MOMENT_OF_INERTIA_ERROR</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">1.0e-3</span><span class="p">,</span> <span class="mf">1.0e-3</span><span class="p">,</span> <span class="mf">1.0e-3</span><span class="p">]])</span>
@@ -367,6 +381,16 @@
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--plot-plane&#39;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;plot mobility tensor in 2D plane (Examples: ab, ac, ba, bc, ca, cb (default is ab))&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;ab&#39;</span><span class="p">,</span> <span class="s1">&#39;ac&#39;</span><span class="p">,</span> <span class="s1">&#39;ba&#39;</span><span class="p">,</span> <span class="s1">&#39;bc&#39;</span><span class="p">,</span> <span class="s1">&#39;ca&#39;</span><span class="p">,</span> <span class="s1">&#39;cb&#39;</span><span class="p">],</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--2d&#39;</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;plane_2d&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;restrict the supercell expansion to the specified plane to skip out-of-plane &#39;</span>
+             <span class="s1">&#39;transfer integrals (Examples: ab, ac, ba, bc, ca, cb). &#39;</span>
+             <span class="s1">&#39;With --cellsize 2 and --2d ab, a 5x5x1 supercell is used instead of 5x5x5&#39;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;ab&#39;</span><span class="p">,</span> <span class="s1">&#39;ac&#39;</span><span class="p">,</span> <span class="s1">&#39;ba&#39;</span><span class="p">,</span> <span class="s1">&#39;bc&#39;</span><span class="p">,</span> <span class="s1">&#39;ca&#39;</span><span class="p">,</span> <span class="s1">&#39;cb&#39;</span><span class="p">],</span>
@@ -546,7 +570,24 @@
     <span class="n">mom_dis_ti</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1"># Store moment of inertia, distance between centers of weight and transfer integral</span>
     <span class="n">center_mol_log_paths</span> <span class="o">=</span> <span class="p">{</span><span class="n">i</span><span class="p">:</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">cif_reader</span><span class="o">.</span><span class="n">z_value</span><span class="p">)}</span>
 
-    <span class="n">expand_mols</span> <span class="o">=</span> <span class="n">cif_reader</span><span class="o">.</span><span class="n">expand_mols</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">cellsize</span><span class="p">)</span>
+    <span class="n">expand_range</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">plane_2d</span><span class="p">:</span>
+        <span class="n">in_plane</span> <span class="o">=</span> <span class="n">PLANE_AXES</span><span class="p">[</span><span class="n">args</span><span class="o">.</span><span class="n">plane_2d</span><span class="p">]</span>
+        <span class="n">expand_range</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">cellsize</span> <span class="k">if</span> <span class="mi">0</span> <span class="ow">in</span> <span class="n">in_plane</span> <span class="k">else</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">cellsize</span> <span class="k">if</span> <span class="mi">1</span> <span class="ow">in</span> <span class="n">in_plane</span> <span class="k">else</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">cellsize</span> <span class="k">if</span> <span class="mi">2</span> <span class="ow">in</span> <span class="n">in_plane</span> <span class="k">else</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Restrict the calculation to the </span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">plane_2d</span><span class="si">}</span><span class="s1"> plane &#39;</span>
+              <span class="sa">f</span><span class="s1">&#39;(supercell </span><span class="si">{</span><span class="mi">2</span><span class="o">*</span><span class="n">expand_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s1">x</span><span class="si">{</span><span class="mi">2</span><span class="o">*</span><span class="n">expand_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s1">x</span><span class="si">{</span><span class="mi">2</span><span class="o">*</span><span class="n">expand_range</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s1">).&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Transfer integrals across the plane are not calculated; &#39;</span>
+              <span class="s1">&#39;the out-of-plane mobility is zero by construction.</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">expand_range</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">cellsize</span>
+
+    <span class="n">plane_label</span> <span class="o">=</span> <span class="n">_plane_label</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">plane_2d</span><span class="p">)</span>
+
+    <span class="n">expand_mols</span> <span class="o">=</span> <span class="n">cif_reader</span><span class="o">.</span><span class="n">expand_mols</span><span class="p">(</span><span class="n">expand_range</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cif_reader</span><span class="o">.</span><span class="n">unique_symbols</span><span class="o">.</span><span class="n">keys</span><span class="p">())):</span>
         <span class="n">unique_symbols</span> <span class="o">=</span> <span class="n">cif_reader</span><span class="o">.</span><span class="n">unique_symbols</span><span class="p">[</span><span class="n">s</span><span class="p">]</span>
         <span class="n">unique_coords</span> <span class="o">=</span> <span class="n">cif_reader</span><span class="o">.</span><span class="n">unique_coords</span><span class="p">[</span><span class="n">s</span><span class="p">]</span>
@@ -748,29 +789,29 @@
         <span class="n">hop</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">marcus_rate</span><span class="p">(</span><span class="n">ti</span><span class="p">,</span> <span class="n">reorg_energy</span><span class="p">)))</span>
 
     <span class="n">diffusion_coef_tensor</span> <span class="o">=</span> <span class="n">diffusion_coefficient_tensor</span><span class="p">(</span><span class="n">cif_reader</span><span class="o">.</span><span class="n">lattice</span> <span class="o">*</span> <span class="mf">1e-8</span><span class="p">,</span> <span class="n">hop</span><span class="p">)</span>
-    <span class="n">print_tensor</span><span class="p">(</span><span class="n">diffusion_coef_tensor</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Diffusion coefficient tensor (cm^2/s)&quot;</span><span class="p">)</span>
+    <span class="n">print_tensor</span><span class="p">(</span><span class="n">diffusion_coef_tensor</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Diffusion coefficient tensor (cm^2/s)</span><span class="si">{</span><span class="n">plane_label</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="n">mu</span> <span class="o">=</span> <span class="n">mobility_tensor</span><span class="p">(</span><span class="n">diffusion_coef_tensor</span><span class="p">)</span>
-    <span class="n">print_tensor</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Mobility tensor (cm^2/Vs)&quot;</span><span class="p">)</span>
+    <span class="n">print_tensor</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Mobility tensor (cm^2/Vs)</span><span class="si">{</span><span class="n">plane_label</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="n">value</span><span class="p">,</span> <span class="n">vector</span> <span class="o">=</span> <span class="n">cal_eigenvalue_decomposition</span><span class="p">(</span><span class="n">mu</span><span class="p">)</span>
-    <span class="n">print_mobility</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">vector</span><span class="p">)</span>
+    <span class="n">print_mobility</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">vector</span><span class="p">,</span> <span class="n">plane</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">plane_2d</span><span class="p">)</span>
 
     <span class="c1">##### Simulate mobility tensor calculation using Monte Carlo method #####</span>
     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">mc</span><span class="p">:</span>
         <span class="n">D_MC</span> <span class="o">=</span> <span class="n">_diffusion_coefficient_tensor_MC</span><span class="p">(</span><span class="n">cif_reader</span><span class="o">.</span><span class="n">lattice</span> <span class="o">*</span> <span class="mf">1e-8</span><span class="p">,</span> <span class="n">hop</span><span class="p">)</span>
-        <span class="n">print_tensor</span><span class="p">(</span><span class="n">D_MC</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Diffusion coefficient tensor (cm^2/s) (MC)&quot;</span><span class="p">)</span>
+        <span class="n">print_tensor</span><span class="p">(</span><span class="n">D_MC</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Diffusion coefficient tensor (cm^2/s) (MC)</span><span class="si">{</span><span class="n">plane_label</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">mu_MC</span> <span class="o">=</span> <span class="n">mobility_tensor</span><span class="p">(</span><span class="n">D_MC</span><span class="p">)</span>
-        <span class="n">print_tensor</span><span class="p">(</span><span class="n">mu_MC</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Mobility tensor (cm^2/Vs) (MC)&quot;</span><span class="p">)</span>
+        <span class="n">print_tensor</span><span class="p">(</span><span class="n">mu_MC</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Mobility tensor (cm^2/Vs) (MC)</span><span class="si">{</span><span class="n">plane_label</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">value_MC</span><span class="p">,</span> <span class="n">vector_MC</span> <span class="o">=</span> <span class="n">cal_eigenvalue_decomposition</span><span class="p">(</span><span class="n">mu_MC</span><span class="p">)</span>
-        <span class="n">print_mobility</span><span class="p">(</span><span class="n">value_MC</span><span class="p">,</span> <span class="n">vector_MC</span><span class="p">,</span> <span class="n">sim_type</span><span class="o">=</span><span class="s1">&#39;MC&#39;</span><span class="p">)</span>
+        <span class="n">print_mobility</span><span class="p">(</span><span class="n">value_MC</span><span class="p">,</span> <span class="n">vector_MC</span><span class="p">,</span> <span class="n">sim_type</span><span class="o">=</span><span class="s1">&#39;MC&#39;</span><span class="p">,</span> <span class="n">plane</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">plane_2d</span><span class="p">)</span>
 
     <span class="c1">##### Simulate mobility tensor calculation using Ordinary Differential Equation method #####</span>
     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">ode</span><span class="p">:</span>
         <span class="n">D_ODE</span> <span class="o">=</span> <span class="n">_diffusion_coefficient_tensor_ODE</span><span class="p">(</span><span class="n">cif_reader</span><span class="o">.</span><span class="n">lattice</span> <span class="o">*</span> <span class="mf">1e-8</span><span class="p">,</span> <span class="n">hop</span><span class="p">)</span>
-        <span class="n">print_tensor</span><span class="p">(</span><span class="n">D_ODE</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Diffusion coefficient tensor (cm^2/s) (ODE)&quot;</span><span class="p">)</span>
+        <span class="n">print_tensor</span><span class="p">(</span><span class="n">D_ODE</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Diffusion coefficient tensor (cm^2/s) (ODE)</span><span class="si">{</span><span class="n">plane_label</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">mu_ODE</span> <span class="o">=</span> <span class="n">mobility_tensor</span><span class="p">(</span><span class="n">D_ODE</span><span class="p">)</span>
-        <span class="n">print_tensor</span><span class="p">(</span><span class="n">mu_ODE</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Mobility tensor (cm^2/Vs) (ODE)&quot;</span><span class="p">)</span>
+        <span class="n">print_tensor</span><span class="p">(</span><span class="n">mu_ODE</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Mobility tensor (cm^2/Vs) (ODE)</span><span class="si">{</span><span class="n">plane_label</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">value_ODE</span><span class="p">,</span> <span class="n">vector_ODE</span> <span class="o">=</span> <span class="n">cal_eigenvalue_decomposition</span><span class="p">(</span><span class="n">mu_ODE</span><span class="p">)</span>
-        <span class="n">print_mobility</span><span class="p">(</span><span class="n">value_ODE</span><span class="p">,</span> <span class="n">vector_ODE</span><span class="p">,</span> <span class="n">sim_type</span><span class="o">=</span><span class="s1">&#39;ODE&#39;</span><span class="p">)</span>
+        <span class="n">print_mobility</span><span class="p">(</span><span class="n">value_ODE</span><span class="p">,</span> <span class="n">vector_ODE</span><span class="p">,</span> <span class="n">sim_type</span><span class="o">=</span><span class="s1">&#39;ODE&#39;</span><span class="p">,</span> <span class="n">plane</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">plane_2d</span><span class="p">)</span>
 
     <span class="c1"># Save reorganization, transfer integrals, hop, mobility tensor</span>
     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">pickle</span><span class="p">:</span>
@@ -785,7 +826,8 @@
                 <span class="s1">&#39;diffusion_coefficient_tensor&#39;</span><span class="p">:</span> <span class="n">diffusion_coef_tensor</span><span class="p">,</span>
                 <span class="s1">&#39;mobility_tensor&#39;</span><span class="p">:</span> <span class="n">mu</span><span class="p">,</span>
                 <span class="s1">&#39;mobility_value&#39;</span><span class="p">:</span> <span class="n">value</span><span class="p">,</span>
-                <span class="s1">&#39;mobility_vector&#39;</span><span class="p">:</span> <span class="n">vector</span>
+                <span class="s1">&#39;mobility_vector&#39;</span><span class="p">:</span> <span class="n">vector</span><span class="p">,</span>
+                <span class="s1">&#39;plane_2d&#39;</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">plane_2d</span><span class="p">,</span>
             <span class="p">},</span> <span class="n">f</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">json</span><span class="p">:</span>
@@ -796,13 +838,14 @@
                    <span class="k">else</span> <span class="s1">&#39;gaussian&#39;</span><span class="p">)</span>
         <span class="n">e</span> <span class="o">=</span> <span class="n">rcal</span><span class="o">.</span><span class="n">intermediate_energies</span>
         <span class="n">result</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s1">&#39;schema_version&#39;</span><span class="p">:</span> <span class="s1">&#39;1.0&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;schema_version&#39;</span><span class="p">:</span> <span class="s1">&#39;1.1&#39;</span><span class="p">,</span>
             <span class="s1">&#39;mcal_version&#39;</span><span class="p">:</span> <span class="n">mcal_version</span><span class="p">,</span>
             <span class="s1">&#39;input_file&#39;</span><span class="p">:</span> <span class="n">Path</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">file</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
             <span class="s1">&#39;osc_type&#39;</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">osc_type</span><span class="p">,</span>
             <span class="s1">&#39;method&#39;</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">method</span><span class="p">,</span>
             <span class="s1">&#39;backend&#39;</span><span class="p">:</span> <span class="n">backend</span><span class="p">,</span>
             <span class="s1">&#39;temperature_K&#39;</span><span class="p">:</span> <span class="mf">300.0</span><span class="p">,</span>
+            <span class="s1">&#39;calculation_plane&#39;</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">plane_2d</span><span class="p">,</span>
             <span class="s1">&#39;reorganization_energy_eV&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">reorg_energy</span><span class="p">),</span>
             <span class="s1">&#39;reorganization_intermediate_energies_eV&#39;</span><span class="p">:</span> <span class="p">{</span>
                 <span class="s1">&#39;neutral_at_neutral_geom&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
@@ -823,6 +866,12 @@
             <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">plot_plane</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">plane_2d</span> <span class="ow">and</span> <span class="n">PLANE_AXES</span><span class="p">[</span><span class="n">args</span><span class="o">.</span><span class="n">plot_plane</span><span class="p">]</span> <span class="o">!=</span> <span class="n">PLANE_AXES</span><span class="p">[</span><span class="n">args</span><span class="o">.</span><span class="n">plane_2d</span><span class="p">]:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s1">&#39;--plot-plane </span><span class="si">%s</span><span class="s1"> is not the plane the calculation was restricted to &#39;</span>
+                <span class="s1">&#39;(--2d </span><span class="si">%s</span><span class="s1">); the plotted curve will be near zero.&#39;</span><span class="p">,</span>
+                <span class="n">args</span><span class="o">.</span><span class="n">plot_plane</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">plane_2d</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="n">plot_mobility_2d</span><span class="p">(</span>
             <span class="n">Path</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">cif_path_without_ext</span><span class="si">}</span><span class="s1">_result.pkl&#39;</span><span class="p">),</span>
             <span class="n">mu</span><span class="p">,</span>
@@ -1551,7 +1600,7 @@
     <span class="n">ax</span><span class="o">.</span><span class="n">set_rlim</span><span class="p">(</span><span class="n">bottom</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">6</span><span class="p">))</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">R</span><span class="s1">&#39;Mobility [$\mathrm</span><span class="si">{cm}</span><span class="s1">^2 \mathrm</span><span class="si">{V}</span><span class="s1">^{-1} \mathrm</span><span class="si">{s}</span><span class="s1">^{-1}$]&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">R</span><span class="s1">&#39;Mobility ($\mathrm</span><span class="si">{cm}</span><span class="s1">^2 \mathrm</span><span class="si">{V}</span><span class="s1">^{-1} \mathrm</span><span class="si">{s}</span><span class="s1">^{-1}$)&#39;</span><span class="p">)</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_label_coords</span><span class="p">(</span><span class="o">-</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">set_rlabel_position</span><span class="p">(</span><span class="mi">90</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">save_path</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">save_path</span><span class="o">.</span><span class="n">stem</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">.png&quot;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s1">&#39;tight&#39;</span><span class="p">)</span>
@@ -1559,9 +1608,31 @@
 
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">_plane_label</span><span class="p">(</span><span class="n">plane</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Build a suffix marking that the result is restricted to a 2D plane.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    plane : Optional[str]</span>
+<span class="sd">        Plane the calculation was restricted to (e.g. &#39;ab&#39;). None when the</span>
+<span class="sd">        calculation was not restricted.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    str</span>
+<span class="sd">        Suffix such as &#39; [2D: ab plane]&#39;, or an empty string if `plane` is None.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39; [2D: </span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s1"> plane]&#39;</span> <span class="k">if</span> <span class="n">plane</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
+
+
 <div class="viewcode-block" id="print_mobility">
 <a class="viewcode-back" href="../../mcal.html#mcal.mcal.print_mobility">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">print_mobility</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">vector</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">sim_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;MC&#39;</span><span class="p">,</span> <span class="s1">&#39;ODE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">print_mobility</span><span class="p">(</span>
+    <span class="n">value</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span>
+    <span class="n">vector</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span>
+    <span class="n">sim_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;MC&#39;</span><span class="p">,</span> <span class="s1">&#39;ODE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+    <span class="n">plane</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print mobility and mobility vector</span>
 
 <span class="sd">    Parameters</span>
@@ -1572,6 +1643,8 @@
 <span class="sd">        Mobility vector</span>
 <span class="sd">    sim_type : str</span>
 <span class="sd">        Simulation type (MC or ODE)</span>
+<span class="sd">    plane : Optional[str]</span>
+<span class="sd">        Plane the calculation was restricted to by --2d, by default None</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">msg_value</span> <span class="o">=</span> <span class="s1">&#39;Mobility eigenvalues (cm^2/Vs)&#39;</span>
     <span class="n">msg_vector</span> <span class="o">=</span> <span class="s1">&#39;Mobility eigenvectors&#39;</span>
@@ -1580,6 +1653,9 @@
     <span class="k">if</span> <span class="n">sim_type</span><span class="p">:</span>
         <span class="n">msg_value</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39; (</span><span class="si">{</span><span class="n">sim_type</span><span class="si">}</span><span class="s1">)&#39;</span>
         <span class="n">msg_vector</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39; (</span><span class="si">{</span><span class="n">sim_type</span><span class="si">}</span><span class="s1">)&#39;</span>
+
+    <span class="n">msg_value</span> <span class="o">+=</span> <span class="n">_plane_label</span><span class="p">(</span><span class="n">plane</span><span class="p">)</span>
+    <span class="n">msg_vector</span> <span class="o">+=</span> <span class="n">_plane_label</span><span class="p">(</span><span class="n">plane</span><span class="p">)</span>
 
     <span class="nb">print</span><span class="p">()</span>
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;-&#39;</span> <span class="o">*</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">msg_value</span><span class="p">)</span><span class="o">+</span><span class="mi">2</span><span class="p">))</span>
@@ -1691,13 +1767,22 @@
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s1">-th in (0,0,0) cell to </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s1">-th in (</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">,</span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s1">,</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">) cell&#39;</span><span class="p">)</span>
         <span class="n">print_transfer_integral</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;osc_type&#39;</span><span class="p">],</span> <span class="n">ti</span><span class="p">)</span>
 
-    <span class="n">print_tensor</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;diffusion_coefficient_tensor&#39;</span><span class="p">],</span> <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Diffusion coefficient tensor (cm^2/s)&quot;</span><span class="p">)</span>
+    <span class="n">plane_2d</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;plane_2d&#39;</span><span class="p">)</span>
+    <span class="n">plane_label</span> <span class="o">=</span> <span class="n">_plane_label</span><span class="p">(</span><span class="n">plane_2d</span><span class="p">)</span>
 
-    <span class="n">print_tensor</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;mobility_tensor&#39;</span><span class="p">],</span> <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Mobility tensor (cm^2/Vs)&quot;</span><span class="p">)</span>
+    <span class="n">print_tensor</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;diffusion_coefficient_tensor&#39;</span><span class="p">],</span> <span class="n">msg</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Diffusion coefficient tensor (cm^2/s)</span><span class="si">{</span><span class="n">plane_label</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-    <span class="n">print_mobility</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;mobility_value&#39;</span><span class="p">],</span> <span class="n">results</span><span class="p">[</span><span class="s1">&#39;mobility_vector&#39;</span><span class="p">])</span>
+    <span class="n">print_tensor</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;mobility_tensor&#39;</span><span class="p">],</span> <span class="n">msg</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Mobility tensor (cm^2/Vs)</span><span class="si">{</span><span class="n">plane_label</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">print_mobility</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;mobility_value&#39;</span><span class="p">],</span> <span class="n">results</span><span class="p">[</span><span class="s1">&#39;mobility_vector&#39;</span><span class="p">],</span> <span class="n">plane</span><span class="o">=</span><span class="n">plane_2d</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">plot_plane</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">plane_2d</span> <span class="ow">and</span> <span class="n">PLANE_AXES</span><span class="p">[</span><span class="n">plot_plane</span><span class="p">]</span> <span class="o">!=</span> <span class="n">PLANE_AXES</span><span class="p">[</span><span class="n">plane_2d</span><span class="p">]:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s1">&#39;--plot-plane </span><span class="si">%s</span><span class="s1"> is not the plane the calculation was restricted to &#39;</span>
+                <span class="s1">&#39;(--2d </span><span class="si">%s</span><span class="s1">); the plotted curve will be near zero.&#39;</span><span class="p">,</span>
+                <span class="n">plot_plane</span><span class="p">,</span> <span class="n">plane_2d</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="n">plot_mobility_2d</span><span class="p">(</span>
             <span class="n">Path</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">),</span>
             <span class="n">results</span><span class="p">[</span><span class="s1">&#39;mobility_tensor&#39;</span><span class="p">],</span>
@@ -1749,7 +1834,7 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=5a057da9"></script>
+</div><script src="../../_static/documentation_options.js?v=486e5634"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>

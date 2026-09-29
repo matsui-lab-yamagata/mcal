@@ -8,9 +8,12 @@ from pyscf.geomopt import geometric_solver
 from pyscf.gto.basis import bse
 
 from mcal.calculations.rcal import Rcal
+from mcal.utils.log import get_logger
 
 
 print = functools.partial(print, flush=True)
+
+logger = get_logger(__name__)
 
 
 class RcalPySCF(Rcal):
@@ -250,7 +253,7 @@ class RcalPySCF(Rcal):
             mf.chkfile = chkfile
             mf.kernel()
             if not mf.converged:
-                print(f'WARNING: SCF did not converge for {label}')
+                logger.warning('SCF did not converge for %s', label)
             energy_ev = mf.e_tot * self.HARTREE_TO_EV
 
         if not only_read and not skip_cal:
@@ -315,7 +318,7 @@ class RcalPySCF(Rcal):
             mf_opt.chkfile = chkfile
             mf_opt.kernel()
             if not mf_opt.converged:
-                print(f'WARNING: SCF did not converge for {label}')
+                logger.warning('SCF did not converge for %s', label)
             energy_ev = mf_opt.e_tot * self.HARTREE_TO_EV
 
         if not only_read and not skip_cal:

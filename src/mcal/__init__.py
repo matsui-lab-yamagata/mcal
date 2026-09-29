@@ -1,5 +1,5 @@
-__version__ = "0.7.1"
-__date__ = "2026/06/18"
+__version__ = "0.8.0"
+__date__ = "2026/08/27"
 
 from .calculations.hopping_mobility_model import (
     cal_pinv,
