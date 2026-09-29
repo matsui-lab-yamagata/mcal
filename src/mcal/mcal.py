@@ -18,6 +18,7 @@ from tcal import Tcal
 from mcal.utils.cif_reader import CifReader
 from mcal.utils.gaus_log_reader import check_normal_termination
 from mcal.utils.gjf_maker import GjfMaker
+from mcal.utils.log import configure_logging, get_logger
 from mcal.calculations.hopping_mobility_model import (
     diffusion_coefficient_tensor,
     _diffusion_coefficient_tensor_MC,
@@ -29,6 +30,14 @@ from mcal.calculations.rcal import Rcal
 
 
 print = functools.partial(print, flush=True)
+
+logger = get_logger(__name__)
+
+PLANE_AXES: Dict[str, Tuple[int, int]] = {
+    'ab': (0, 1), 'ba': (0, 1),
+    'bc': (1, 2), 'cb': (1, 2),
+    'ac': (0, 2), 'ca': (0, 2),
+}
 
 
 def main():
@@ -57,6 +66,10 @@ def main():
         - Expand calculation range to 5x5x5 supercell to widen transfer integral calculation range\n
         $ mcal xxx.cif p --cellsize 2
 
+    Restrict calculation to a 2D plane (faster for layered crystals):
+        - Use a 5x5x1 supercell and skip transfer integrals across the ab plane\n
+        $ mcal xxx.cif p --2d ab
+
     Resume and save results:
         - Resume from existing calculations\n
         $ mcal xxx.cif p --resume
@@ -74,6 +87,7 @@ def main():
         - Plot mobility tensor in 2D plane (Examples: ab, ac, ba, bc, ca, cb (default is ab))\n
         $ python hop_mcal.py xxx.cif p --plot-plane ab
     """
+    configure_logging()
     # Error range for skipping calculation of transfer integrals using moment of inertia and distance between centers of weight.
     CENTER_OF_WEIGHT_ERROR = 1.0e-7
     MOMENT_OF_INERTIA_ERROR = np.array([[1.0e-3, 1.0e-3, 1.0e-3]])
@@ -130,6 +144,16 @@ def main():
     parser.add_argument(
         '--plot-plane',
         help='plot mobility tensor in 2D plane (Examples: ab, ac, ba, bc, ca, cb (default is ab))',
+        type=str,
+        default=None,
+        choices=['ab', 'ac', 'ba', 'bc', 'ca', 'cb'],
+    )
+    parser.add_argument(
+        '--2d',
+        dest='plane_2d',
+        help='restrict the supercell expansion to the specified plane to skip out-of-plane '
+             'transfer integrals (Examples: ab, ac, ba, bc, ca, cb). '
+             'With --cellsize 2 and --2d ab, a 5x5x1 supercell is used instead of 5x5x5',
         type=str,
         default=None,
         choices=['ab', 'ac', 'ba', 'bc', 'ca', 'cb'],
@@ -309,7 +333,24 @@ def main():
     mom_dis_ti = [] # Store moment of inertia, distance between centers of weight and transfer integral
     center_mol_log_paths = {i: None for i in range(cif_reader.z_value)}
 
-    expand_mols = cif_reader.expand_mols(args.cellsize)
+    expand_range: Union[int, Tuple[int, int, int]]
+    if args.plane_2d:
+        in_plane = PLANE_AXES[args.plane_2d]
+        expand_range = (
+            args.cellsize if 0 in in_plane else 0,
+            args.cellsize if 1 in in_plane else 0,
+            args.cellsize if 2 in in_plane else 0,
+        )
+        print(f'Restrict the calculation to the {args.plane_2d} plane '
+              f'(supercell {2*expand_range[0]+1}x{2*expand_range[1]+1}x{2*expand_range[2]+1}).')
+        print('Transfer integrals across the plane are not calculated; '
+              'the out-of-plane mobility is zero by construction.\n')
+    else:
+        expand_range = args.cellsize
+
+    plane_label = _plane_label(args.plane_2d)
+
+    expand_mols = cif_reader.expand_mols(expand_range)
     for s in range(len(cif_reader.unique_symbols.keys())):
         unique_symbols = cif_reader.unique_symbols[s]
         unique_coords = cif_reader.unique_coords[s]
@@ -511,29 +552,29 @@ def main():
         hop.append((s, t, i, j, k, marcus_rate(ti, reorg_energy)))
 
     diffusion_coef_tensor = diffusion_coefficient_tensor(cif_reader.lattice * 1e-8, hop)
-    print_tensor(diffusion_coef_tensor, msg="Diffusion coefficient tensor (cm^2/s)")
+    print_tensor(diffusion_coef_tensor, msg=f"Diffusion coefficient tensor (cm^2/s){plane_label}")
     mu = mobility_tensor(diffusion_coef_tensor)
-    print_tensor(mu, msg="Mobility tensor (cm^2/Vs)")
+    print_tensor(mu, msg=f"Mobility tensor (cm^2/Vs){plane_label}")
     value, vector = cal_eigenvalue_decomposition(mu)
-    print_mobility(value, vector)
+    print_mobility(value, vector, plane=args.plane_2d)
 
     ##### Simulate mobility tensor calculation using Monte Carlo method #####
     if args.mc:
         D_MC = _diffusion_coefficient_tensor_MC(cif_reader.lattice * 1e-8, hop)
-        print_tensor(D_MC, msg="Diffusion coefficient tensor (cm^2/s) (MC)")
+        print_tensor(D_MC, msg=f"Diffusion coefficient tensor (cm^2/s) (MC){plane_label}")
         mu_MC = mobility_tensor(D_MC)
-        print_tensor(mu_MC, msg="Mobility tensor (cm^2/Vs) (MC)")
+        print_tensor(mu_MC, msg=f"Mobility tensor (cm^2/Vs) (MC){plane_label}")
         value_MC, vector_MC = cal_eigenvalue_decomposition(mu_MC)
-        print_mobility(value_MC, vector_MC, sim_type='MC')
+        print_mobility(value_MC, vector_MC, sim_type='MC', plane=args.plane_2d)
 
     ##### Simulate mobility tensor calculation using Ordinary Differential Equation method #####
     if args.ode:
         D_ODE = _diffusion_coefficient_tensor_ODE(cif_reader.lattice * 1e-8, hop)
-        print_tensor(D_ODE, msg="Diffusion coefficient tensor (cm^2/s) (ODE)")
+        print_tensor(D_ODE, msg=f"Diffusion coefficient tensor (cm^2/s) (ODE){plane_label}")
         mu_ODE = mobility_tensor(D_ODE)
-        print_tensor(mu_ODE, msg="Mobility tensor (cm^2/Vs) (ODE)")
+        print_tensor(mu_ODE, msg=f"Mobility tensor (cm^2/Vs) (ODE){plane_label}")
         value_ODE, vector_ODE = cal_eigenvalue_decomposition(mu_ODE)
-        print_mobility(value_ODE, vector_ODE, sim_type='ODE')
+        print_mobility(value_ODE, vector_ODE, sim_type='ODE', plane=args.plane_2d)
 
     # Save reorganization, transfer integrals, hop, mobility tensor
     if args.pickle:
@@ -548,7 +589,8 @@ def main():
                 'diffusion_coefficient_tensor': diffusion_coef_tensor,
                 'mobility_tensor': mu,
                 'mobility_value': value,
-                'mobility_vector': vector
+                'mobility_vector': vector,
+                'plane_2d': args.plane_2d,
             }, f)
 
     if args.json:
@@ -559,13 +601,14 @@ def main():
                    else 'gaussian')
         e = rcal.intermediate_energies
         result = {
-            'schema_version': '1.0',
+            'schema_version': '1.1',
             'mcal_version': mcal_version,
             'input_file': Path(args.file).name,
             'osc_type': args.osc_type,
             'method': args.method,
             'backend': backend,
             'temperature_K': 300.0,
+            'calculation_plane': args.plane_2d,
             'reorganization_energy_eV': float(reorg_energy),
             'reorganization_intermediate_energies_eV': {
                 'neutral_at_neutral_geom': float(e[0]),
@@ -586,6 +629,12 @@ def main():
             json.dump(result, f, indent=2)
 
     if args.plot_plane:
+        if args.plane_2d and PLANE_AXES[args.plot_plane] != PLANE_AXES[args.plane_2d]:
+            logger.warning(
+                '--plot-plane %s is not the plane the calculation was restricted to '
+                '(--2d %s); the plotted curve will be near zero.',
+                args.plot_plane, args.plane_2d,
+            )
         plot_mobility_2d(
             Path(f'{cif_path_without_ext}_result.pkl'),
             mu,
@@ -1263,14 +1312,36 @@ def plot_mobility_2d(
     ax.set_rlim(bottom=0)
     ax.set_xticks(np.arange(0, 2*np.pi, np.pi/6))
     ax.tick_params(axis="x", pad=5)
-    ax.set_ylabel(R'Mobility [$\mathrm{cm}^2 \mathrm{V}^{-1} \mathrm{s}^{-1}$]')
+    ax.set_ylabel(R'Mobility ($\mathrm{cm}^2 \mathrm{V}^{-1} \mathrm{s}^{-1}$)')
     ax.yaxis.set_label_coords(-0.2, 0.5)
     ax.set_rlabel_position(90)
     plt.savefig(save_path.parent / f"{save_path.stem}_{plane}.png", dpi=300, bbox_inches='tight')
     plt.close()
 
 
-def print_mobility(value: NDArray[np.float64], vector: NDArray[np.float64], sim_type: Literal['MC', 'ODE'] = ''):
+def _plane_label(plane: Optional[str]) -> str:
+    """Build a suffix marking that the result is restricted to a 2D plane.
+
+    Parameters
+    ----------
+    plane : Optional[str]
+        Plane the calculation was restricted to (e.g. 'ab'). None when the
+        calculation was not restricted.
+
+    Returns
+    -------
+    str
+        Suffix such as ' [2D: ab plane]', or an empty string if `plane` is None.
+    """
+    return f' [2D: {plane} plane]' if plane else ''
+
+
+def print_mobility(
+    value: NDArray[np.float64],
+    vector: NDArray[np.float64],
+    sim_type: Literal['MC', 'ODE'] = '',
+    plane: Optional[str] = None,
+):
     """Print mobility and mobility vector
 
     Parameters
@@ -1281,6 +1352,8 @@ def print_mobility(value: NDArray[np.float64], vector: NDArray[np.float64], sim_
         Mobility vector
     sim_type : str
         Simulation type (MC or ODE)
+    plane : Optional[str]
+        Plane the calculation was restricted to by --2d, by default None
     """
     msg_value = 'Mobility eigenvalues (cm^2/Vs)'
     msg_vector = 'Mobility eigenvectors'
@@ -1289,6 +1362,9 @@ def print_mobility(value: NDArray[np.float64], vector: NDArray[np.float64], sim_
     if sim_type:
         msg_value += f' ({sim_type})'
         msg_vector += f' ({sim_type})'
+
+    msg_value += _plane_label(plane)
+    msg_vector += _plane_label(plane)
 
     print()
     print('-' * (len(msg_value)+2))
@@ -1388,13 +1464,22 @@ def read_pickle(
         print(f'{s}-th in (0,0,0) cell to {t}-th in ({i},{j},{k}) cell')
         print_transfer_integral(results['osc_type'], ti)
 
-    print_tensor(results['diffusion_coefficient_tensor'], msg="Diffusion coefficient tensor (cm^2/s)")
+    plane_2d = results.get('plane_2d')
+    plane_label = _plane_label(plane_2d)
 
-    print_tensor(results['mobility_tensor'], msg="Mobility tensor (cm^2/Vs)")
+    print_tensor(results['diffusion_coefficient_tensor'], msg=f"Diffusion coefficient tensor (cm^2/s){plane_label}")
 
-    print_mobility(results['mobility_value'], results['mobility_vector'])
+    print_tensor(results['mobility_tensor'], msg=f"Mobility tensor (cm^2/Vs){plane_label}")
+
+    print_mobility(results['mobility_value'], results['mobility_vector'], plane=plane_2d)
 
     if plot_plane:
+        if plane_2d and PLANE_AXES[plot_plane] != PLANE_AXES[plane_2d]:
+            logger.warning(
+                '--plot-plane %s is not the plane the calculation was restricted to '
+                '(--2d %s); the plotted curve will be near zero.',
+                plot_plane, plane_2d,
+            )
         plot_mobility_2d(
             Path(file_name).with_suffix(''),
             results['mobility_tensor'],

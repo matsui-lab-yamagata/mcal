@@ -1,10 +1,13 @@
 """ GjfMaker beta (2025/08/18)"""
 import os
-import warnings
 from pathlib import Path
 from typing import List, Optional, Tuple
 
 import pandas as pd
+
+from mcal.utils.log import get_logger
+
+logger = get_logger(__name__)
 
 
 class GjfMaker:
@@ -256,7 +259,7 @@ class GjfMaker:
         This radical check is incomplete. If the number of unpaired electrons is even, it is not considered a radical.
         """
         # FIXME: This radical check is incomplete. If the number of unpaired electrons is even, it is not considered a radical.
-        warnings.warn('This radical check is incomplete. If the number of unpaired electrons is even, it is not considered a radical.')
+        logger.warning('This radical check is incomplete. If the number of unpaired electrons is even, it is not considered a radical.')
         elements = 0
         for symbol in self._symbols:
             elements += self.ELEMENTS_NUM[symbol]

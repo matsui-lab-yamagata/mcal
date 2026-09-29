@@ -10,6 +10,7 @@ from typing import List, Literal
 
 from mcal.utils.cif_reader import CifReader
 from mcal.utils.gjf_maker import GjfMaker
+from mcal.utils.log import configure_logging
 
 
 print = functools.partial(print, flush=True)
@@ -17,6 +18,7 @@ print = functools.partial(print, flush=True)
 
 def main():
     """This code is to execute rcal for command line."""
+    configure_logging()
     parser = argparse.ArgumentParser()
     parser.add_argument('file', help='cif file name or gjf file name or xyz file name', type=str)
     parser.add_argument('osc_type', help='organic semiconductor type', type=str)
